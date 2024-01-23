@@ -47,14 +47,3 @@ void use_arguments(int argc, char* argv[]) {
         
     }
 }
-
-TEST_CASE("TEST"){
-    printf("TEST Ran");
-    CHECK( (new VarExpr("x"))->equals(new VarExpr("x")) == true );
-    CHECK( (new VarExpr("x"))->equals(new VarExpr("y")) == false );
-    CHECK( (new NumExpr(1))->equals(new VarExpr("x")) == false );
-    CHECK( (new AddExpr(new NumExpr(2),new NumExpr(3)))->equals(new AddExpr(new NumExpr(2),new NumExpr(3)))==true );
-    CHECK( (new AddExpr(new NumExpr(2),new NumExpr(3)))->equals(new AddExpr(new NumExpr(3),new NumExpr(2)))==false );
-    CHECK(( new Mult( new NumExpr(2), new NumExpr(2)))->equals(new Mult(new NumExpr(2), new NumExpr(1)))==false);
-    CHECK(( new Mult( new NumExpr(2), new NumExpr(2)))->equals(new Mult(new NumExpr(2), new NumExpr(2)))==true);
-}
