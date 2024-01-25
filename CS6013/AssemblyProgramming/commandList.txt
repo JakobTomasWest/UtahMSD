@@ -1,0 +1,12 @@
+Run the assembler to create the .o file:
+nasm -felf64 <filename>.s     myAsm1.s
+Compile the cpp file:
+clang++ -c <filename>.cpp         main.cpp
+Link all .o file:
+clang++ *.o -o run <fileName to compile and run >
+Run the executable file:
+./<executable file name>
+Edit file with nano:
+nano <filename and extension>
+
+
