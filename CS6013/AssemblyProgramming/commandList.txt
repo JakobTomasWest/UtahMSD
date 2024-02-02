@@ -9,4 +9,10 @@ Run the executable file:
 Edit file with nano:
 nano <filename and extension>
 
+scp u0675702@lab1-11.eng.utah.edu:MSD/CS6013/main.cpp
+
+
+nasm -g -felf64 -F dwarf lab2.s -o lab2.o // creates assembly object file
+Gcc -g lab2.o -o lab2.o //links it into executable prgoram 
+
 
