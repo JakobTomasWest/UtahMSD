@@ -14,19 +14,18 @@ public class Main {
         //using UDP instead of TCP - datagram
         DatagramSocket socket = new DatagramSocket(server_port);
 
-        byte[] buffer = new byte[512];
-        DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length);
 
         DNSCache cache = new DNSCache(); // for storing DNS records from google
 
         for (int count = 1; true; count++) {
+            byte[] buffer = new byte[512];
+            DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length);
             //while the server is running, recieve packets of max 512 bytes
             socket.receive(requestPacket);
             // now that we have the clients datagramPacket / DNS request we can get the data, and decode it into a DNSMessage or DNSHeader
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(requestPacket.getData());
-//            DNSMessage request= DNSMessage.decodeMessage(requestPacket.getData());
-//            System.out.println("DNSMessage request: " + request + "\n");
-            DNSHeader.decodeHeader(byteArrayInputStream);
+            DNSMessage dnsMessage = DNSMessage.decodeMessage(requestPacket.getData());
+            System.out.println("message: " + dnsMessage);
 
             System.out.println(count + " heard from " + requestPacket.getAddress()+ " " + requestPacket.getPort());
             for (int i = 0; i < requestPacket.getLength(); i++) {
@@ -35,41 +34,41 @@ public class Main {
             }
 
             // Decode the DNSHeader to check if it's a query
-            DNSHeader header = DNSHeader.decodeHeader(byteArrayInputStream);
-            if (header.getQuestionCount() > 0) {
-                // Handle DNS queries
-                DNSQuestion[] questions = new DNSQuestion[header.getQuestionCount()];
-                for (int i = 0; i < header.getQuestionCount(); i++) {
-                    questions[i] = DNSQuestion.decodeQuestion(byteArrayInputStream, new DNSMessage());
-                    System.out.println("question added");
-                }
-
-
-                // Check if answers exist in cache and build a DNSMessage response
-                DNSRecord[] answers = new DNSRecord[questions.length];
-                for (int i = 0; i < questions.length; i++) {
-                    DNSQuestion question = questions[i];
-                    DNSRecord cachedRecord = cache.query(question);
-                    if (cachedRecord != null) {
-                        answers[i] = cachedRecord;
-
-                    } else {
-                        // Forward the request to Google's public DNS server (8.8.8.8)
-                        DNSMessage googleResponse = forwardRequestToGoogle(requestPacket.getData());
-
-                    }
-                }
-
-                // Build the response DNSMessage
-                DNSMessage request = DNSMessage.decodeMessage(requestPacket.getData());
-                System.out.println("DNSMessage request: " + request + "\n");
-                DNSMessage response = DNSMessage.buildResponse(request, answers);
-                System.out.println("DNSMessage response: " + response + "\n");
-
-                // Send the response back to the client
-                sendResponseToClient(socket, response, requestPacket.getAddress(), requestPacket.getPort());
-
+            if (dnsMessage.getQuestion().length == 0) {
+                continue;
             }
+
+            // Check if answers exist in cache and build a DNSMessage response
+            DNSQuestion[] questions = dnsMessage.getQuestion();
+            DNSRecord[] answers = new DNSRecord[questions.length];
+            for (int i = 0; i < questions.length; i++) {
+                DNSQuestion question = questions[i];
+                DNSRecord cachedRecord = cache.query(question);
+                if (cachedRecord != null) {
+                    answers[i] = cachedRecord;
+                } else {
+                    // Forward the request to Google's public DNS server (8.8.8.8)
+                    DNSMessage googleResponse = forwardRequestToGoogle(requestPacket.getData());
+
+                    // Assuming googleResponse now contains the response from Google DNS
+                    // Serialize the googleResponse into bytes
+                    byte[] responseData = googleResponse.toBytes();  // Ensure this method correctly serializes the DNSMessage
+
+                    // Send the response back to the client
+                    DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length, requestPacket.getAddress(), requestPacket.getPort());
+                    socket.send(responsePacket);
+                    System.out.println("Forwarded Google's DNS response to the client.");
+                }
+            }
+
+            // Build the response DNSMessage
+            DNSMessage request = DNSMessage.decodeMessage(requestPacket.getData());
+            System.out.println("DNSMessage request: " + request + "\n");
+            DNSMessage response = DNSMessage.buildResponse(request, answers);
+            System.out.println("DNSMessage response: " + response + "\n");
+
+            // Send the response back to the client
+            sendResponseToClient(socket, response, requestPacket.getAddress(), requestPacket.getPort());
         }
 
     }
@@ -85,7 +84,7 @@ public class Main {
             // Send the request to Google
             googleSocket.send(googleRequestPacket);
             // Receive the response from Google
-            byte[] buffer = new byte[512];
+            byte[] buffer = new byte[1024];
             DatagramPacket googleResponsePacket = new DatagramPacket(buffer, buffer.length);
             googleSocket.receive(googleResponsePacket);
             System.out.println("response from google: " + DNSMessage.decodeMessage(googleResponsePacket.getData()));

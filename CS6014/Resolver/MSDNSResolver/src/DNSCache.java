@@ -12,7 +12,7 @@ public class DNSCache {
     public void insert(DNSQuestion question, DNSRecord record) {
         cache.put(question, record);
     }
-    //public void insert(DNSQuestion question, DNSRecord answer){
+//    public void insert(DNSQuestion question, DNSRecord answer){
 //        if(!cache.containsKey(question)){
 //            cache.put(question.answer);
 //        }
