@@ -2,6 +2,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -35,6 +36,7 @@ public class DNSQuestion {
     public static DNSQuestion decodeQuestion(ByteArrayInputStream inputStream, DNSMessage message) throws IOException {
         // read the domain name using DNSMessage's method
         String[] domainNameParts = message.readDomainName(inputStream);
+
         String domainName = String.join(".", domainNameParts);
 
         // put the first two bytes into the type and the next two into the queryClass

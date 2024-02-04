@@ -54,7 +54,7 @@ public class DNSMessage {
         List<String> domainNamePieces = new ArrayList<>();
         // read the next byte for length
         int length = inputStream.read();
-        //System.out.println("Length byte: " + length);
+        System.out.println("Length byte: " + length);
         while(length != 0){
             // Since we are looking at the domain or a repeated domain we have to check for a pointer
             if((length & 0xC0) == 0xC0) { // 0011 1111// if length that was previously mentioned is now 0x CO to FF, we have a pointer - 1100 0000 to 1111 1111 because
@@ -62,14 +62,12 @@ public class DNSMessage {
                 // the following two bytes will denote the offset, that value will point to the particular byte number where the domain name is found
                 int secondByte = inputStream.read();    // read second byte of pointer
                 // get that it's a pointer and append the second byte for the location of og domain name
-                //System.out.println("Length byte: " + length + ", Second byte: " + secondByte);
                 int offset = ((length & 0x3F) << 8) | secondByte;
-                System.out.println("offset is " + offset);
                 // add the offset to array of string to represent our pointer
                 String label = readDomainNameFromOffset(offset);
-                System.out.println("label is" + label);
                 // add the array of pointer parts as a list to our arraylist
                 domainNamePieces.add(label);
+                break;
             }
             else {
                 //otherwise we will just read the bytes for the domainName normally
@@ -96,27 +94,54 @@ public class DNSMessage {
     //If there is a pointer our readDomainName function will recursively call this function
     //we will read the labels from this pointer to the end of the message
     // ex., start reading from the int =12 th --- byte of the DNS message
-    public String readDomainNameFromOffset(int offset) throws IOException {
-        if (this.messageBytes == null || this.messageBytes.length == 0) {
-            throw new IllegalStateException("messageBytes is not initialized.");
-        }
+//    public String readDomainNameFromOffset(int offset) throws IOException {
+//        if (this.messageBytes == null || this.messageBytes.length == 0) {
+//            throw new IllegalStateException("messageBytes is not initialized.");
+//        }
 //        if (offset < 0 || offset >= messageBytes.length) {
 //            throw new IllegalArgumentException("Offset is out of bounds: " + offset);
 //        }
-        int length = this.messageBytes[offset];
-        byte[] buffer = new byte[length]; // ie, size = 6
-        System.arraycopy(this.messageBytes, offset + 1, buffer, 0, length);
-
-        //convert byte to string value ascii g to "g"
-        return new String(buffer, "UTF-8");
-    }
-//    public String[] readDomainName(int firstByte) throws IOException {
-//        if (messageBytes == null) {
-//            throw new IllegalStateException("DNS message bytes not set for compression processing.");
-//        }
+//        int length = this.messageBytes[offset];
+//        byte[] buffer = new byte[length]; // ie, size = 6
+//        System.arraycopy(this.messageBytes, offset + 1, buffer, 0, length);
 //
-//        return readDomainNameFromOffset(firstByte);
+//         String test= new String (buffer, "UTF-8");
+//        System.out.println("testing : " + test);
+//        //convert byte to string value ascii g to "g"
+//        return new String(buffer, "UTF-8");
 //    }
+
+    public String readDomainNameFromOffset(int offset) throws IOException {
+        if (this.messageBytes == null || this.messageBytes.length == 0) {
+            throw new IllegalStateException("DNS message bytes not initialized.");
+        }
+        if (offset < 0 || offset >= messageBytes.length) {
+            throw new IllegalArgumentException("Offset out of bounds: " + offset);
+        }
+
+        StringBuilder domainName = new StringBuilder();
+        int length = messageBytes[offset] & 0xFF; // Ensure length is treated as unsigned
+        while (length != 0) {
+            if ((length & 0xC0) == 0xC0) { // Check for a pointer
+                int secondByte = messageBytes[offset + 1] & 0xFF;
+                int pointerOffset = ((length & 0x3F) << 8) | secondByte;
+                domainName.append(readDomainNameFromOffset(pointerOffset)); // Append domain name from pointer
+                break; // Break after processing a pointer to avoid reading past it
+            } else { // Read and append the label
+                byte[] labelBytes = new byte[length];
+                System.arraycopy(messageBytes, offset + 1, labelBytes, 0, length);
+                if (domainName.length() > 0) {
+                    domainName.append('.');
+                }
+
+                domainName.append(new String(labelBytes, "UTF-8"));
+                offset += length + 1; // Move to the next label
+                length = messageBytes[offset] & 0xFF; // Read next label's length
+            }
+        }
+
+        return domainName.toString();
+    }
 
     //--build a response based on the request and the answers you intend to send back.
 
