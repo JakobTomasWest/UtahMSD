@@ -35,10 +35,10 @@ public class DNSRecord {
         // read and parse the domain name
         String[] domainNameParts = message.readDomainName(inputStream);
         String domainName = String.join(".", domainNameParts);
-        System.out.println(domainName);
+//        System.out.println(domainName);
         // read the 2 bytes for type -- Address (A) IPv6 (AAAA)
         int type = (inputStream.read() << 8) + inputStream.read();
-        System.out.println(type);
+//        System.out.println(type);
         // read the 2 bytes for class -- Probably the Internet IN
 //        short type = dataInputStream.readShort();
         int recordClass = (inputStream.read() << 8) + inputStream.read();
@@ -79,30 +79,30 @@ public class DNSRecord {
 
     // parse bytes in order from the stream and write them
     public void writeBytes(ByteArrayOutputStream byteArrayOutputStream, HashMap<String, Integer> domainNameLocation) throws IOException {
-        DataOutputStream dataToClient = new DataOutputStream(byteArrayOutputStream);
+//        DataOutputStream dataToClient = new DataOutputStream(byteArrayOutputStream);
         DNSMessage.writeDomainName(byteArrayOutputStream, domainNameLocation, recordDomainName.split("\\."));
 
         // write the two bytes for the type
-//        byteArrayOutputStream.write((recordType >> 8) & 0xFF);
-//        byteArrayOutputStream.write(recordType & 0xFF);
-//        // ...
-//        byteArrayOutputStream.write((recordClass >>8) & 0xFF);
-//        byteArrayOutputStream.write( recordClass & 0xFF);
-//        byteArrayOutputStream.write((ttl >> 24) & 0xFF);
-//        byteArrayOutputStream.write((ttl >> 16) & 0xFF);
-//        byteArrayOutputStream.write((ttl >> 8) & 0xFF);
-//        byteArrayOutputStream.write(ttl & 0xFF);
-//        byteArrayOutputStream.write((resourceData.length >> 8) & 0xFF);
-//        byteArrayOutputStream.write(resourceData.length & 0xFF);
-//        byteArrayOutputStream.write(resourceData);
+        byteArrayOutputStream.write((recordType >> 8) & 0xFF);
+        byteArrayOutputStream.write(recordType & 0xFF);
+        // ...
+        byteArrayOutputStream.write((recordClass >>8) & 0xFF);
+        byteArrayOutputStream.write( recordClass & 0xFF);
+        byteArrayOutputStream.write((ttl >> 24) & 0xFF);
+        byteArrayOutputStream.write((ttl >> 16) & 0xFF);
+        byteArrayOutputStream.write((ttl >> 8) & 0xFF);
+        byteArrayOutputStream.write(ttl & 0xFF);
+        byteArrayOutputStream.write((resourceData.length >> 8) & 0xFF);
+        byteArrayOutputStream.write(resourceData.length & 0xFF);
+        byteArrayOutputStream.write(resourceData);
 
-        dataToClient.writeShort(recordType);
-        dataToClient.writeShort(recordClass);
-        dataToClient.writeInt(ttl); // write TTL as an integer
-        dataToClient.writeShort(resourceData.length); // write the length of resource data
-        dataToClient.write(resourceData);
-
-        dataToClient.flush();
+//        dataToClient.writeShort(recordType);
+//        dataToClient.writeShort(recordClass);
+//        dataToClient.writeInt(ttl); // write TTL as an integer
+//        dataToClient.writeShort(resourceData.length); // write the length of resource data
+//        dataToClient.write(resourceData);
+//
+//        dataToClient.flush();
     }
 
     /*

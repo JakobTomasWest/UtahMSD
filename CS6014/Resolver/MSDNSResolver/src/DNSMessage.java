@@ -70,13 +70,13 @@ public class DNSMessage {
                 break;
             }
             else {
-                //otherwise we will just read the bytes for the domainName normally
+                // otherwise we will just read the bytes for the domainName normally
                 byte[] buffer = new byte[length]; // ie, size = 6
                 int readBytes = inputStream.read(buffer); //read all 6 bytes
                 if (readBytes != length) {
                     throw new IOException("We couldn't read the whole length of the DomainName");
                 }
-                //convert byte to string value ascii g to "g"
+                // convert byte to string value ascii g to "g"
                 String domainNamePiece = new String(buffer, "UTF-8");
                 domainNamePieces.add(domainNamePiece);
 
@@ -87,29 +87,12 @@ public class DNSMessage {
 
         // list of strings --> String array
         String[] domainNameArray = domainNamePieces.toArray(new String[0]);
-
         return domainNameArray;
     }
 
     //If there is a pointer our readDomainName function will recursively call this function
     //we will read the labels from this pointer to the end of the message
     // ex., start reading from the int =12 th --- byte of the DNS message
-//    public String readDomainNameFromOffset(int offset) throws IOException {
-//        if (this.messageBytes == null || this.messageBytes.length == 0) {
-//            throw new IllegalStateException("messageBytes is not initialized.");
-//        }
-//        if (offset < 0 || offset >= messageBytes.length) {
-//            throw new IllegalArgumentException("Offset is out of bounds: " + offset);
-//        }
-//        int length = this.messageBytes[offset];
-//        byte[] buffer = new byte[length]; // ie, size = 6
-//        System.arraycopy(this.messageBytes, offset + 1, buffer, 0, length);
-//
-//         String test= new String (buffer, "UTF-8");
-//        System.out.println("testing : " + test);
-//        //convert byte to string value ascii g to "g"
-//        return new String(buffer, "UTF-8");
-//    }
 
     public String readDomainNameFromOffset(int offset) throws IOException {
         if (this.messageBytes == null || this.messageBytes.length == 0) {
@@ -120,25 +103,31 @@ public class DNSMessage {
         }
 
         StringBuilder domainName = new StringBuilder();
-        int length = messageBytes[offset] & 0xFF; // Ensure length is treated as unsigned
+        int length = messageBytes[offset] & 0xFF; // 0-255
         while (length != 0) {
             if ((length & 0xC0) == 0xC0) { // Check for a pointer
                 int secondByte = messageBytes[offset + 1] & 0xFF;
                 int pointerOffset = ((length & 0x3F) << 8) | secondByte;
                 domainName.append(readDomainNameFromOffset(pointerOffset)); // Append domain name from pointer
-                break; // Break after processing a pointer to avoid reading past it
-            } else { // Read and append the label
+                break;
+            } else {
+                // otherwise read and add the label to end of teh string
                 byte[] labelBytes = new byte[length];
                 System.arraycopy(messageBytes, offset + 1, labelBytes, 0, length);
+
                 if (domainName.length() > 0) {
                     domainName.append('.');
                 }
-
                 domainName.append(new String(labelBytes, "UTF-8"));
-                offset += length + 1; // Move to the next label
-                length = messageBytes[offset] & 0xFF; // Read next label's length
+                // move to the next label
+                offset += length + 1;
+                // read next label's length
+                length = messageBytes[offset] & 0xFF;
             }
+            System.out.println("domain name: " + domainName.toString());
         }
+
+//        System.out.println("domain name: " + domainName.toString());
 
         return domainName.toString();
     }
@@ -147,11 +136,10 @@ public class DNSMessage {
 
     public static DNSMessage buildResponse(DNSMessage request, DNSRecord[] answers) {
         DNSMessage response = new DNSMessage();
-
+        // build response header transactionId, flags, questionCount, answerCount, authorityCount, additionalCount
+        response.header = DNSHeader.buildHeaderForResponse(request, answers);
         // get the answers from the DNSRecord
         response.answers = answers;
-        // build response header transactionId, flags, questionCount, answerCount, authorityCount, additionalCount
-        response.header = DNSHeader.buildHeaderForResponse(request, response);
         // take the questions from the request
         response.questions = request.questions;
 
@@ -161,7 +149,8 @@ public class DNSMessage {
     // get the bytes to put in a packet and send back
     public byte[] toBytes() throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        DataOutputStream dataToClient = new DataOutputStream(byteArrayOutputStream);
+//        DataOutputStream dataToClient = new DataOutputStream(byteArrayOutputStream);
+
 
         header.writeBytes(byteArrayOutputStream);
         for(DNSQuestion question : questions){
@@ -173,7 +162,7 @@ public class DNSMessage {
                 answer.writeBytes(byteArrayOutputStream, new HashMap<>());
             }
         }
-        dataToClient.flush();
+//        dataToClient.flush();
         return byteArrayOutputStream.toByteArray();
     }
 
@@ -182,27 +171,31 @@ public class DNSMessage {
     // 0 at the end), and add it to the hash map.
     // Otherwise, write a back pointer to where the domain has been seen previously.
     public static void writeDomainName(ByteArrayOutputStream outputStream, HashMap<String, Integer> domainLocations, String[] domainPieces) throws IOException {
-        DataOutputStream domainNameToClient = new DataOutputStream(outputStream);
+//        DataOutputStream domainNameToClient = new DataOutputStream(outputStream);
         for (String piece : domainPieces) {
             // if the hash already contains the label we will write the pointer to the outputstream
             if (domainLocations.containsKey(piece)) {
                 // write a pointer to the existing location of the domain piece
                 int pointer = domainLocations.get(piece);
                 // take the pointer, extract the top 8 bits, or with 1100 0000 to signify that it's a pointer
-                domainNameToClient.write((pointer >> 8) | 0xC0);
+                outputStream.write((pointer >> 8) | 0xC0);
                 // write the second byte for location --- get rid of top 8 bits and keep bottom 8 bits
-                domainNameToClient.write(pointer & 0xFF);
+                outputStream.write(pointer & 0xFF);
+
             } else {
                 // writing an original domain name from the packet, get the string label piece and convert it to a byteArray
                 byte[] pieceBytes = piece.getBytes("UTF-8");
-                domainNameToClient.write(pieceBytes.length); // write first byte as the length of the label
-                domainNameToClient.write(pieceBytes);        // finish the label in bytes
+                outputStream.write(pieceBytes.length); // write first byte as the length of the label
+                outputStream.write(pieceBytes);        // finish the label in bytes
 
                 // put the key string in the hash with its correlated location( current size after last byte - the label and label length)
                 domainLocations.put(piece, outputStream.size() - pieceBytes.length - 1);
+                System.out.println(Arrays.toString(domainPieces));
+                System.out.println(piece);
+
             }
         }
-            domainNameToClient.writeByte(0); // 0 at the end to terminate label sequence
+            outputStream.write(0); // 0 at the end to terminate label sequence
     }
     ////////
 

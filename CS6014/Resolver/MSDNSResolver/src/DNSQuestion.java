@@ -50,16 +50,16 @@ public class DNSQuestion {
     //Write the question bytes which will be sent to the client.
     //The hash map is used for us to compress the message
     public void writeBytes(ByteArrayOutputStream byteArrayOutputStream, HashMap<String, Integer> domainNameLocations) throws IOException {
-        DataOutputStream dataToClient = new DataOutputStream(byteArrayOutputStream);
+
+
         // write the domain name with DNS message compression
         DNSMessage.writeDomainName(byteArrayOutputStream, domainNameLocations, domainName.split("\\."));
 
         // write the bytes
-//        writeTwoBytes(byteArrayOutputStream, type);
-//        writeTwoBytes(byteArrayOutputStream, queryClass);
-        dataToClient.writeShort(type);
-        dataToClient.writeShort(queryClass);
-        dataToClient.flush();
+        writeTwoBytes(byteArrayOutputStream, type);
+        writeTwoBytes(byteArrayOutputStream, queryClass);
+//        dataToClient.writeShort(queryClass);
+//        dataToClient.flush();
     }
     // you have to write byte 1 at time for byteArrayOutputStream API
     private void writeTwoBytes(ByteArrayOutputStream byteArrayOutputStream, int value) {

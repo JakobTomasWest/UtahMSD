@@ -46,28 +46,33 @@ public class Main {
                 DNSRecord cachedRecord = cache.query(question);
                 if (cachedRecord != null) {
                     answers[i] = cachedRecord;
+                    System.out.println("chache hit");
                 } else {
-                    // Forward the request to Google's public DNS server (8.8.8.8)
-                    DNSMessage googleResponse = forwardRequestToGoogle(requestPacket.getData());
 
-                    // Assuming googleResponse now contains the response from Google DNS
-                    // Serialize the googleResponse into bytes
+                    // forward the request to Google's public DNS server (8.8.8.8)
+                    DNSMessage googleResponse = forwardRequestToGoogle(requestPacket.getData());
+                    for(int x =0; x< googleResponse.getAnswers().length; x++){
+                        cache.insert(googleResponse.getQuestion()[x],googleResponse.getAnswers()[x]);
+                        System.out.println("something else");
+                    }
+                    // assuming googleResponse now contains the response from Google DNS
+                    // serialize the googleResponse into bytes
                     byte[] responseData = googleResponse.toBytes();  // Ensure this method correctly serializes the DNSMessage
 
-                    // Send the response back to the client
+                    // send the response back to the client
                     DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length, requestPacket.getAddress(), requestPacket.getPort());
                     socket.send(responsePacket);
                     System.out.println("Forwarded Google's DNS response to the client.");
                 }
             }
 
-            // Build the response DNSMessage
+            // build the response DNSMessage
             DNSMessage request = DNSMessage.decodeMessage(requestPacket.getData());
             System.out.println("DNSMessage request: " + request + "\n");
             DNSMessage response = DNSMessage.buildResponse(request, answers);
             System.out.println("DNSMessage response: " + response + "\n");
 
-            // Send the response back to the client
+            // send the response back to the client
             sendResponseToClient(socket, response, requestPacket.getAddress(), requestPacket.getPort());
         }
 
