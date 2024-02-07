@@ -1,0 +1,162 @@
+\doxysection{Num\+Expr Class Reference}
+\hypertarget{class_num_expr}{}\label{class_num_expr}\index{NumExpr@{NumExpr}}
+Inheritance diagram for Num\+Expr\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_num_expr}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_num_expr_aebdeb7b32db1c09a5e5a4d97f81b5b6e}{Num\+Expr}} (int \+\_\+val)
+\begin{DoxyCompactList}\small\item\em Constructs a numerical expression with a given int value. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_num_expr_a345c1c83f40ae7bc26494a6f6be6f918}{equals}} (\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}e) override
+\begin{DoxyCompactList}\small\item\em Checks if this numerical expression equals expression another expression. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{class_num_expr_accf2cbee4d176ed39e4a759d09ad9453}{interp}} () override
+\begin{DoxyCompactList}\small\item\em Evaluates the numerical expression and returns its value. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_num_expr_a688fa97c58c339c17378c803cddc14ea}{has\+\_\+variable}} () override
+\begin{DoxyCompactList}\small\item\em Determines if the numerical expression contains any variables. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_num_expr_ad6d81e3173a41506e2ab50e7b0de0fd5}{subst}} (const string \&given\+Var\+Name, \mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}e) override
+\begin{DoxyCompactList}\small\item\em Substitutes a variable within the expression with another expression. For \doxylink{class_num_expr}{Num\+Expr}, it returns a copy of itself since it contains no variables. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_num_expr_a86b72b8ab7c56146717f7afd9b7e2bf5}{print}} (ostream \&ot) const override
+\begin{DoxyCompactList}\small\item\em Prints the numerical expression to an output stream. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_expr}{Expr}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual void {\bfseries print} (std\+::ostream \&out) const =0
+\item 
+virtual void \mbox{\hyperlink{class_expr_a93aeb8bee2b9a446ad14298beb12eb20}{pretty\+\_\+print}} (std\+::ostream \&out) const
+\begin{DoxyCompactList}\small\item\em Provides a basic form of pretty printing to fallback on and is overridden by the required derived/concrete mult and Addexpr pretty\+\_\+prints. \end{DoxyCompactList}\item 
+string \mbox{\hyperlink{class_expr_a7bec2d72187b0b5228442bc03e2226b7}{to\+\_\+string}} () const
+\begin{DoxyCompactList}\small\item\em Converts the expression to a standard string representation. \end{DoxyCompactList}\item 
+string \mbox{\hyperlink{class_expr_a716cbe983dfa2edf43527facbc6332a5}{to\+\_\+pretty\+\_\+string}} () const
+\begin{DoxyCompactList}\small\item\em Converts the expression to pretty-\/printed string representation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_num_expr_ae904172b15605675c663f12dee4a3bae}\label{class_num_expr_ae904172b15605675c663f12dee4a3bae} 
+int {\bfseries \+\_\+val}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_num_expr_aebdeb7b32db1c09a5e5a4d97f81b5b6e}\label{class_num_expr_aebdeb7b32db1c09a5e5a4d97f81b5b6e} 
+\index{NumExpr@{NumExpr}!NumExpr@{NumExpr}}
+\index{NumExpr@{NumExpr}!NumExpr@{NumExpr}}
+\doxysubsubsection{\texorpdfstring{NumExpr()}{NumExpr()}}
+{\footnotesize\ttfamily Num\+Expr\+::\+Num\+Expr (\begin{DoxyParamCaption}\item[{int}]{val }\end{DoxyParamCaption})}
+
+
+
+Constructs a numerical expression with a given int value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em val} & The integer value of the expression. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_num_expr_a345c1c83f40ae7bc26494a6f6be6f918}\label{class_num_expr_a345c1c83f40ae7bc26494a6f6be6f918} 
+\index{NumExpr@{NumExpr}!equals@{equals}}
+\index{equals@{equals}!NumExpr@{NumExpr}}
+\doxysubsubsection{\texorpdfstring{equals()}{equals()}}
+{\footnotesize\ttfamily bool Num\+Expr\+::equals (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{e }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Checks if this numerical expression equals expression another expression. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & Pointer to the expression to compare with. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the expressions are equal, otherwise return false. 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_expr}{Expr}}.
+
+\Hypertarget{class_num_expr_a688fa97c58c339c17378c803cddc14ea}\label{class_num_expr_a688fa97c58c339c17378c803cddc14ea} 
+\index{NumExpr@{NumExpr}!has\_variable@{has\_variable}}
+\index{has\_variable@{has\_variable}!NumExpr@{NumExpr}}
+\doxysubsubsection{\texorpdfstring{has\_variable()}{has\_variable()}}
+{\footnotesize\ttfamily bool Num\+Expr\+::has\+\_\+variable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Determines if the numerical expression contains any variables. 
+
+\begin{DoxyReturn}{Returns}
+False, a numerical expression does not contain variables. 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_expr}{Expr}}.
+
+\Hypertarget{class_num_expr_accf2cbee4d176ed39e4a759d09ad9453}\label{class_num_expr_accf2cbee4d176ed39e4a759d09ad9453} 
+\index{NumExpr@{NumExpr}!interp@{interp}}
+\index{interp@{interp}!NumExpr@{NumExpr}}
+\doxysubsubsection{\texorpdfstring{interp()}{interp()}}
+{\footnotesize\ttfamily int Num\+Expr\+::interp (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Evaluates the numerical expression and returns its value. 
+
+\begin{DoxyReturn}{Returns}
+The int value of the numerical expression. 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_expr}{Expr}}.
+
+\Hypertarget{class_num_expr_a86b72b8ab7c56146717f7afd9b7e2bf5}\label{class_num_expr_a86b72b8ab7c56146717f7afd9b7e2bf5} 
+\index{NumExpr@{NumExpr}!print@{print}}
+\index{print@{print}!NumExpr@{NumExpr}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}}
+{\footnotesize\ttfamily void Num\+Expr\+::print (\begin{DoxyParamCaption}\item[{ostream \&}]{ot }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Prints the numerical expression to an output stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em out} & The output stream where we will print to. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_num_expr_ad6d81e3173a41506e2ab50e7b0de0fd5}\label{class_num_expr_ad6d81e3173a41506e2ab50e7b0de0fd5} 
+\index{NumExpr@{NumExpr}!subst@{subst}}
+\index{subst@{subst}!NumExpr@{NumExpr}}
+\doxysubsubsection{\texorpdfstring{subst()}{subst()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*} Num\+Expr\+::subst (\begin{DoxyParamCaption}\item[{const string \&}]{targetmatch,  }\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{e }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Substitutes a variable within the expression with another expression. For \doxylink{class_num_expr}{Num\+Expr}, it returns a copy of itself since it contains no variables. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target\+Var\+Name} & The name of the variable to be substituted. \\
+\hline
+{\em replacement\+Var} & Pointer to the expression that would replace the variable. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \doxylink{class_num_expr}{Num\+Expr} with the same value as this expression. 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_expr}{Expr}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/jakobwest/\+Desktop/\+Utah\+MSD/\+CS6015/\+MSDScript\+Project/expr.\+hpp\item 
+/\+Users/jakobwest/\+Desktop/\+Utah\+MSD/\+CS6015/\+MSDScript\+Project/expr.\+cpp\end{DoxyCompactItemize}
