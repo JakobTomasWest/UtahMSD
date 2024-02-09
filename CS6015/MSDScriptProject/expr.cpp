@@ -68,7 +68,7 @@ AddExpr::AddExpr(Expr* lhs, Expr* rhs){
 }
 
 /**
- * \brief Check if this addtion expression equals another expression.
+ * \brief Check if this addition expression equals another expression.
  * \param e Pointer to the expression to compare with.
  * return True if the expression are equal, return false if the expressions are not equal.
  */
@@ -282,10 +282,10 @@ bool NumExpr::has_variable() {
  *\param replacementVar Pointer to the expression that would replace the variable.
  *\return A new NumExpr with the same value as this expression.
 */
-Expr* NumExpr::subst(const string &targetmatch, Expr *e) {
+Expr* NumExpr::subst(const string& targetmatch, Expr *e) {
     //you cannot substitute a string for a number
     //only a string for a string
-    return new NumExpr(this->_val);
+    return new NumExpr(_val);
 }
     //reference & is direct, use actual value
 /**
@@ -353,7 +353,7 @@ Expr* VarExpr::subst(const string& targetvar, Expr* replacementVar) {
         //i.e., if 'x' is our og, and our targetvar isn't 'x' we can't replace the variable,
         //so we just create our new expression variable with this-> _val (string)
         // we already have stored
-        return new VarExpr(this->_val);
+        return new VarExpr(_val);
 
     }
 
@@ -366,4 +366,106 @@ void VarExpr::print(std::ostream& ot) const {
     // already a string just send this 'x' to outstream
     ot << this->_val;
 }
+
+
+
+LetExpr::LetExpr(const string& var, Expr *boundExpr, Expr *bodyExpr) {
+    varName = var;
+    _boundExpr = boundExpr;
+    _bodyExpr = bodyExpr;
+}
+
+/**
+ * \brief Evaluating whether this letExpr is equivalent to the otherLetExpression
+ * \param otherLetExpression The LetExpression we want to compare with
+ *
+ */
+bool LetExpr::equals(Expr *otherExpression) {
+    //like other classes -- attempt to have base Expr pointer, point to derived instance of another
+    // expression class -> LetExpr
+
+    // dynamic_cast successfully converts the pointer
+    // and returns the address of the object as type LetExpr*.
+    LetExpr* otherLet = dynamic_cast<LetExpr*>(otherExpression);
+    //or if dynamic cast fails, otherExpression cannot point/ is not a letExpr
+    if(otherLet == nullptr){
+        return false;
+    }
+
+    //Compare each member variable of this LetExpr to the otherLet Expr
+    if(this->varName != otherLet->varName){
+        return false;
+    }
+    //Check if boundExpr is the same exact as otherlets boundExpr or recursively evaluates
+    // to the same expression components
+    // i.e., (_let x = (a+b) _in (x)) equal (_let x = (a+c) _in (x)) !equal (_let x = (a+d) _in (x))
+    // when a = new NumExpr(1), b = new NumExpr(2), c = New NumExpr(2), d = new NumExpr(3)
+    if(!this->_boundExpr->equals(otherLet->_boundExpr)){
+        return false;
+    }
+    if(!this->_bodyExpr->equals(otherLet->_bodyExpr)){
+        return false;
+    }
+    return true;
+}
+/**
+ * \brief Bind the boundExpr to the varName and substitutes the boundExpr into said VarName if the body
+ * expression holds this variable
+ *
+ * @return the evaluated expression
+ */
+int LetExpr::interp() {
+    //let x=boundExpr, bodyExpr
+
+//    int boundExprValue = this->_boundExpr->interp();
+    //send boundExprValue into body for varName
+//    Expr* substitutedBody = _bodyExpr->subst(varName,new NumExpr(boundExprValue));
+    Expr* interpretedExpression = _bodyExpr->subst(varName,_boundExpr);
+//    int interpretedExpression = substitutedBody->interp();
+
+
+    return interpretedExpression->interp();
+}
+/**
+ * \brief Determines whether the bodyExpression has a variable
+ * @return true if the body has a variable
+ */
+bool LetExpr::has_variable() {
+//    Expr* lhs = this->varName;
+    Expr* rhs = this->_bodyExpr;
+    if(rhs->has_variable() ){
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+/**
+ * \brief
+ * @param givenVarName
+ * @param e
+ * @return
+ */
+Expr *LetExpr::subst(const string &givenVarName, Expr *newExpression) {
+    //See if the variable is even correct for substitution for the boundExpr
+    if(varName == givenVarName){
+        //Now i want to replace my varNames corresponding boundExpression
+        //with the new expression
+//        _boundExpr= newExpression;
+        return new LetExpr(varName,_boundExpr->subst(givenVarName,newExpression),_bodyExpr);
+    }  else{
+        //otherwise the varName is different so we will just create the same object and if body can substitute the varName it will
+        return new LetExpr(varName,_boundExpr->subst(givenVarName,newExpression), _bodyExpr->subst(givenVarName,newExpression));
+    }
+}
+//(_let x=5 _in ((_let y=3 _in (y+2))+x)
+void LetExpr::print(ostream &out) const {
+    out << "(_let " <<varName << "=" << _boundExpr->to_string() << " _in " << _bodyExpr->to_string() <<")";
+}
+
+void LetExpr::pretty_print(ostream &out) const {
+    Expr::pretty_print(out);
+}
+
 

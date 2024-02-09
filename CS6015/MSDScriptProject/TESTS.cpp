@@ -6,6 +6,7 @@
 #include "expr.hpp"
 #include "cmdline.hpp"
 #include <sstream>
+#include "stdlib.h"
 TEST_CASE("TEST"){
 printf("TESTS RAN");
 
@@ -99,10 +100,106 @@ printf("TESTS RAN");
     CHECK((new VarExpr("x"))->to_string() == "x");
     CHECK((new AddExpr(new NumExpr(1),new NumExpr(2)))->to_string() == "(1+2)");
 
-    CHECK (( new Mult( new NumExpr(2),new AddExpr(new NumExpr(1), new NumExpr(3))))->to_pretty_string() == "2 * (1 + 3)");
-    CHECK (( new AddExpr(new NumExpr(2), new Mult(new NumExpr(1), new NumExpr(3))))->to_pretty_string() == "2 + 1 * 3");
-    CHECK ( (new Mult(new NumExpr(1), new AddExpr(new NumExpr(2), new NumExpr(3))))->to_pretty_string() ==  "1 * (2 + 3)" );
-    CHECK ( (new Mult(new Mult(new NumExpr(8), new NumExpr(1)), new VarExpr("y")))->to_pretty_string() ==  "(8 * 1) * y" );
-    CHECK ( (new Mult(new AddExpr(new NumExpr(3), new NumExpr(5)), new Mult(new NumExpr(6), new NumExpr(1))))->to_pretty_string() ==  "(3 + 5) * 6 * 1" );
-    CHECK ( (new Mult(new Mult(new NumExpr(7), new NumExpr(7)), new AddExpr(new NumExpr(9), new NumExpr(2))) )->to_pretty_string() ==  "(7 * 7) * (9 + 2)" );
+    CHECK ( ( new Mult( new NumExpr(2),new AddExpr(new NumExpr(1), new NumExpr(3))))
+    ->to_pretty_string() == "2 * (1 + 3)");
+    CHECK ( ( new AddExpr(new NumExpr(2), new Mult(new NumExpr(1), new NumExpr(3))))
+    ->to_pretty_string() == "2 + 1 * 3");
+    CHECK ( (new Mult(new NumExpr(1), new AddExpr(new NumExpr(2), new NumExpr(3))))
+    ->to_pretty_string() ==  "1 * (2 + 3)" );
+    CHECK ( (new Mult(new Mult(new NumExpr(8), new NumExpr(1)), new VarExpr("y")))
+    ->to_pretty_string() ==  "(8 * 1) * y" );
+    CHECK ( (new Mult(new AddExpr(new NumExpr(3), new NumExpr(5)), new Mult(new NumExpr(6), new NumExpr(1))))
+    ->to_pretty_string() ==  "(3 + 5) * 6 * 1" );
+    CHECK ( (new Mult(new Mult(new NumExpr(7), new NumExpr(7)), new AddExpr(new NumExpr(9), new NumExpr(2))) )
+    ->to_pretty_string() ==  "(7 * 7) * (9 + 2)" );
+    CHECK ( (new Mult( new Mult(new NumExpr(5), new NumExpr(2)), new NumExpr(8)))
+    ->to_pretty_string() == "(5 * 2) * 8");
+    CHECK ( (new Mult(new NumExpr(8),new Mult(new NumExpr(5), new NumExpr(2))))
+    ->to_pretty_string() == "8 * 5 * 2");
+
+    //---------------------------------------LetExpr Tests-----------------------------------------------------------------------------------------------//
+    CHECK ( (new LetExpr("x", new NumExpr(5), new AddExpr(new LetExpr("y", new NumExpr(3), new AddExpr(new VarExpr("y"), new NumExpr(2))), new VarExpr("x"))))->to_string() == "(_let x=5 _in ((_let y=3 _in (y+2))+x))");
+
+    Expr* a = new NumExpr(1);
+    Expr* b = new NumExpr(2);
+    Expr* c = new NumExpr(2);
+    Expr* d = new NumExpr(3);
+    LetExpr* abx2 = new LetExpr("x", new AddExpr(a, b), new AddExpr(new VarExpr("x"), new NumExpr(2)));
+    cout << abx2->to_string() <<"\n";
+    LetExpr* bax2 = new LetExpr("x", new AddExpr(b,a), new AddExpr(new VarExpr("x"), new NumExpr(2)));
+    cout << bax2->to_string() <<"\n";
+    LetExpr* acx2 = new LetExpr("x", new AddExpr(a, c), new AddExpr(new VarExpr("x"), new NumExpr(2)));
+    LetExpr* adx2 = new LetExpr("x", new AddExpr(a, d), new AddExpr(new VarExpr("x"), new NumExpr(2)));
+    LetExpr* adx3= new LetExpr("x", new AddExpr(a, d), new AddExpr(new VarExpr("x"), new NumExpr(3)));
+    LetExpr* ady2 = new LetExpr("x", new AddExpr(a, d), new AddExpr(new VarExpr("y"), new NumExpr(2)));
+    LetExpr* ady3 = new LetExpr("x", new AddExpr(a, d), new AddExpr(new VarExpr("y"), new NumExpr(3)));
+    LetExpr* ady3clone = new LetExpr("x", new AddExpr(a, d), new AddExpr(new VarExpr("y"), new NumExpr(3)));
+    //bound
+    CHECK(abx2->equals(acx2));
+    CHECK(!abx2->equals(bax2)); // should return true if we arent using interp?
+    CHECK(!abx2->equals(adx2));
+    //body
+    CHECK(!abx2->equals(adx2));
+    CHECK(!abx2->equals(adx2));
+    CHECK(!adx2->equals(ady2));
+    CHECK(!adx3->equals(ady3));
+    //clone
+    CHECK(ady3->equals(ady3clone));
+    //nest
+    LetExpr* nested_abx2 = new LetExpr("y", new NumExpr(4), new LetExpr("x", new AddExpr(a, b), new AddExpr(new VarExpr("x"), new VarExpr("y"))));
+    LetExpr* nested_acx2 = new LetExpr("y", new NumExpr(4), new LetExpr("x", new AddExpr(a, c), new AddExpr(new VarExpr("x"), new VarExpr("y"))));
+    CHECK(nested_abx2->equals(nested_acx2));
+
+    //Interp
+    CHECK(abx2->interp()==5 );
+
+    //Substitute
+    //Dont sub x because lhs = valToSub
+    CHECK( (new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(5))))
+    ->subst("x", new NumExpr(4))
+                   ->equals( new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(5)))));
+    //Don't sub x because valToSub is not contained
+    CHECK( (new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(5))))
+    ->subst("y", new NumExpr(4))
+                   ->equals( new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(5)))));
+
+    CHECK((new LetExpr("y", new NumExpr(1),
+                       new LetExpr("z", new AddExpr(new VarExpr("x"), new NumExpr(1)),
+                                   new AddExpr(new VarExpr("z"), new NumExpr(1))))
+                                   // _let y=1 _in ( _let z=x + 1 _in (z+1))
+          )->subst("x", new NumExpr(2))
+                                    //x =2
+                  ->equals(new LetExpr("y", new NumExpr(1),
+                                       new LetExpr("z", new AddExpr(new NumExpr(2), new NumExpr(1)),
+                                                   new AddExpr(new VarExpr("z"), new NumExpr(1)))
+                  )));
+                            //_let y=1 _in (_let z=2+1 _ in (z+1)
+
+    CHECK((new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("y"), new NumExpr(2)))
+            //_let x=5 _in y + 2
+          )->subst("y", new NumExpr(3))
+                    // y =3
+                  ->equals(new LetExpr("x", new NumExpr(5), new AddExpr(new NumExpr(3), new NumExpr(2)))
+                  ));
+    //_let x=5 _in 3 + 2
+
+    CHECK((new LetExpr("x", new AddExpr(new VarExpr("x"),new NumExpr(1)), new AddExpr(new VarExpr("x"), new NumExpr(30))))
+        ->subst("x", new NumExpr(300))
+                ->equals((new LetExpr("x", new AddExpr(new NumExpr(300),new NumExpr(1)), new AddExpr(new VarExpr("x"), new NumExpr(30))))));
+
+    //Sub if lhs != valToSub when valToSub is contained in rhs
+    //Sub if lhs != valToSub when valToSub is contained in body
+    delete abx2;
+    delete bax2;
+    delete acx2;
+    delete adx2;
+    delete adx3;
+    delete ady2;
+    delete ady3;
+    delete nested_abx2;
+    delete nested_acx2;
+    delete a;
+    delete b;
+    delete c;
+    delete d;
 }

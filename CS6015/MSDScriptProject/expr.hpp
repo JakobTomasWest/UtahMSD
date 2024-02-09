@@ -16,9 +16,11 @@ public:
     virtual int interp() = 0;
     virtual Expr* subst(const string& givenVarName, Expr* e) = 0;
     virtual void print(std::ostream& out) const = 0;
+    virtual ~Expr() = default;
     virtual void pretty_print(std::ostream& out) const;
     string to_string() const;
     string to_pretty_string() const;
+
 };
 
 
@@ -74,6 +76,26 @@ public:
     void print(ostream &ot) const override;
 };
 
+class LetExpr : public Expr{
+private:
+    std::string varName;
+    Expr* _boundExpr;
+    Expr* _bodyExpr;
+
+public:
+    LetExpr(const string &var, Expr* boundExpr, Expr* bodyExpr);
+    bool equals(Expr *e) override;
+    int interp() override;
+    bool has_variable() override;
+    Expr* subst(const string& givenVarName, Expr* e) override;
+    void print(ostream &ot) const override;
+    void pretty_print(std::ostream& out) const override;
+    virtual ~LetExpr() {
+        delete _boundExpr;
+        delete _bodyExpr;
+    }
+
+};
 
 
 
