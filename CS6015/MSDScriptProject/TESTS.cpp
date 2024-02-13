@@ -104,6 +104,7 @@ printf("TESTS RAN");
     ->to_pretty_string() == "2 * (1 + 3)");
     CHECK ( ( new AddExpr(new NumExpr(2), new Mult(new NumExpr(1), new NumExpr(3))))
     ->to_pretty_string() == "2 + 1 * 3");
+
     CHECK ( (new Mult(new NumExpr(1), new AddExpr(new NumExpr(2), new NumExpr(3))))
     ->to_pretty_string() ==  "1 * (2 + 3)" );
     CHECK ( (new Mult(new Mult(new NumExpr(8), new NumExpr(1)), new VarExpr("y")))
@@ -118,7 +119,7 @@ printf("TESTS RAN");
     ->to_pretty_string() == "8 * 5 * 2");
 
     //---------------------------------------LetExpr Tests-----------------------------------------------------------------------------------------------//
-    CHECK ( (new LetExpr("x", new NumExpr(5), new AddExpr(new LetExpr("y", new NumExpr(3), new AddExpr(new VarExpr("y"), new NumExpr(2))), new VarExpr("x"))))->to_string() == "(_let x=5 _in ((_let y=3 _in (y+2))+x))");
+    CHECK ( (new LetExpr("x", new NumExpr(5), new AddExpr(new LetExpr("y", new NumExpr(3), new AddExpr(new VarExpr("y"), new NumExpr(2))), new VarExpr("x"))))->to_string() == "(_let x = 5 _in ((_let y = 3 _in (y+2))+x))");
 
     Expr* a = new NumExpr(1);
     Expr* b = new NumExpr(2);
@@ -202,4 +203,23 @@ printf("TESTS RAN");
     delete b;
     delete c;
     delete d;
+
+    CHECK((new Mult(new Mult(new NumExpr (2), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x") , new NumExpr(1)) )), new NumExpr(3) ))
+    ->to_pretty_string() == "(2 * _let x = 5\n"
+                           "      _in  x + 1) * 3");
+//    //Let nested to the left in add expression which is nested to the right within a multiplication expression
+//    CHECK((new Mult(new NumExpr(5), new AddExpr(new LetExpr("x", new NumExpr(5), new VarExpr("x")), new NumExpr(1))))->to_pretty_string() == "5 * ((_let x = 5\n"
+//                                                                                                                         "      _in x) + 1)");
+    CHECK((new Mult(new NumExpr(5), new AddExpr(new LetExpr("x", new NumExpr(5), new VarExpr("x")), new NumExpr(1))))->to_pretty_string() == "5 * ((_let x = 5\n"
+                                                                                                                         "       _in  x) + 1)");
+    //    //Let in lhs of add
+    CHECK ( (new AddExpr(new LetExpr("x", new NumExpr(2), new AddExpr(new VarExpr("x"), new NumExpr(9))), new NumExpr(4)))->to_pretty_string() == "(_let x = 2\n"
+                                                                                                                          "  _in  x + 9) + 4");
+    //Let in lhs of multiplication expression
+    CHECK((new Mult(new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(8))), new NumExpr(3)))->to_pretty_string() == "(_let x = 5\n"
+                                                                                                                         "  _in  x + 8) * 3");
+    //Let nest as right argument of un-parenthesized multiplication expression
+    CHECK((new AddExpr (new Mult(new NumExpr(4), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))), new NumExpr(9)))->to_pretty_string() == "4 * (_let x = 5\n"
+                                                                                                                                               "      _in  x + 1) + 9");
+
 }

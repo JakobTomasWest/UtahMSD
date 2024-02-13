@@ -52,8 +52,12 @@ std::string Expr::to_pretty_string() const {
  *  pretty_prints
  *  \param out The output stream where the expression will be pretty-printed
  */
-void Expr::pretty_print(std::ostream& out) const {
-    this->print(out);
+void Expr::pretty_print(std::ostream& ostream) const{
+    std::streampos pos;
+    pretty_printHelper(ostream,prec_none, false,0);
+}
+void Expr::pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const{
+    print(ostream);
 }
 
 /**
@@ -119,37 +123,30 @@ void AddExpr::print(std::ostream& ot)const{
 
     ot << "(" << lhs->to_string() << "+" << rhs->to_string() << ")";
 }
+void AddExpr::pretty_print(std::ostream &ostream) const{
+    std::streampos pos = ostream.tellp();
+//    pretty_printHelper(ostream, prec_none, false,pos);
+    pretty_printHelper(ostream, prec_add, false,pos);
+
+}
 /**
  * \brief Prints the addition expression in a pretty-printed format, using operation precedence.
- * \param out The output stream to print to.
+ * \param ostream The output stream to print to.
  */
-void AddExpr::pretty_print(std::ostream &out) const {
-    //get precedence value
-   precedence_t lhs_prec = exprToPrecedence(this->lhs);
-   //precedence_t rhs_prec = exprToPrecedence(this->rhs);
-   //case for mult expression inside AddExpr
-   if (lhs_prec == prec_mult) {
-       //if LHS has multi precedence, it's printed because multiplication has higher precedence than addition, so
-       //no parentheses are needed.
-       // i.e., new AddExpr(new Mult(new NumExpr(1), new NumExpr(2)), new NumExpr(3));  --> since Mult>add prec --> lhs doesnt need parenthesis
-       // --> 1 * 2 + 3
-       this->lhs->pretty_print(out);
-       //if LHS is another addition expression we have explicitly group it
-       // i.,e newAdd(new newAdd( nn(1), nn(3)), nn (2) --> (1 + 3) + 2
-   } else if (lhs_prec == prec_add) {
+void AddExpr::pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const {
+    // If the precedence we pass in is greater than add precedence we'll use needParen
+    if (precedence > prec_add ) {
+        ostream << "(";
+    }
+    //lhs will ensure parenthesis if nested in a prec_add (+1) / greater precedence
+    this->lhs->pretty_printHelper(ostream, static_cast<precedence_t>(prec_add + 1),needsParen,spaces);
+    ostream << " + ";
+    this->rhs->pretty_printHelper(ostream, prec_add,needsParen,spaces);
 
-       out << "(";
-       //calling pretty print on the outer AddExpr triggers the pretty printing of the inner AddExpr --> (1 + 3)
-       this->lhs->pretty_print(out);
-       out << ")";
-   } else {
-       //print as is 3 + 4
-       this->lhs->pretty_print(out);
-   }
-    // indicate that its an addition expression and print rhs as is
-    // --> + 2
-   out << " + ";
-   this->rhs->pretty_print(out);
+    if (precedence > prec_add ) {
+        ostream << ")";
+    }
+
 }
 
 /**
@@ -209,35 +206,30 @@ Expr* Mult::subst(const string& targetVarName, Expr* replacementVar) {
 void::Mult::print(std::ostream& ot)const {
     ot << "(" << lhs->to_string() << "*" << rhs->to_string() << ")";
 }
+void Mult::pretty_print(std::ostream &ostream) const {
+    std::streampos pos = ostream.tellp();
+//    pretty_printHelper(ostream, prec_none, false,0);
+    pretty_printHelper(ostream, prec_mult, false,pos);
+
+}
 /**
  *\brief Prints the multiplication expression in a pretty-printed format, using precedence.
- *\param out The output stream to print to.
+ *\param ostream The output stream to print to.
  */
-void Mult::pretty_print(std::ostream &out) const {
-    precedence_t lhs_prec = exprToPrecedence(this->lhs);
-    precedence_t rhs_prec = exprToPrecedence(this->rhs);
-    if (lhs_prec != prec_none) {
-        out << "(";
-        //recognize that there is an add or mult expression inside of the mult expression on the lhs and evaulate it first enclosing it with ()
-        //use AddExpr/multExpr pretty print for the new nums
-        this->lhs->pretty_print(out);
-        out << ")";
-    } else {
-        // 1 ... 2
-        this->lhs->pretty_print(out);
-    }
+void Mult::pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const {
 
-    out << " * ";
-    //if we have an add expression on the right hand side of * then we will print the parenthesis
-    //and put the rhs expression between those
-    if (rhs_prec == prec_add) {
-        out << "(";
-        //ensure ()s around lower precedence add --> 1 * ( 2 + 3)
-        this->rhs->pretty_print(out);
-        out << ")";
-    } else {
-        // 1 * 2 * 3 --> new Mult( new NumExpr(1), new Mult( new NumExpr(2), new Num Expr(3)); 3
-        this->rhs->pretty_print(out);
+    //see if this multiplication method is nested within an operation of higher precedence
+    if (precedence > prec_mult ) {
+        needsParen = true;
+        ostream << "(";
+    }
+    //ensure that if lhs is part of a nested multiplication or add expression that the is gets parenthesis
+    this->lhs->pretty_printHelper(ostream, static_cast<precedence_t>(prec_mult + 1),needsParen,spaces);
+    ostream << " * ";
+    this->rhs->pretty_printHelper(ostream, prec_mult,needsParen,spaces);
+    //close out if we opened paren
+    if (precedence > prec_mult ) {
+        ostream << ")";
     }
 }
 /**
@@ -461,11 +453,40 @@ Expr *LetExpr::subst(const string &givenVarName, Expr *newExpression) {
 }
 //(_let x=5 _in ((_let y=3 _in (y+2))+x)
 void LetExpr::print(ostream &out) const {
-    out << "(_let " <<varName << "=" << _boundExpr->to_string() << " _in " << _bodyExpr->to_string() <<")";
+    out << "(_let " <<varName << " = " << _boundExpr->to_string() << " _in " << _bodyExpr->to_string() <<")";
 }
 
-void LetExpr::pretty_print(ostream &out) const {
-    Expr::pretty_print(out);
+void LetExpr::pretty_print(std::ostream &ostream) const {
+    std::streampos pos =  ostream.tellp();
+    pretty_printHelper(ostream,prec_none, false,pos);
 }
+void LetExpr::pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const {
+
+    //always give letExpr ()
+    if (!needsParen && precedence != prec_none) {
+        ostream << "(";
+    }
+
+    std::streampos letPosition = ostream.tellp();
+    std::streampos depth = letPosition - spaces;
+    ostream<< "_let " << this->varName<<" = ";
+    //print bound expression with passing difference
+    this->_boundExpr->pretty_printHelper(ostream,prec_none, needsParen, depth);
+    ostream<< "\n ";
+    std::streampos nextPos = ostream.tellp();
+    //start print with indentation
+    for ( int i = 0; i < letPosition - spaces; i++ ) {
+        ostream<< " ";
+    }
+    ostream<< "_in  ";
+    this->_bodyExpr->pretty_printHelper(ostream, prec_none, needsParen, nextPos);
+    if (!needsParen && precedence != prec_none) {
+        ostream << ")";
+    }
+
+}
+
+
+
 
 

@@ -11,6 +11,11 @@
 using namespace std;
 class Expr {
 public:
+    typedef enum {
+        prec_none,      // = 0
+        prec_add,       // = 1
+        prec_mult       // = 2
+    } precedence_t;
     virtual bool equals(Expr *e) = 0;
     virtual bool has_variable() =0;
     virtual int interp() = 0;
@@ -18,8 +23,11 @@ public:
     virtual void print(std::ostream& out) const = 0;
     virtual ~Expr() = default;
     virtual void pretty_print(std::ostream& out) const;
+    virtual void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen,
+                                    std::streampos spaces) const;
     string to_string() const;
     string to_pretty_string() const;
+
 
 };
 
@@ -34,7 +42,8 @@ public:
     bool has_variable() override;
     Expr* subst(const string& givenVarName, Expr* e) override;
     void print(ostream &ot) const override;
-    void pretty_print(std::ostream& out) const override;
+    void pretty_print(std::ostream &ostream) const override;
+    void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const override;
 
 };
 
@@ -49,7 +58,8 @@ public:
     bool has_variable() override;
     Expr* subst(const string& givenVarName, Expr* e) override;
     void print(ostream &ot) const override;
-    void pretty_print(ostream &ot) const override;
+    void pretty_print(std::ostream &ostream) const override;
+    void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const override;
 };
 
 
@@ -74,6 +84,7 @@ public:
     bool has_variable() override;
     Expr* subst(const string& givenVarName, Expr* e) override;
     void print(ostream &ot) const override;
+
 };
 
 class LetExpr : public Expr{
@@ -86,16 +97,20 @@ public:
     LetExpr(const string &var, Expr* boundExpr, Expr* bodyExpr);
     bool equals(Expr *e) override;
     int interp() override;
+
     bool has_variable() override;
     Expr* subst(const string& givenVarName, Expr* e) override;
+
     void print(ostream &ot) const override;
-    void pretty_print(std::ostream& out) const override;
+    void pretty_print(std::ostream &ostream) const override;
+    void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const override;
     virtual ~LetExpr() {
         delete _boundExpr;
         delete _bodyExpr;
     }
 
 };
+
 
 
 
