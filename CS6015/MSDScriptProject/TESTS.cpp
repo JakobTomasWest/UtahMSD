@@ -221,5 +221,7 @@ printf("TESTS RAN");
     //Let nest as right argument of un-parenthesized multiplication expression
     CHECK((new AddExpr (new Mult(new NumExpr(4), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))), new NumExpr(9)))->to_pretty_string() == "4 * (_let x = 5\n"
                                                                                                                                                "      _in  x + 1) + 9");
-
+    CHECK((new Mult(new NumExpr(4), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))))->to_pretty_string() == "4 * (_let x = 5\n"
+                                                                                                                                                                           "      _in  x + 1)");
+    CHECK((new Mult(new NumExpr(5), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))))->interp() == 30);
 }

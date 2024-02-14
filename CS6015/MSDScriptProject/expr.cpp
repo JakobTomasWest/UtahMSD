@@ -123,15 +123,31 @@ void AddExpr::print(std::ostream& ot)const{
 
     ot << "(" << lhs->to_string() << "+" << rhs->to_string() << ")";
 }
+/**
+ * \brief Initiates the pretty-printing process for an AddExpr object.
+ *
+ * This method handles the initial call to pretty_printHelper with specific
+ * settings for indentation level and the need for parentheses, determined
+ * by the context of the expression.
+ *
+ * \param ostream The output stream where the expression will be pretty-printed.
+ */
 void AddExpr::pretty_print(std::ostream &ostream) const{
     std::streampos pos = ostream.tellp();
 //    pretty_printHelper(ostream, prec_none, false,pos);
     pretty_printHelper(ostream, prec_add, false,pos);
-
 }
 /**
  * \brief Prints the addition expression in a pretty-printed format, using operation precedence.
+ * This helper function recursively pretty-prints left and right subexpressions,
+ * applying parentheses around subexpressions where necessary, based on the
+ * provided precedence level.
  * \param ostream The output stream to print to.
+ * \param precedence The current expressions precedence
+ * \param needsParen  boolean flag indicating whether the current expression should
+ * be enclosed in parentheses
+ * \param spaces Indicates the current indentation level or position within the output, for aligning the expression properly
+ * stream
  */
 void AddExpr::pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const {
     // If the precedence we pass in is greater than add precedence we'll use needParen
@@ -206,6 +222,15 @@ Expr* Mult::subst(const string& targetVarName, Expr* replacementVar) {
 void::Mult::print(std::ostream& ot)const {
     ot << "(" << lhs->to_string() << "*" << rhs->to_string() << ")";
 }
+/**
+ * \brief Initiates the pretty-printing process for an Mult object.
+ *
+ * This method handles the initial call to pretty_printHelper with specific
+ * settings for indentation level and the need for parentheses, determined
+ * by the context of the expression.
+ *
+ * \param ostream The output stream where the expression will be pretty-printed.
+ */
 void Mult::pretty_print(std::ostream &ostream) const {
     std::streampos pos = ostream.tellp();
 //    pretty_printHelper(ostream, prec_none, false,0);
@@ -213,8 +238,16 @@ void Mult::pretty_print(std::ostream &ostream) const {
 
 }
 /**
- *\brief Prints the multiplication expression in a pretty-printed format, using precedence.
- *\param ostream The output stream to print to.
+ * \brief Prints the multiplication expression in a pretty-printed format, using operation precedence.
+ * This helper function recursively pretty-prints left and right subexpressions,
+ * applying parentheses around subexpressions where necessary, based on the
+ * provided precedence level.
+ * \param ostream The output stream to print to.
+ * \param precedence The current expressions precedence
+ * \param needsParen  boolean flag indicating whether the current expression should
+ * be enclosed in parentheses
+ * \param spaces Indicates the current indentation level or position within the output, for aligning the expression properly
+ * stream
  */
 void Mult::pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const {
 
@@ -404,7 +437,7 @@ bool LetExpr::equals(Expr *otherExpression) {
  * \brief Bind the boundExpr to the varName and substitutes the boundExpr into said VarName if the body
  * expression holds this variable
  *
- * @return the evaluated expression
+ * @return the evaluated expression as an int
  */
 int LetExpr::interp() {
     //let x=boundExpr, bodyExpr
@@ -434,10 +467,15 @@ bool LetExpr::has_variable() {
     }
 }
 /**
- * \brief
- * @param givenVarName
- * @param e
- * @return
+ * \brief Substitutes a given variable name within the LetExpr with a new expression.
+ *
+ * This method checks if the variable name matches the variable name within the `LetExpr`.
+ * If it matches, it replaces the bound expression with the new expression. Otherwise,
+ * it recursively substitutes within the bound and body expressions.
+ *
+ * \param givenVarName The name of the variable to be substituted.
+ * \param newExpression The new expression to replace the variable with.
+ * \return A new LetExpr instance with the variable substituted.
  */
 Expr *LetExpr::subst(const string &givenVarName, Expr *newExpression) {
     //See if the variable is even correct for substitution for the boundExpr
@@ -452,14 +490,42 @@ Expr *LetExpr::subst(const string &givenVarName, Expr *newExpression) {
     }
 }
 //(_let x=5 _in ((_let y=3 _in (y+2))+x)
+
+/**
+ * \brief Prints the LetExpr to the output stream.
+ *
+ * This method formats the `LetExpr` as a string and outputs it to the given stream,
+ * showing the structure of the let expression.
+ *
+ * \param out The output stream we will print the expression to.
+ */
 void LetExpr::print(ostream &out) const {
     out << "(_let " <<varName << " = " << _boundExpr->to_string() << " _in " << _bodyExpr->to_string() <<")";
 }
-
+/**
+ * \brief Initiates the pretty-printing process for a LetExpr object.
+ *
+ * This method creates initial settings for the pretty-printing process, such as
+ * indentation level and (no)need for parentheses, and delegates to pretty_printHelper
+ * for the actual printing logic.
+ *
+ * \param ostream The output stream where the expression will be pretty-printed to.
+ */
 void LetExpr::pretty_print(std::ostream &ostream) const {
     std::streampos pos =  ostream.tellp();
     pretty_printHelper(ostream,prec_none, false,pos);
 }
+/**
+ * \brief Pretty-prints the LetExpr expression, considering indentation and the need for parentheses.
+ *
+ * This helper function formats the LetExpr to show the variable binding and body expression
+ * with proper indentation and parentheses, ensuring the necessary nested structure.
+ *
+ * @param ostream The output stream to print to.
+ * @param precedence The operation precedence gives the LetExpr the precedence level that it is a part of.
+ * @param needsParen Decides whether the expression needs to be in parentheses.
+ * @param spaces The current indentation level, used for aligning nested expressions.
+ */
 void LetExpr::pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const {
 
     //always give letExpr ()
