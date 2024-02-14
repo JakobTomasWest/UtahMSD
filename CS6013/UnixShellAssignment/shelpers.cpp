@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Author: Ben Jones (I think) with a lot of clean up by J. Davison de St. Germain
-//
+// Student: Jakob Tomas West u0675702
 // Date:   2019?
 //         Jan 2022 - Cleanup
 //

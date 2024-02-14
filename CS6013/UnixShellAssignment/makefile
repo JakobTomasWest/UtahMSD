@@ -1,5 +1,5 @@
 compile:
-	c++ -std=c++17 *.cpp -o build
+	c++ -std=c++17 *.cpp -o build -lreadline
 
 .PHONY: build
 ls: build compile

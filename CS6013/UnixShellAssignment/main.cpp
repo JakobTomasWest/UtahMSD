@@ -1,22 +1,56 @@
 //
-// Created by Jakob West on 2/7/24.
+// Created by Student: Jakob Tomas West u0675702 on 2/7/24.
+//
 #include <iostream>
 #include <unistd.h>
 #include "shelpers.hpp"
 #include <cstdlib>
 #include <stdio.h>
+#include <readline/readline.h>
 
+const char* commandlist[] = {"cd","ls", "NULL"};
+char* command_generator(const char* text, int state) {
+    static int list_index, len;
+    const char* name;
+
+    if (!state) {
+        list_index = 0;
+        len = strlen(text);
+    }
+
+    while ((name = commandlist[list_index++])) {
+        if (strncmp(name, text, len) == 0) {
+            return strdup(name);
+        }
+    }
+
+    return NULL; // No more matches
+}
+char ** character_name_completion(const char *text, int start, int end)
+{
+    if (start == 0) {
+        return rl_completion_matches(text, command_generator);
+    }
+    return NULL;
+}
 
 using namespace std;
 int main(int argc, char **argv) {
     Command command;
-    string inputLine;
+
     vector<Command> myCommands;
-    cout << ">"; //tells terminal to give a command
-
+//    cout << ">"; //tells terminal to give a command
+    rl_attempted_completion_function = character_name_completion;
     while(true) {
+        char* input = readline("> ");
+        if (strlen(input) > 0) {
+            add_history(input);
+        }
+            string inputLine(input);
+            free(input);
 
-        getline(cin, inputLine);
+
+//        getline(cin, inputLine);
         if (inputLine == "exit") { // Check for exit command
             break;
         }
@@ -113,42 +147,5 @@ int main(int argc, char **argv) {
     }
 
 }
-//p if (myCommands[0].inputFd != STDIN_FILENO) {
-//
-//                    if (dup2(myCommands[0].inputFd, STDIN_FILENO) == -1) {
-//                        perror("dup2 failed for inputFd");
-//                        exit(1);
-//
-//                    }
-//                    close(myCommands[0].inputFd);
-//                }
-//                if (myCommands[0].outputFd != STDOUT_FILENO) {
-//
-//                    if (dup2(myCommands[0].outputFd, STDOUT_FILENO) == -1) {
-//                        perror("dup2 failed for inputFd");
-//                        exit(1);
-//                    }
-//                    close(myCommands[0].outputFd);
-//
-//                }
 
 
-// child int dupinput;
-//                //the write from the first command is not changing
-//                //i.e., echos input is still from the terminal fd[0]
-//                dupinput= dup2(myCommands[0].inputFd,0);
-//                cout << dupinput;
-//                int dupoutput;
-//                //the echo output will be redirected to the next available fd
-//                //i.e., fd[3] which will output echos information to i.e., test.txt
-//                dupoutput = dup2(myCommands[0].outputFd,1);
-//                cout << dupoutput;
-//                if (dupoutput < 0){
-//                    perror("dup failed");
-//                }
-//                if (dupinput < 0){
-//                    perror("dup input failed");
-//                }
-//// if
-//                cout << "Child" << getpid();
-//                execvp(command.execName.c_str(), const_cast<char *const *>(myCommands[0].argv.data()));
