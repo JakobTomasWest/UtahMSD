@@ -149,7 +149,7 @@ vector<Command> getCommands( const vector<string> & tokens )
 
    int first = 0;
    int last = find( tokens.begin(), tokens.end(), "|" ) - tokens.begin();
-
+   vector<int> pipes;
    bool error = false;
 
    for( int cmdNumber = 0; cmdNumber < commands.size(); ++cmdNumber ){
@@ -182,22 +182,35 @@ vector<Command> getCommands( const vector<string> & tokens )
             int fd;
             if(tokens[j] == ">"){
                 fd=open(fileName.c_str(), O_WRONLY | O_CREAT | O_TRUNC,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+                if (fd < 0) {
+                    perror("Open file for output redirection failed");
+                    exit(1);
+                }
+                //assign our file descriptor for writing,creating -- in to our commands
+                //this operation assigns the file descriptor obtained from open to the command's outputFd.
+                //when the command is executed with execvp, its standard output is redirected to the file represented by fd.
+                //-- the fd after ">"
+                //saving the integer
+                commands[cmdNumber].outputFd = fd;
+
             }
             if(tokens[j] == "<"){
                 fd=open(fileName.c_str(), O_RDONLY);
+                if (fd < 0) {
+                    perror("Open file for output redirection failed");
+                    exit(1);
+                }
+                commands[cmdNumber].inputFd = fd;
+
             }
+            j++;
             // Note, that only the FIRST command can take input redirection
             // (all others get input from a pipe)
             // Only the LAST command can have output redirection!
             if( fd< 0){
                 perror("failed");
                 exit(1);
-            }else{
-            
-
             }
-
-
          }
          else if( tokens[j] == "&" ){
             // Fill this in if you choose to do the optional "background command" part.
@@ -211,12 +224,22 @@ vector<Command> getCommands( const vector<string> & tokens )
 
       if( !error ) {
 
-         if( cmdNumber > 0 ){
-            // There are multiple commands.  Open a pipe and
-            // connect the ends to the fd's for the commands!
+          if (cmdNumber > 0) {
+              // Create a pipe for all but the first command
+              int pipefd[2];
+              if (pipe(pipefd) == -1) {
+                  perror("pipe");
+                  exit(EXIT_FAILURE);
+              }
+              //setup input for the current command from the previous pipe
+              commands[cmdNumber].inputFd = pipefd[0];
 
-            assert( false );
-         }
+              //save write end for vector of ints - pipes
+              pipes.push_back(pipefd[1]);
+
+              //setup output of the previous command to write to the current pipe
+              commands[cmdNumber - 1].outputFd = pipefd[1];
+          }
 
          // Exec wants argv to have a nullptr at the end!
          command.argv.push_back( nullptr );
@@ -239,8 +262,9 @@ vector<Command> getCommands( const vector<string> & tokens )
       // of this, a "command" name can be blank (the default for a command struct that has not
       // yet been filled in).  (Note, it has not been filled in yet because the processing
       // has not gotten to it when the error (in a previous command) occurred.
-
-      assert(false);
+       for (int fd : pipes) {
+           close(fd);
+       }
    }
 
    return commands;

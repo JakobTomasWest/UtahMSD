@@ -37,29 +37,27 @@ int main(int argc, char **argv) {
             if (pid > 0) { //parent
                 cout << "PARENT: my child has pid " << pid << "\n";
                 wait(nullptr);
-
-                cout << "> ";
                 break;
+                cout << "> ";
+
             } else { //parent pid if pid =0
-
-                if (command.inputFd != STDIN_FILENO) {
-
-                    if (dup2(command.inputFd, STDIN_FILENO) == -1) {
-                        perror("dup2 failed for inputFd");
-                        exit(1);
-
-                    }
-                    close(command.inputFd);
+                int dupinput;
+                //the write from the first command is not changing
+                //i.e., echos input is still from the terminal fd[0]
+                dupinput= dup2(myCommands[0].inputFd,0);
+                cout << dupinput;
+                int dupoutput;
+                //the echo output will be redirected to the next available fd
+                //i.e., fd[3] which will output echos information to i.e., test.txt
+                dupoutput = dup2(myCommands[0].outputFd,1);
+                cout << dupoutput;
+                if (dupoutput < 0){
+                    perror("dup failed");
                 }
-                if (command.outputFd != STDOUT_FILENO) {
-
-                    if (dup2(command.inputFd, STDOUT_FILENO) == -1) {
-                        perror("dup2 failed for inputFd");
-                        exit(1);
-                    }
-                    close(command.outputFd);
-
+                if (dupinput < 0){
+                    perror("dup input failed");
                 }
+// if
                 cout << "Child" << getpid();
                 execvp(command.execName.c_str(), const_cast<char *const *>(myCommands[0].argv.data()));
 
@@ -70,3 +68,21 @@ int main(int argc, char **argv) {
     }
 
 }
+//if (myCommands[0].inputFd != STDIN_FILENO) {
+//
+//                    if (dup2(myCommands[0].inputFd, STDIN_FILENO) == -1) {
+//                        perror("dup2 failed for inputFd");
+//                        exit(1);
+//
+//                    }
+//                    close(myCommands[0].inputFd);
+//                }
+//                if (myCommands[0].outputFd != STDOUT_FILENO) {
+//
+//                    if (dup2(myCommands[0].outputFd, STDOUT_FILENO) == -1) {
+//                        perror("dup2 failed for inputFd");
+//                        exit(1);
+//                    }
+//                    close(myCommands[0].outputFd);
+//
+//                }
