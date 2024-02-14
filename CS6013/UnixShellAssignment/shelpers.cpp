@@ -233,10 +233,8 @@ vector<Command> getCommands( const vector<string> & tokens )
               }
               //setup input for the current command from the previous pipe
               commands[cmdNumber].inputFd = pipefd[0];
-
               //save write end for vector of ints - pipes
               pipes.push_back(pipefd[1]);
-
               //setup output of the previous command to write to the current pipe
               commands[cmdNumber - 1].outputFd = pipefd[1];
           }
