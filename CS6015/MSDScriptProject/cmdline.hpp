@@ -9,12 +9,14 @@
 #include <string.h>
 #include <cstdlib>
 #include <iostream>
-//typedef enum {
-//    do_nothing,
-//    do_interp,
-//    do_print,
-//    do_pretty print
-//} run_t_mode
-void use_arguments(int argc, char* argv[]);
+typedef enum {
+    do_nothing,
+    do_test,
+    do_interp,
+    do_print,
+    do_pretty_print
+} run_mode_t;
+
+run_mode_t use_arguments(int argc, char **argv);
 
 #endif //INTERPRET_CMDLINE_HPP
