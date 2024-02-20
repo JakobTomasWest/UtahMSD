@@ -94,6 +94,15 @@ void skip_whitespace(std::istream &in) {
       }
 }
 
+Expr* parse(std::istream &in) {
+    return parse_expr(in);
+}
+
+// Implement parseString
+Expr* parseString(const std::string &s) {
+    std::istringstream in(s);
+    return parse_expr(in);
+}
 
 
 
