@@ -111,7 +111,7 @@ Expr *parse_var(std::istream &inn) {
         throw std::runtime_error("Expected a variable name to start with a letter");
     }
     //variables can have numbers or other strings after the starting alphabet char
-    while (std::isalnum(inn.peek()) || inn.peek() == '_') {
+    while (std::isalpha(inn.peek()) || inn.peek() == '_') {
         if (inn.peek() == '_') {
             throw std::runtime_error("invalid input: variable names cannot contain underscores");
         }
