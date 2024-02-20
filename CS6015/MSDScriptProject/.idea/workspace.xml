@@ -22,7 +22,13 @@
   <component name="ChangeListManager">
     <list default="true" id="0ba017bc-fb7f-47a9-8bb1-df680b90c8e6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TESTS.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/TESTS.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Lab03" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cmdline.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/cmdline.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expr.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/expr.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parse.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/parse.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parse.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/parse.hpp" afterDir="false" />
@@ -55,6 +61,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "CMake Application.Lab03.executor": "Run",
+    "Catch.parse.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
@@ -72,12 +79,23 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Catch.parse">
+    <configuration name="parse" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Lab03" TARGET_NAME="Lab03" RUN_TARGET_PROJECT_NAME="Lab03" RUN_TARGET_NAME="Lab03" TEST_METHOD="parse" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Lab03" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Lab03" TARGET_NAME="Lab03" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Lab03" RUN_TARGET_NAME="Lab03">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Catch.parse" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -90,7 +108,7 @@
       <workItem from="1707767083778" duration="5113000" />
       <workItem from="1707772386256" duration="13742000" />
       <workItem from="1707803255078" duration="9221000" />
-      <workItem from="1708376211253" duration="8904000" />
+      <workItem from="1708376211253" duration="18430000" />
     </task>
     <servers />
   </component>

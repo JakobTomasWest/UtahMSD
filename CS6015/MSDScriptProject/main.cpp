@@ -16,8 +16,8 @@ int main(int argc, char **argv) {
     if(mode!=do_nothing) {
         Expr *e = parse(cin);
         switch (mode) {
-            case do_nothing:
-                break;
+//            case do_nothing:
+//                break;
             case do_interp:
                 cout << e->interp() << "\n";
                 break;

@@ -5,6 +5,7 @@
 #include "TESTS.h"
 #include "expr.hpp"
 #include "cmdline.hpp"
+#include "parse.hpp"
 #include <sstream>
 #include "stdlib.h"
 TEST_CASE("TEST"){
@@ -40,7 +41,7 @@ printf("TESTS RAN");
     CHECK( (new AddExpr(new AddExpr(new NumExpr(10), new NumExpr(15)),new AddExpr(new NumExpr(20),new NumExpr(20))))
                    ->interp()==65);
     CHECK( (new AddExpr(new AddExpr(new NumExpr(-10), new NumExpr(15)),new AddExpr(new NumExpr(20),new NumExpr(20))))
-                   ->interp()==45);               
+                   ->interp()==45);
 
     CHECK_THROWS_WITH( (new VarExpr("x"))->interp(), "no value for variable" );
 
@@ -224,4 +225,53 @@ printf("TESTS RAN");
     CHECK((new Mult(new NumExpr(4), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))))->to_pretty_string() == "4 * (_let x = 5\n"
                                                                                                                                                                            "      _in  x + 1)");
     CHECK((new Mult(new NumExpr(5), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))))->interp() == 30);
+
+
+}
+TEST_CASE("parse") {
+    CHECK_THROWS_WITH( parseString("()"), "bad input" );
+
+    CHECK( parseString("(1)")->equals(new NumExpr(1)) );
+    CHECK( parseString("(((1)))")->equals(new NumExpr(1)) );
+
+    CHECK_THROWS_WITH( parseString("(1"), "missing closing parenthesis" );
+
+    CHECK( parseString("1")->equals(new NumExpr(1)) );
+    CHECK( parseString("10")->equals(new NumExpr(10)) );
+    CHECK( parseString("-3")->equals(new NumExpr(-3)) );
+    CHECK( parseString("  \n 5  ")->equals(new NumExpr(5)) );
+    CHECK_THROWS_WITH( parseString("-"), "no following digit after the negative sign, invalid input" );
+
+    // This was some temporary debugging code:
+    //  std::istringstream in("-");
+    //  parse_num(in)->print(std::cout); std::cout << "\n";
+
+    CHECK_THROWS_WITH( parseString(" -   5  "), "no following digit after the negative sign, invalid input" );
+
+    CHECK( parseString("x")->equals(new VarExpr("x")) );
+    CHECK( parseString("xyz")->equals(new VarExpr("xyz")) );
+    CHECK( parseString("xYz")->equals(new VarExpr("xYz")) );
+    CHECK_THROWS_WITH( parseString("x_z"), "invalid input: variable names cannot contain underscores" );
+
+    CHECK( parseString("x + y")->equals(new AddExpr(new VarExpr("x"), new VarExpr("y"))) );
+
+    CHECK( parseString("x * y")->equals(new Mult(new VarExpr("x"), new VarExpr("y"))) );
+
+    CHECK( parseString("z * x + y")
+                   ->equals(new AddExpr(new Mult(new VarExpr("z"), new VarExpr("x")),
+                                    new VarExpr("y"))) );
+
+    CHECK( parseString("z * (x + y)")
+                   ->equals(new Mult(new VarExpr("z"),
+                                     new AddExpr(new VarExpr("x"), new VarExpr("y"))) ));
+
+
+    CHECK(parseString("_let x = 5\n_in  (_let y = 3\n      _in  y + 2) + x")
+                   ->equals(new LetExpr("x", new NumExpr(5), new AddExpr(new LetExpr("y", new NumExpr(3), new AddExpr(new VarExpr("y"), new NumExpr(2))), new VarExpr("x")) )));
+
+    CHECK( parseString("_let x = 5 _in x + 5")->equals(new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(5)))));
+    CHECK( parseString("_let x = 5 _in ((_let x = 5 _in x + 1) + x)")->equals(new LetExpr("x", new NumExpr(5), new AddExpr(new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
+    CHECK( parseString("_let x = 5 _in ((_let x = 5 _in x * 1) * x)")->equals(new LetExpr("x", new NumExpr(5), new Mult(new LetExpr("x", new NumExpr(5), new Mult(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
+    CHECK( parseString("x * ((_let x = 5 _in x * 1) * x)")->equals(new Mult(new VarExpr("x"), new Mult(new LetExpr("x", new NumExpr(5), new Mult(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
+
 }

@@ -39,10 +39,13 @@ run_mode_t use_arguments(int argc, char** argv) {
                 exit(1);
 
         } else if ((strcmp(argv[i], "--interp") == 0)) {
+            check_mode_already( mode ,argv[i]);
             mode = do_interp;
         } else if ((strcmp(argv[i], "--print") == 0)) {
+            check_mode_already( mode ,argv[i]);
             mode = do_print;
         } else if ((strcmp(argv[i], "--pretty-print") == 0)) {
+            check_mode_already( mode ,argv[i]);
             mode = do_pretty_print;
         } else {
             std :: cerr << "bad flag: " << argv[i] << "\n";

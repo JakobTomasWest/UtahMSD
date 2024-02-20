@@ -5,6 +5,11 @@ compile:
 test: build compile
 	./build --test
 
+run: build
+	./build --print
+	./build --pretty-print
+	./build --interp
+
 doc: msdscript
 		cd Documentation && Doxygen
 

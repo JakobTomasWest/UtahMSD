@@ -112,9 +112,6 @@ public:
 };
 
 
-static void consume(std::istream &in, int expect);
-void skip_whitespace(std::istream &in);
-Expr *parse_num(std::istream &inn);
 
 
 
