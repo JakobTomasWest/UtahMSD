@@ -251,7 +251,7 @@ TEST_CASE("parse") {
     CHECK( parseString("x")->equals(new VarExpr("x")) );
     CHECK( parseString("xyz")->equals(new VarExpr("xyz")) );
     CHECK( parseString("xYz")->equals(new VarExpr("xYz")) );
-    CHECK_THROWS_WITH( parseString("x_z"), "invalid input: variable names cannot contain underscores" );
+    CHECK_THROWS_WITH( parseString("x_z"), "invalid input: variable names cannot contain underscores or alphanum" );
     CHECK( parseString("x + y")->equals(new AddExpr(new VarExpr("x"), new VarExpr("y"))) );
 
     CHECK( parseString("x * y")->equals(new Mult(new VarExpr("x"), new VarExpr("y"))) );

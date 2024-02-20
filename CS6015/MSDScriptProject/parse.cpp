@@ -113,7 +113,7 @@ Expr *parse_var(std::istream &inn) {
     //variables can have numbers or other strings after the starting alphabet char
     while (std::isalpha(inn.peek()) || inn.peek() == '_') {
         if (inn.peek() == '_') {
-            throw std::runtime_error("invalid input: variable names cannot contain underscores");
+            throw std::runtime_error("invalid input: variable names cannot contain underscores or alphanum");
         }
         varName += static_cast<char>(inn.get());
     }
