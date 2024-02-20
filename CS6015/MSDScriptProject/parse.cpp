@@ -20,7 +20,7 @@ Expr *parse_expr(std::istream &in) {
     int c = in.peek();
     if (c == '+') {
         consume(in, '+');
-        Expr *rhs = parse_addend(in);
+        Expr *rhs = parse_expr(in);
         return new AddExpr(e, rhs);
     } else
         return e;
@@ -45,18 +45,22 @@ Expr *parse_multicand(std::istream &in) {
         return parse_num(in);
     }else if(isalpha(c)){
         return parse_var(in);
+
         //if we find parenthesis we'll consume opener --> parse expression inside --> consume closing
+    }else if (c == '_') {
+        return parse_let(in);
     }else if (c == '(') {
-        consume(in, '(');
-        if(in.peek() == ')'){
-            throw std::runtime_error("bad input");
-        }
-        Expr *e = parse_expr(in);
-        skip_whitespace(in);
-        c = in.get();
-        if (c != ')')
-            throw std::runtime_error("missing closing parenthesis");
-        return e;
+            consume(in, '(');
+            if(in.peek() == ')'){
+                throw std::runtime_error("bad input");
+            }
+            Expr *e = parse_expr(in);
+            skip_whitespace(in);
+            c = in.get();
+            if (c != ')')
+                throw std::runtime_error("missing closing parenthesis");
+            return e;
+
     } else {
         consume(in, c);
         throw std::runtime_error("invalid input in multicand");
@@ -85,9 +89,9 @@ Expr *parse_num(std::istream &inn) {
     }
     if (negative)
         n = -n;
-
     return new NumExpr(n);
 }
+
 Expr* parse(std::istream &in) {
     return parse_expr(in);
 }
@@ -96,6 +100,7 @@ Expr* parseString(const std::string &s) {
     std::istringstream in(s);
     return parse(in);
 }
+
 Expr *parse_var(std::istream &inn) {
     std::string varName;
     skip_whitespace(inn);
@@ -117,8 +122,10 @@ Expr *parse_var(std::istream &inn) {
     }
     return new VarExpr(varName);
 }
+
+
 Expr* parse_let(std::istream &in){
-    //first consume _let
+    //first *consume* _let
     string letPart;
     for(int i =0; i <4; i++){
         letPart += static_cast<char>(in.get());
@@ -143,7 +150,8 @@ Expr* parse_let(std::istream &in){
     //parse boundExpr
     Expr* boundExpr = parse_expr(in);
     skip_whitespace(in);
-    //consume '_in'
+
+    //*consume* _in
     string inPart;
     for(int i =0; i < 3; i++){
         inPart += static_cast<char>(in.get());
@@ -172,15 +180,3 @@ void skip_whitespace(std::istream &in) {
     consume(in, c);
       }
 }
-
-
-
-
-
-//
-//isAlpha() -->
-//_--> read 3 characters --> should be followed by varName --> = --> (spaces --> )expr ---> (spaces -->) _in --> expr
-//
-//parse _var helper
-// parse_let jelper
-//parse_keyword
