@@ -32,7 +32,7 @@ Expr *parse_addend (std::istream &in) {
     int c = in.peek();
     if (c == '*') {
         consume(in, '*');
-        Expr *rhs = parse_multicand(in);
+        Expr *rhs = parse_addend(in);
         return new Mult(e, rhs);
     } else
         return e;
