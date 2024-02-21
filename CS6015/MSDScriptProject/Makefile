@@ -1,6 +1,8 @@
 compile:
 	c++ -std=c++17 *.cpp -o build
 
+
+
 .PHONY: build
 test: build compile
 	./build --test
@@ -18,3 +20,11 @@ clean:
 	rm -rf *.o build
 	
 	
+#compile the test_msdscript program
+test_msdscript: test_msdscript.cpp
+    g++ -o test_msdscript test_msdscript.cpp
+
+#add a custom target for testing
+.PHONY: test
+test: msdscript test_msdscript
+    ./test_msdscript ./msdscript
