@@ -127,13 +127,15 @@ Expr *parse_var(std::istream &inn) {
 Expr* parse_let(std::istream &in){
     //first *consume* _let
     string letPart;
-    for(int i =0; i <4; i++){
+    for(int i =0; i < 4; i++){
+        skip_whitespace(in);
         letPart += static_cast<char>(in.get());
     }
 
     if(letPart != "_let"){
         throw std::runtime_error("expected '_let'");
     }
+
     skip_whitespace(in);
     //parse variable name -- not as a new var expr
     string varName;
