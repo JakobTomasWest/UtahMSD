@@ -1,0 +1,3 @@
+/Users/jakobwest/UtahMSD/CS6013/MallocReplacement/cmake-build-debug/CMakeFiles/MallocReplacement.dir
+/Users/jakobwest/UtahMSD/CS6013/MallocReplacement/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/jakobwest/UtahMSD/CS6013/MallocReplacement/cmake-build-debug/CMakeFiles/rebuild_cache.dir

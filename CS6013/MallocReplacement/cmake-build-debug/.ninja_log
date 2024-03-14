@@ -1,0 +1,5 @@
+# ninja log v5
+1	326	1710378050256809944	CMakeFiles/MallocReplacement.dir/MyAllocator.cpp.o	7b31cb9f274b600
+3	584	1710454217638452129	CMakeFiles/MallocReplacement.dir/hashTable.cpp.o	df6b7c90c387c799
+584	725	1710454217780008812	MallocReplacement	bddfef83641c84fa
+4	532	1710453278129849401	CMakeFiles/MallocReplacement.dir/main.cpp.o	1c8bb869df3c66bd
