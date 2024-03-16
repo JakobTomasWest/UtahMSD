@@ -1,6 +1,6 @@
 //
 // Created by Jakob West on 3/14/24.
-//
+//Creating Custom implementation of Malloc() and Free() using mmap and munmap
 #include <sys/mman.h>
 #include <cstdio>
 
@@ -8,7 +8,7 @@
 
 MyMalloc::MyMalloc(size_t initialCapacity) : table(initialCapacity) {
 }
-
+//Used to allocate memory using mmap
 void *MyMalloc::allocate(size_t size) {
     //Use mmap to allocate memory
     void* addr = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);

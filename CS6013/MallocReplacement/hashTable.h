@@ -29,7 +29,7 @@ private:
 
 public:
     size_t getEntrySize(void* addressptr);
-    // Destructor to deallocate the table
+    //Destructor to deallocate the table
     ~hashTable();
     void insert(void* addressptr, size_t size);
     void remove(void* addressptr);
@@ -37,8 +37,8 @@ public:
 
     explicit hashTable(size_t initialCapacity);
 
-//Current number of elements in the hash table
-size_t currentNumEntries;
+    //Current number of elements in the hash table
+    size_t currentNumEntries;
 };
 
 #endif //MALLOCREPLACEMENT_HASHTABLE_H

@@ -1,12 +1,13 @@
 //
 // Created by Jakob West on 3/13/24.
-//
+//Creating hashTable class for custom memory allocation
 #include <cstdio>
 #include <cassert>
 #include <iostream>
 #include "hashTable.h"
 #include "sys/mman.h"
 
+//hashTable constructor used for setting initial capacity, allocating memory, and initializing hash table entries as unused.
 hashTable::hashTable(size_t initialCapacity) {
     capacity = initialCapacity;
     currentNumEntries = 0;
@@ -37,11 +38,11 @@ hashTable::hashTable(size_t initialCapacity) {
     this->table[i].used = false;
     }
 }
-//The hash function takes whatever the key is and gets the index into our array
+//The hash function takes whatever the key is and gets the index into our array from the address pointer
 size_t hashTable::hashFunction(void *addressptr) const {
     return ((size_t)addressptr >> 12) % capacity;
 }
-
+//The purpose of the function is to assign a value of bytes to our key: the address we are pointing to --> within our hashTable
 void hashTable::insert(void *addressptr, size_t size) {
     //Check to see if we have to grow the hashtable first
     float loadFactor = static_cast<float>(currentNumEntries + 1) / capacity;
@@ -69,11 +70,11 @@ void hashTable::insert(void *addressptr, size_t size) {
         currentNumEntries++;
     }
 }
-
+//Using the address pointer look for the address in the hashTable and return its index
 size_t hashTable::find(void *addressptr){
-    //look for particular address in hashtable
+    //Look for particular address in hashtable
     size_t index = hashFunction(addressptr);
-    //mark this as the beginning to create an end point in our circular-array search
+    //Mark this as the beginning to create an end point in our circular-array search
     size_t start = index;
     while (table[index].used || table[index].deleted) {
         if (table[index].used && !table[index].deleted && table[index].addressptr == addressptr) {
@@ -87,13 +88,14 @@ size_t hashTable::find(void *addressptr){
     }
     return -1;
 }
-
+//Function to find and remove an address using the pointer for the index within our hashtable
 void hashTable::remove(void *addressptr) {
-    size_t index = find(addressptr); // Assuming find returns the correct index or -1 if not found
-    if (index != -1) { // Key found
+    size_t index = find(addressptr); //Can return -1 if not found
+
+    if (index != -1) { //Key found
         table[index].used = false;
         table[index].deleted = true;
-        currentNumEntries--; // Decrement because we effectively removed an item
+        currentNumEntries--; //Decrease count after removing the item
     }
 }
 //Function to increase the virtual address space available by doubling our hashTable size
@@ -101,7 +103,7 @@ void hashTable::grow() {
     size_t newCapacity = capacity *2;
     //Declare the total amount of memory we want to request mmap
     size_t newSize = newCapacity * sizeof(HashEntry);
-    //get pointer to start the newly allocated memory
+    //Get pointer to start the newly allocated memory
     HashEntry* newTable = (HashEntry*)mmap(
             //The OS chooses initial address to place memory with nullptr
             nullptr, newSize, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
@@ -130,13 +132,11 @@ void hashTable::grow() {
             newTable[newIndex].deleted = false;
         }
     }
-
-        //Unmap the old table
+    //Unmap the old table
     if (munmap(table, capacity * sizeof(HashEntry)) == -1) {
         perror("munmap");
         exit(EXIT_FAILURE);
     }
-
     //Update the table's properties
     table = newTable;
     capacity = newCapacity;
@@ -148,11 +148,10 @@ hashTable::~hashTable() {
         perror("munmap");
     }
 }
-
+//Using the address look at the within a particular index of or hashTable
 size_t hashTable::getEntrySize(void* addressptr) {
     //First find the index of teh address to retrieve the size
     size_t index = find(addressptr);
-
     //Make sure the address was found.
     if (index != (size_t)-1) {
         //Return the size associated with the address.

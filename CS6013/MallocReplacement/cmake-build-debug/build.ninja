@@ -61,12 +61,6 @@ build CMakeFiles/MallocReplacement.dir/hashTable.cpp.o: CXX_COMPILER__MallocRepl
   OBJECT_DIR = CMakeFiles/MallocReplacement.dir
   OBJECT_FILE_DIR = CMakeFiles/MallocReplacement.dir
 
-build CMakeFiles/MallocReplacement.dir/MyAllocator.cpp.o: CXX_COMPILER__MallocReplacement_unscanned_Debug /Users/jakobwest/UtahMSD/CS6013/MallocReplacement/MyAllocator.cpp || cmake_object_order_depends_target_MallocReplacement
-  DEP_FILE = CMakeFiles/MallocReplacement.dir/MyAllocator.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
-  OBJECT_DIR = CMakeFiles/MallocReplacement.dir
-  OBJECT_FILE_DIR = CMakeFiles/MallocReplacement.dir
-
 build CMakeFiles/MallocReplacement.dir/MyMalloc.cpp.o: CXX_COMPILER__MallocReplacement_unscanned_Debug /Users/jakobwest/UtahMSD/CS6013/MallocReplacement/MyMalloc.cpp || cmake_object_order_depends_target_MallocReplacement
   DEP_FILE = CMakeFiles/MallocReplacement.dir/MyMalloc.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
@@ -81,7 +75,7 @@ build CMakeFiles/MallocReplacement.dir/MyMalloc.cpp.o: CXX_COMPILER__MallocRepla
 #############################################
 # Link the executable MallocReplacement
 
-build MallocReplacement: CXX_EXECUTABLE_LINKER__MallocReplacement_Debug CMakeFiles/MallocReplacement.dir/main.cpp.o CMakeFiles/MallocReplacement.dir/hashTable.cpp.o CMakeFiles/MallocReplacement.dir/MyAllocator.cpp.o CMakeFiles/MallocReplacement.dir/MyMalloc.cpp.o
+build MallocReplacement: CXX_EXECUTABLE_LINKER__MallocReplacement_Debug CMakeFiles/MallocReplacement.dir/main.cpp.o CMakeFiles/MallocReplacement.dir/hashTable.cpp.o CMakeFiles/MallocReplacement.dir/MyMalloc.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk
   OBJECT_DIR = CMakeFiles/MallocReplacement.dir
   POST_BUILD = :

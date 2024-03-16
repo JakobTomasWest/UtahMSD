@@ -8,13 +8,13 @@
 #include "hashTable.h"
 
 class MyMalloc {
-private:
-    hashTable table;
 
 public:
     explicit MyMalloc(size_t initialCapacity);
     void* allocate(size_t size);
     void deallocate(void* addressptr);
+
+    hashTable table;
 };
 
 
