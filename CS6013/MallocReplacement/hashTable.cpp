@@ -89,6 +89,8 @@ size_t hashTable::find(void *addressptr){
     return -1;
 }
 //Function to find and remove an address using the pointer for the index within our hashtable
+//Lazy deletion: instead of immediately removing an element and triggering rehashing
+// or rearranging of the remaining elements, the element is marked as deleted.
 void hashTable::remove(void *addressptr) {
     size_t index = find(addressptr); //Can return -1 if not found
 
