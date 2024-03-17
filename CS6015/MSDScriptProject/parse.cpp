@@ -33,7 +33,7 @@ Expr *parse_addend (std::istream &in) {
     if (c == '*') {
         consume(in, '*');
         Expr *rhs = parse_addend(in);
-        return new Mult(e, rhs);
+        return new MultExpr(e, rhs);
     } else
         return e;
 }

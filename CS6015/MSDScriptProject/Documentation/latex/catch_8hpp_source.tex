@@ -3143,8 +3143,8 @@
 \DoxyCodeLine{03177\ \ \ \ \ \}\ \textcolor{comment}{//\ end\ namespace\ Detail}}
 \DoxyCodeLine{03178\ }
 \DoxyCodeLine{03179\ \ \ \ \ \textcolor{keyword}{namespace\ }literals\ \{}
-\DoxyCodeLine{03180\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_catch_1_1_detail_1_1_approx}{Detail::Approx}}\ \textcolor{keyword}{operator}\ \textcolor{stringliteral}{"{}"{}}\ \mbox{\hyperlink{struct_catch_1_1true__given}{\_a}}(\textcolor{keywordtype}{long}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{struct_catch_1_1true__given}{val}});}
-\DoxyCodeLine{03181\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_catch_1_1_detail_1_1_approx}{Detail::Approx}}\ \textcolor{keyword}{operator}\ \textcolor{stringliteral}{"{}"{}}\ \mbox{\hyperlink{struct_catch_1_1true__given}{\_a}}(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{long}\ \mbox{\hyperlink{struct_catch_1_1true__given}{val}});}
+\DoxyCodeLine{03180\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_catch_1_1_detail_1_1_approx}{Detail::Approx}}\ \textcolor{keyword}{operator}\ \textcolor{stringliteral}{"{}"{}}\ \mbox{\hyperlink{struct_catch_1_1true__given}{\_a}}(\textcolor{keywordtype}{long}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{struct_catch_1_1true__given}{Val}});}
+\DoxyCodeLine{03181\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_catch_1_1_detail_1_1_approx}{Detail::Approx}}\ \textcolor{keyword}{operator}\ \textcolor{stringliteral}{"{}"{}}\ \mbox{\hyperlink{struct_catch_1_1true__given}{\_a}}(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{long}\ \mbox{\hyperlink{struct_catch_1_1true__given}{Val}});}
 \DoxyCodeLine{03182\ \ \ \ \ \}\ \textcolor{comment}{//\ end\ namespace\ literals}}
 \DoxyCodeLine{03183\ }
 \DoxyCodeLine{03184\ \ \ \ \ \textcolor{keyword}{template}<>}
@@ -3976,12 +3976,12 @@
 \DoxyCodeLine{04014\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ populate(\mbox{\hyperlink{struct_catch_1_1true__given}{GeneratorWrapper<T>}}\&\&\ \mbox{\hyperlink{struct_catch_1_1true__given}{generator}})\ \{}
 \DoxyCodeLine{04015\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_generators.emplace\_back(std::move(\mbox{\hyperlink{struct_catch_1_1true__given}{generator}}));}
 \DoxyCodeLine{04016\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{04017\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ populate(\mbox{\hyperlink{struct_catch_1_1true__given}{T}}\&\&\ \mbox{\hyperlink{struct_catch_1_1true__given}{val}})\ \{}
-\DoxyCodeLine{04018\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_generators.emplace\_back(value(std::forward<T>(\mbox{\hyperlink{struct_catch_1_1true__given}{val}})));}
+\DoxyCodeLine{04017\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ populate(\mbox{\hyperlink{struct_catch_1_1true__given}{T}}\&\&\ \mbox{\hyperlink{struct_catch_1_1true__given}{Val}})\ \{}
+\DoxyCodeLine{04018\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_generators.emplace\_back(value(std::forward<T>(\mbox{\hyperlink{struct_catch_1_1true__given}{Val}})));}
 \DoxyCodeLine{04019\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{04020\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ U>}
-\DoxyCodeLine{04021\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ populate(\mbox{\hyperlink{struct_catch_1_1true__given}{U}}\&\&\ \mbox{\hyperlink{struct_catch_1_1true__given}{val}})\ \{}
-\DoxyCodeLine{04022\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ populate(\mbox{\hyperlink{struct_catch_1_1true__given}{T}}(std::forward<U>(\mbox{\hyperlink{struct_catch_1_1true__given}{val}})));}
+\DoxyCodeLine{04021\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ populate(\mbox{\hyperlink{struct_catch_1_1true__given}{U}}\&\&\ \mbox{\hyperlink{struct_catch_1_1true__given}{Val}})\ \{}
+\DoxyCodeLine{04022\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ populate(\mbox{\hyperlink{struct_catch_1_1true__given}{T}}(std::forward<U>(\mbox{\hyperlink{struct_catch_1_1true__given}{Val}})));}
 \DoxyCodeLine{04023\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{04024\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ \mbox{\hyperlink{struct_catch_1_1true__given}{U}},\ \textcolor{keyword}{typename}...\ \mbox{\hyperlink{struct_catch_1_1true__given}{Gs}}>}
 \DoxyCodeLine{04025\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ populate(\mbox{\hyperlink{struct_catch_1_1true__given}{U}}\&\&\ \mbox{\hyperlink{struct_catch_1_1true__given}{valueOrGenerator}},\ \mbox{\hyperlink{struct_catch_1_1true__given}{Gs}}\ \&\&...\ \mbox{\hyperlink{struct_catch_1_1true__given}{moreGenerators}})\ \{}
@@ -4030,12 +4030,12 @@
 \DoxyCodeLine{04068\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{struct_catch_1_1true__given}{Generators<T>}}(std::move(\mbox{\hyperlink{struct_catch_1_1true__given}{generator}}));}
 \DoxyCodeLine{04069\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{04070\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}...\ Gs>}
-\DoxyCodeLine{04071\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ makeGenerators(\ T\&\&\ val,\ Gs\ \&\&...\ moreGenerators\ )\ -\/>\ Generators<T>\ \{}
-\DoxyCodeLine{04072\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ makeGenerators(\ value(\ std::forward<T>(\ val\ )\ ),\ std::forward<Gs>(\ moreGenerators\ )...\ );}
+\DoxyCodeLine{04071\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ makeGenerators(\ T\&\&\ Val,\ Gs\ \&\&...\ moreGenerators\ )\ -\/>\ Generators<T>\ \{}
+\DoxyCodeLine{04072\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ makeGenerators(\ value(\ std::forward<T>(\ Val\ )\ ),\ std::forward<Gs>(\ moreGenerators\ )...\ );}
 \DoxyCodeLine{04073\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{04074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U,\ \textcolor{keyword}{typename}...\ Gs>}
-\DoxyCodeLine{04075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ makeGenerators(\ as<T>,\ U\&\&\ val,\ Gs\ \&\&...\ moreGenerators\ )\ -\/>\ Generators<T>\ \{}
-\DoxyCodeLine{04076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ makeGenerators(\ value(\ T(\ std::forward<U>(\ val\ )\ )\ ),\ std::forward<Gs>(\ moreGenerators\ )...\ );}
+\DoxyCodeLine{04075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ makeGenerators(\ as<T>,\ U\&\&\ Val,\ Gs\ \&\&...\ moreGenerators\ )\ -\/>\ Generators<T>\ \{}
+\DoxyCodeLine{04076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ makeGenerators(\ value(\ T(\ std::forward<U>(\ Val\ )\ )\ ),\ std::forward<Gs>(\ moreGenerators\ )...\ );}
 \DoxyCodeLine{04077\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{04078\ }
 \DoxyCodeLine{04079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ acquireGeneratorTracker(\ StringRef\ generatorName,\ SourceLineInfo\ \textcolor{keyword}{const}\&\ lineInfo\ )\ -\/>\ IGeneratorTracker\&;}
@@ -7870,11 +7870,11 @@
 \DoxyCodeLine{07920\ \}\ \textcolor{comment}{//\ end\ namespace\ Detail}}
 \DoxyCodeLine{07921\ }
 \DoxyCodeLine{07922\ \textcolor{keyword}{namespace\ }literals\ \{}
-\DoxyCodeLine{07923\ \ \ \ \ Detail::Approx\ \textcolor{keyword}{operator}\ \textcolor{stringliteral}{"{}"{}}\ \_a(\textcolor{keywordtype}{long}\ \textcolor{keywordtype}{double}\ val)\ \{}
-\DoxyCodeLine{07924\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Detail::Approx(val);}
+\DoxyCodeLine{07923\ \ \ \ \ Detail::Approx\ \textcolor{keyword}{operator}\ \textcolor{stringliteral}{"{}"{}}\ \_a(\textcolor{keywordtype}{long}\ \textcolor{keywordtype}{double}\ Val)\ \{}
+\DoxyCodeLine{07924\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Detail::Approx(Val);}
 \DoxyCodeLine{07925\ \ \ \ \ \}}
-\DoxyCodeLine{07926\ \ \ \ \ Detail::Approx\ \textcolor{keyword}{operator}\ \textcolor{stringliteral}{"{}"{}}\ \_a(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{long}\ val)\ \{}
-\DoxyCodeLine{07927\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Detail::Approx(val);}
+\DoxyCodeLine{07926\ \ \ \ \ Detail::Approx\ \textcolor{keyword}{operator}\ \textcolor{stringliteral}{"{}"{}}\ \_a(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{long}\ Val)\ \{}
+\DoxyCodeLine{07927\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Detail::Approx(Val);}
 \DoxyCodeLine{07928\ \ \ \ \ \}}
 \DoxyCodeLine{07929\ \}\ \textcolor{comment}{//\ end\ namespace\ literals}}
 \DoxyCodeLine{07930\ }
@@ -12160,10 +12160,10 @@
 \DoxyCodeLine{12218\ \textcolor{preprocessor}{\#pragma\ warning(disable:4146)\ }\textcolor{comment}{//\ we\ negate\ uint32\ during\ the\ rotate}}
 \DoxyCodeLine{12219\ \textcolor{preprocessor}{\#endif}}
 \DoxyCodeLine{12220\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Safe\ rotr\ implementation\ thanks\ to\ John\ Regehr}}
-\DoxyCodeLine{12221\ \ \ \ \ \ \ \ \ uint32\_t\ rotate\_right(uint32\_t\ val,\ uint32\_t\ count)\ \{}
+\DoxyCodeLine{12221\ \ \ \ \ \ \ \ \ uint32\_t\ rotate\_right(uint32\_t\ Val,\ uint32\_t\ count)\ \{}
 \DoxyCodeLine{12222\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ uint32\_t\ mask\ =\ 31;}
 \DoxyCodeLine{12223\ \ \ \ \ \ \ \ \ \ \ \ \ count\ \&=\ mask;}
-\DoxyCodeLine{12224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (val\ >>\ count)\ |\ (val\ <<\ (-\/count\ \&\ mask));}
+\DoxyCodeLine{12224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (Val\ >>\ count)\ |\ (Val\ <<\ (-\/count\ \&\ mask));}
 \DoxyCodeLine{12225\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{12226\ }
 \DoxyCodeLine{12227\ \textcolor{preprocessor}{\#if\ defined(\_MSC\_VER)}}

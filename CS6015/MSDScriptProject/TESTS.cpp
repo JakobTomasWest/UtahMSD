@@ -6,6 +6,7 @@
 #include "expr.hpp"
 #include "cmdline.hpp"
 #include "parse.hpp"
+#include "Val.h"
 #include <sstream>
 #include "stdlib.h"
 TEST_CASE("TEST"){
@@ -22,26 +23,37 @@ printf("TESTS RAN");
     Expr* addExpr =(new AddExpr(new NumExpr(1), new NumExpr(2)));
     Expr* numExpr = new NumExpr(3);
     CHECK(addExpr->equals(numExpr) == false);
-    Expr* multExpr = new Mult(new NumExpr(1), new NumExpr(2));
+    Expr* multExpr = new MultExpr(new NumExpr(1), new NumExpr(2));
     CHECK(multExpr->equals(numExpr) == false);
-    CHECK((new Mult(new NumExpr(1),new NumExpr(2)))->to_string() == "(1*2)");
-    CHECK(( new Mult( new NumExpr(2), new NumExpr(2)))->equals(new Mult(new NumExpr(2), new NumExpr(1)))==false);
-    CHECK(( new Mult( new NumExpr(2), new NumExpr(2)))->equals(new Mult(new NumExpr(2), new NumExpr(2)))==true);
-    CHECK((new Mult(new VarExpr("x"),new VarExpr("y")))->has_variable() ==true);
-    CHECK( (new NumExpr(22))->subst("y", new Mult(new VarExpr("y"),new NumExpr(7)))->equals(new NumExpr(22)) );
+    CHECK((new MultExpr(new NumExpr(1), new NumExpr(2)))->to_string() == "(1*2)");
+    CHECK(( new MultExpr(new NumExpr(2), new NumExpr(2)))->equals(new MultExpr(new NumExpr(2), new NumExpr(1))) == false);
+    CHECK(( new MultExpr(new NumExpr(2), new NumExpr(2)))->equals(new MultExpr(new NumExpr(2), new NumExpr(2))) == true);
+    CHECK((new MultExpr(new VarExpr("x"), new VarExpr("y")))->has_variable() == true);
+    CHECK( (new NumExpr(22))->subst("y", new MultExpr(new VarExpr("y"), new NumExpr(7)))->equals(new NumExpr(22)) );
 
-    int result1 = (new Mult(new NumExpr(2), new NumExpr(2)))->interp();
-    int result2 = (new AddExpr(new NumExpr(2), new NumExpr(2)))->interp();
-    CHECK(result1 == result2);
+    Val* result1 = (new MultExpr(new NumExpr(2), new NumExpr(2)))->interp();
+    Val* result2 = (new AddExpr(new NumExpr(2), new NumExpr(2)))->interp();
+    CHECK(dynamic_cast<NumVal*>(result1)->equals(dynamic_cast<NumVal*>(result2)));
 
-    CHECK( (new Mult(new NumExpr(3), new NumExpr(2)))
-                   ->interp()==6 );
-     CHECK( (new Mult(new NumExpr(-3), new NumExpr(-2)))
-                   ->interp()==6 );
-    CHECK( (new AddExpr(new AddExpr(new NumExpr(10), new NumExpr(15)),new AddExpr(new NumExpr(20),new NumExpr(20))))
-                   ->interp()==65);
-    CHECK( (new AddExpr(new AddExpr(new NumExpr(-10), new NumExpr(15)),new AddExpr(new NumExpr(20),new NumExpr(20))))
-                   ->interp()==45);
+    Val* result3 = (new MultExpr(new NumExpr(3), new NumExpr(2)))->interp();
+    CHECK(dynamic_cast<NumVal*>(result3)->equals(new NumVal(6)));
+
+    Val* result4 = (new MultExpr(new NumExpr(-3), new NumExpr(-2)))->interp();
+    CHECK(dynamic_cast<NumVal*>(result4)->equals(new NumVal(6)));
+
+    Val* result5 = (new AddExpr(new AddExpr(new NumExpr(10), new NumExpr(15)),new AddExpr(new NumExpr(20),new NumExpr(20))))->interp();
+    CHECK(dynamic_cast<NumVal*>(result5)->equals(new NumVal(65)));
+
+    Val* result6 = (new AddExpr(new AddExpr(new NumExpr(-10), new NumExpr(15)),new AddExpr(new NumExpr(20),new NumExpr(20))))->interp();
+    CHECK(dynamic_cast<NumVal*>(result6)->equals(new NumVal(45)));
+
+// Don't forget to free memory if you're not using smart pointers
+//    delete result1;
+//    delete result2;
+//    delete result3;
+//    delete result4;
+//    delete result5;
+//    delete result6;
 
     CHECK_THROWS_WITH( (new VarExpr("x"))->interp(), "no value for variable" );
 
@@ -54,28 +66,28 @@ printf("TESTS RAN");
     CHECK( (new AddExpr( new NumExpr(7),new VarExpr("x")))
                    ->subst("x", new VarExpr("y"))
                    ->equals(new AddExpr( new VarExpr("y"),new NumExpr(7))) == false);
-    CHECK( (new Mult(new VarExpr("x"), new NumExpr(7)))
+    CHECK( (new MultExpr(new VarExpr("x"), new NumExpr(7)))
                    ->subst("x", new VarExpr("y"))
-                   ->equals(new Mult(new VarExpr("y"), new NumExpr(7))) );
-    CHECK( (new Mult( new NumExpr(7),new VarExpr("x")))
+                   ->equals(new MultExpr(new VarExpr("y"), new NumExpr(7))) );
+    CHECK( (new MultExpr(new NumExpr(7), new VarExpr("x")))
                    ->subst("x", new VarExpr("y"))
-                   ->equals(new Mult( new NumExpr(7),new VarExpr("y"))) );
-    CHECK( (new Mult( new NumExpr(7),new VarExpr("x")))
+                   ->equals(new MultExpr(new NumExpr(7), new VarExpr("y"))) );
+    CHECK((new MultExpr(new NumExpr(7), new VarExpr("x")))
                    ->subst("x", new VarExpr("y"))
-                   ->equals(new Mult( new VarExpr("y"),new NumExpr(7))) == false);
+                   ->equals(new MultExpr(new VarExpr("y"), new NumExpr(7))) == false);
 
     CHECK( (new VarExpr("x"))
                    ->subst("x", new AddExpr(new VarExpr("y"),new NumExpr(7)))
                    ->equals(new AddExpr(new VarExpr("y"),new NumExpr(7))) );
 
     CHECK( (new VarExpr("x"))
-                   ->subst("x", new Mult(new VarExpr("y"),new NumExpr(7)))
-                   ->equals(new Mult(new VarExpr("y"),new NumExpr(7))) );
+                   ->subst("x", new MultExpr(new VarExpr("y"), new NumExpr(7)))
+                   ->equals(new MultExpr(new VarExpr("y"), new NumExpr(7))) );
+    CHECK((new VarExpr("x"))
+                   ->subst("7", new MultExpr(new VarExpr("y"), new NumExpr(7)))
+                   ->equals(new MultExpr(new VarExpr("y"), new NumExpr(7))) == false );
     CHECK( (new VarExpr("x"))
-                   ->subst("7", new Mult(new VarExpr("y"),new NumExpr(7)))
-                   ->equals(new Mult(new VarExpr("y"),new NumExpr(7))) ==false );
-    CHECK( (new VarExpr("x"))
-                   ->subst("7", new Mult(new VarExpr("y"),new NumExpr(7)))
+                   ->subst("7", new MultExpr(new VarExpr("y"), new NumExpr(7)))
                    ->equals(new VarExpr("x")) );
 
     CHECK((new NumExpr(1))->has_variable() == false);
@@ -101,22 +113,30 @@ printf("TESTS RAN");
     CHECK((new VarExpr("x"))->to_string() == "x");
     CHECK((new AddExpr(new NumExpr(1),new NumExpr(2)))->to_string() == "(1+2)");
 
-    CHECK ( ( new Mult( new NumExpr(2),new AddExpr(new NumExpr(1), new NumExpr(3))))
+    CHECK ( ( new MultExpr(new NumExpr(2), new AddExpr(new NumExpr(1), new NumExpr(3))))
     ->to_pretty_string() == "2 * (1 + 3)");
-    CHECK ( ( new AddExpr(new NumExpr(2), new Mult(new NumExpr(1), new NumExpr(3))))
+    CHECK ( ( new AddExpr(new NumExpr(2), new MultExpr(new NumExpr(1), new NumExpr(3))))
     ->to_pretty_string() == "2 + 1 * 3");
 
-    CHECK ( (new Mult(new NumExpr(1), new AddExpr(new NumExpr(2), new NumExpr(3))))
+    CHECK ( (new MultExpr(new NumExpr(1), new AddExpr(new NumExpr(2), new NumExpr(3))))
     ->to_pretty_string() ==  "1 * (2 + 3)" );
-    CHECK ( (new Mult(new Mult(new NumExpr(8), new NumExpr(1)), new VarExpr("y")))
+    CHECK ( (new MultExpr(new MultExpr(new NumExpr(8), new NumExpr(1)), new VarExpr("y")))
     ->to_pretty_string() ==  "(8 * 1) * y" );
-    CHECK ( (new Mult(new AddExpr(new NumExpr(3), new NumExpr(5)), new Mult(new NumExpr(6), new NumExpr(1))))
+    CHECK ( (new MultExpr(new MultExpr(new NumExpr(8), new NumExpr(1)), new VarExpr("y")))
+                    ->to_string() ==  "((8*1)*y)" );
+    CHECK ( (new MultExpr(new AddExpr(new NumExpr(3), new NumExpr(5)), new MultExpr(new NumExpr(6), new NumExpr(1))))
     ->to_pretty_string() ==  "(3 + 5) * 6 * 1" );
-    CHECK ( (new Mult(new Mult(new NumExpr(7), new NumExpr(7)), new AddExpr(new NumExpr(9), new NumExpr(2))) )
+    CHECK ( (new MultExpr(new MultExpr(new NumExpr(7), new NumExpr(7)), new AddExpr(new NumExpr(9), new NumExpr(2))) )
     ->to_pretty_string() ==  "(7 * 7) * (9 + 2)" );
-    CHECK ( (new Mult( new Mult(new NumExpr(5), new NumExpr(2)), new NumExpr(8)))
+    CHECK ( (new MultExpr(new MultExpr(new NumExpr(7), new NumExpr(7)), new AddExpr(new NumExpr(9), new NumExpr(2))) )
+                    ->to_string() ==  "((7*7)*(9+2))" );
+    CHECK ( (new AddExpr(new MultExpr(new NumExpr(7), new MultExpr(new NumExpr(7), new NumExpr(9))), new NumExpr(2)))
+                    ->to_string() ==  "((7*(7*9))+2)" );
+    CHECK ( (new AddExpr(new MultExpr(new NumExpr(7), new MultExpr(new NumExpr(7), new NumExpr(9))), new NumExpr(2)))
+                    ->to_pretty_string() ==  "7 * 7 * 9 + 2" );
+    CHECK ( (new MultExpr(new MultExpr(new NumExpr(5), new NumExpr(2)), new NumExpr(8)))
     ->to_pretty_string() == "(5 * 2) * 8");
-    CHECK ( (new Mult(new NumExpr(8),new Mult(new NumExpr(5), new NumExpr(2))))
+    CHECK ( (new MultExpr(new NumExpr(8), new MultExpr(new NumExpr(5), new NumExpr(2))))
     ->to_pretty_string() == "8 * 5 * 2");
 
     //---------------------------------------LetExpr Tests-----------------------------------------------------------------------------------------------//
@@ -153,7 +173,9 @@ printf("TESTS RAN");
     CHECK(nested_abx2->equals(nested_acx2));
 
     //Interp
-    CHECK(abx2->interp()==5 );
+    Val* result = abx2->interp();
+    CHECK(dynamic_cast<NumVal*>(result)->equals(new NumVal(5)));
+
 
     //Substitute
     //Dont sub x because lhs = valToSub
@@ -205,26 +227,27 @@ printf("TESTS RAN");
     delete c;
     delete d;
 
-    CHECK((new Mult(new Mult(new NumExpr (2), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x") , new NumExpr(1)) )), new NumExpr(3) ))
+    CHECK((new MultExpr(new MultExpr(new NumExpr (2), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x") , new NumExpr(1)) )), new NumExpr(3) ))
     ->to_pretty_string() == "(2 * _let x = 5\n"
                            "      _in  x + 1) * 3");
 //    //Let nested to the left in add expression which is nested to the right within a multiplication expression
-//    CHECK((new Mult(new NumExpr(5), new AddExpr(new LetExpr("x", new NumExpr(5), new VarExpr("x")), new NumExpr(1))))->to_pretty_string() == "5 * ((_let x = 5\n"
+//    CHECK((new MultExpr(new NumExpr(5), new AddExpr(new LetExpr("x", new NumExpr(5), new VarExpr("x")), new NumExpr(1))))->to_pretty_string() == "5 * ((_let x = 5\n"
 //                                                                                                                         "      _in x) + 1)");
-    CHECK((new Mult(new NumExpr(5), new AddExpr(new LetExpr("x", new NumExpr(5), new VarExpr("x")), new NumExpr(1))))->to_pretty_string() == "5 * ((_let x = 5\n"
+    CHECK((new MultExpr(new NumExpr(5), new AddExpr(new LetExpr("x", new NumExpr(5), new VarExpr("x")), new NumExpr(1))))->to_pretty_string() == "5 * ((_let x = 5\n"
                                                                                                                          "       _in  x) + 1)");
     //    //Let in lhs of add
     CHECK ( (new AddExpr(new LetExpr("x", new NumExpr(2), new AddExpr(new VarExpr("x"), new NumExpr(9))), new NumExpr(4)))->to_pretty_string() == "(_let x = 2\n"
                                                                                                                           "  _in  x + 9) + 4");
     //Let in lhs of multiplication expression
-    CHECK((new Mult(new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(8))), new NumExpr(3)))->to_pretty_string() == "(_let x = 5\n"
+    CHECK((new MultExpr(new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(8))), new NumExpr(3)))->to_pretty_string() == "(_let x = 5\n"
                                                                                                                          "  _in  x + 8) * 3");
     //Let nest as right argument of un-parenthesized multiplication expression
-    CHECK((new AddExpr (new Mult(new NumExpr(4), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))), new NumExpr(9)))->to_pretty_string() == "4 * (_let x = 5\n"
+    CHECK((new AddExpr (new MultExpr(new NumExpr(4), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))), new NumExpr(9)))->to_pretty_string() == "4 * (_let x = 5\n"
                                                                                                                                                "      _in  x + 1) + 9");
-    CHECK((new Mult(new NumExpr(4), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))))->to_pretty_string() == "4 * (_let x = 5\n"
+    CHECK((new MultExpr(new NumExpr(4), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))))->to_pretty_string() == "4 * (_let x = 5\n"
                                                                                                                                                                            "      _in  x + 1)");
-    CHECK((new Mult(new NumExpr(5), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))))->interp() == 30);
+    Val* resultInterp = (new MultExpr(new NumExpr(5), new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1)))))->interp();
+    CHECK(dynamic_cast<NumVal*>(resultInterp)->equals(new NumVal(30)));
 
 
 }
@@ -254,15 +277,15 @@ TEST_CASE("parse") {
     CHECK_THROWS_WITH( parseString("x_z"), "invalid input: variable names cannot contain underscores or alphanum" );
     CHECK( parseString("x + y")->equals(new AddExpr(new VarExpr("x"), new VarExpr("y"))) );
 
-    CHECK( parseString("x * y")->equals(new Mult(new VarExpr("x"), new VarExpr("y"))) );
+    CHECK( parseString("x * y")->equals(new MultExpr(new VarExpr("x"), new VarExpr("y"))) );
 
     CHECK( parseString("z * x + y")
-                   ->equals(new AddExpr(new Mult(new VarExpr("z"), new VarExpr("x")),
+                   ->equals(new AddExpr(new MultExpr(new VarExpr("z"), new VarExpr("x")),
                                     new VarExpr("y"))) );
 
     CHECK( parseString("z * (x + y)")
-                   ->equals(new Mult(new VarExpr("z"),
-                                     new AddExpr(new VarExpr("x"), new VarExpr("y"))) ));
+                   ->equals(new MultExpr(new VarExpr("z"),
+                                         new AddExpr(new VarExpr("x"), new VarExpr("y"))) ));
 
 
     CHECK(parseString("_let x = 5\n_in  (_let y = 3\n      _in  y + 2) + x")
@@ -270,7 +293,7 @@ TEST_CASE("parse") {
 
     CHECK( parseString("_let x = 5 _in x + 5")->equals(new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(5)))));
     CHECK( parseString("_let x = 5 _in ((_let x = 5 _in x + 1) + x)")->equals(new LetExpr("x", new NumExpr(5), new AddExpr(new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
-    CHECK( parseString("_let x = 5 _in ((_let x = 5 _in x * 1) * x)")->equals(new LetExpr("x", new NumExpr(5), new Mult(new LetExpr("x", new NumExpr(5), new Mult(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
-    CHECK( parseString("x * ((_let x = 5 _in x * 1) * x)")->equals(new Mult(new VarExpr("x"), new Mult(new LetExpr("x", new NumExpr(5), new Mult(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
+    CHECK( parseString("_let x = 5 _in ((_let x = 5 _in x * 1) * x)")->equals(new LetExpr("x", new NumExpr(5), new MultExpr(new LetExpr("x", new NumExpr(5), new MultExpr(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
+    CHECK( parseString("x * ((_let x = 5 _in x * 1) * x)")->equals(new MultExpr(new VarExpr("x"), new MultExpr(new LetExpr("x", new NumExpr(5), new MultExpr(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
 
 }

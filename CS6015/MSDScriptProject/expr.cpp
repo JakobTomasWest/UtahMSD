@@ -2,6 +2,7 @@
 // Created by Jakob West on 1/23/24.
 //
 #include "expr.hpp"
+#include "Val.h"
 #include <stdexcept>
 #include <sstream>
 
@@ -18,7 +19,7 @@ typedef enum {
 precedence_t exprToPrecedence(Expr* e ){
     if(dynamic_cast<AddExpr*>(e) != nullptr ){
         return prec_add;
-    } else if (dynamic_cast<Mult*>(e)!= nullptr){
+    } else if (dynamic_cast<MultExpr*>(e) != nullptr){
         return prec_mult;
     } else{
         return prec_none;
@@ -103,10 +104,10 @@ Expr* AddExpr::subst(const string& targetVarName, Expr* replacementVar){
  * \brief Evaluates the addition expression and return the sum
  * \return The integer result of the summed addition.
  */
-int AddExpr::interp() {
+Val* AddExpr::interp() {
     //return an int for the value of the expression
     // the value of addition expression is the sum of teh two subexpressions
-    return lhs->interp() + rhs->interp();
+    return rhs->interp()->add_to( lhs->interp());
 }
 /**
  *\brief Determines if the addition expression contains a variable
@@ -170,7 +171,7 @@ void AddExpr::pretty_printHelper(std::ostream &ostream, precedence_t precedence,
  \param lhs Pointer to the left-hand side expression.
  \param rhs Pointer to the right-hand side expression.
  */
-Mult::Mult(Expr *lhs, Expr *rhs) {
+MultExpr::MultExpr(Expr *lhs, Expr *rhs) {
     this->lhs = lhs;
     this->rhs = rhs;
 }
@@ -179,8 +180,8 @@ Mult::Mult(Expr *lhs, Expr *rhs) {
  *\param e Pointer to the expression to compare with.
  *\return True if the expressions are equal, otherwise false.
  */
-bool Mult::equals(Expr *e){
-    Mult *m = dynamic_cast<Mult*>(e);
+bool MultExpr::equals(Expr *e){
+    MultExpr *m = dynamic_cast<MultExpr*>(e);
     if(m == nullptr){
         return false;
     } else{
@@ -191,14 +192,14 @@ bool Mult::equals(Expr *e){
  *\brief Evaluates the multiplication expression and returns its value.
  *\return The integer result of the multiplication.
  */
-int Mult::interp() {
-    return lhs->interp() * rhs->interp();
+Val* MultExpr::interp() {
+    return rhs->interp()->mult_with(lhs->interp());
 }
 /**
  *\brief Determines if the multiplication expression contains any variables.
  *\return True if the expression contains variables, otherwise false.
  */
-bool Mult::has_variable() {
+bool MultExpr::has_variable() {
     //return true if the lhs-> or rhs-> is a variable
     return lhs->has_variable() || rhs->has_variable();
 }
@@ -208,22 +209,22 @@ bool Mult::has_variable() {
  *\param replacementVar Pointer to the expression that will replace the variable.
  *\return A new expression with the variable substituted.
  */
-Expr* Mult::subst(const string& targetVarName, Expr* replacementVar) {
+Expr* MultExpr::subst(const string& targetVarName, Expr* replacementVar) {
     //recursively look at the left hand and right hand side expression to see
     //if there is the target variable, if the target variable exists
     //on either the lhs or rhs of the multiplication expression, it can be replaced by
     //a new expression -- replacementVar
-    return new Mult(lhs->subst(targetVarName, replacementVar), rhs->subst(targetVarName,replacementVar));
+    return new MultExpr(lhs->subst(targetVarName, replacementVar), rhs->subst(targetVarName, replacementVar));
 }
 /**
  *\brief Prints the multiplication expression in a standard format.
  *\param ot The output stream to print to.
  */
-void::Mult::print(std::ostream& ot)const {
+void::MultExpr::print(std::ostream& ot)const {
     ot << "(" << lhs->to_string() << "*" << rhs->to_string() << ")";
 }
 /**
- * \brief Initiates the pretty-printing process for an Mult object.
+ * \brief Initiates the pretty-printing process for an MultExpr object.
  *
  * This method handles the initial call to pretty_printHelper with specific
  * settings for indentation level and the need for parentheses, determined
@@ -231,7 +232,7 @@ void::Mult::print(std::ostream& ot)const {
  *
  * \param ostream The output stream where the expression will be pretty-printed.
  */
-void Mult::pretty_print(std::ostream &ostream) const {
+void MultExpr::pretty_print(std::ostream &ostream) const {
     std::streampos pos = ostream.tellp();
 //    pretty_printHelper(ostream, prec_none, false,0);
     pretty_printHelper(ostream, prec_mult, false,pos);
@@ -249,7 +250,7 @@ void Mult::pretty_print(std::ostream &ostream) const {
  * \param spaces Indicates the current indentation level or position within the output, for aligning the expression properly
  * stream
  */
-void Mult::pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const {
+void MultExpr::pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const {
 
     //see if this multiplication method is nested within an operation of higher precedence
     if (precedence > prec_mult ) {
@@ -290,9 +291,9 @@ bool NumExpr::equals(Expr* e){
  *\brief Evaluates the numerical expression and returns its value.
  *\return The int value of the numerical expression.
  */
-int NumExpr::interp() {
-    //just return the member variable of the number expression when interpreting the number
-    return _val;
+Val* NumExpr::interp() {
+    //just return the new numVal when interpreting the number
+    return new NumVal(_val);
 }
 /**
  *\brief Determines if the numerical expression contains any variables.
@@ -348,7 +349,7 @@ bool VarExpr::equals(Expr* e){
  *\brief Throws an exception as variable expressions cannot be directly evaluated without a context that assigns values to variables.
  *\throw runtime_error indicating there is no numerical value for the variable
 */
-int VarExpr::interp()
+Val* VarExpr::interp()
 {
      throw runtime_error("no value for variable");
 }
@@ -370,7 +371,7 @@ Expr* VarExpr::subst(const string& targetvar, Expr* replacementVar) {
     //object holds 'x' as it's value, we will change return a newVarName (holding 'y')
     //where our new Expr* result will point to replacement VarExpr (containing 'y')
     if(this->_val==targetvar){
-        //return Expr that holds val->'y'
+        //return Expr that holds Val->'y'
         return replacementVar;
     }else{
 
@@ -439,7 +440,7 @@ bool LetExpr::equals(Expr *otherExpression) {
  *
  * @return the evaluated expression as an int
  */
-int LetExpr::interp() {
+Val* LetExpr::interp() {
     //let x=boundExpr, bodyExpr
 
 //    int boundExprValue = this->_boundExpr->interp();

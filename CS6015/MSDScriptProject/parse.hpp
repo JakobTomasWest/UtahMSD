@@ -15,8 +15,8 @@ Expr *parse_multicand (std::istream & inn);
 void skip_whitespace(std::istream &in);
 Expr *parse_var(std::istream &inn);
 Expr* parse_let(std::istream &in);
-
 Expr* parse(std::istream &in);
 Expr* parseString(const std::string &s);
+
 
 #endif

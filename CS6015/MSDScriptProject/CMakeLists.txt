@@ -6,4 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(Lab03 main.cpp
         cmdline.cpp
         expr.cpp
-        TESTS.cpp)
+        TESTS.cpp
+        Val.h
+        val.cpp)

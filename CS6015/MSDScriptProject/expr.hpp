@@ -9,6 +9,7 @@
 #include <string>
 
 using namespace std;
+class Val;
 class Expr {
 public:
     typedef enum {
@@ -18,7 +19,7 @@ public:
     } precedence_t;
     virtual bool equals(Expr *e) = 0;
     virtual bool has_variable() =0;
-    virtual int interp() = 0;
+    virtual Val* interp() = 0;
     virtual Expr* subst(const string& givenVarName, Expr* e) = 0;
     virtual void print(std::ostream& out) const = 0;
     virtual ~Expr() = default;
@@ -27,18 +28,14 @@ public:
                                     std::streampos spaces) const;
     string to_string() const;
     string to_pretty_string() const;
-
-
 };
-
-
 class AddExpr : public Expr {
 public:
     Expr *lhs;
     Expr *rhs;
     AddExpr(Expr *lhs, Expr *rhs);
     bool equals(Expr *e) override;
-    int interp() override;
+    Val* interp() override;
     bool has_variable() override;
     Expr* subst(const string& givenVarName, Expr* e) override;
     void print(ostream &ot) const override;
@@ -48,13 +45,13 @@ public:
 };
 
 
-class Mult : public Expr {
+class MultExpr : public Expr {
 public:
     Expr *lhs;
     Expr *rhs;
-    Mult(Expr *lhs, Expr *rhs);
+    MultExpr(Expr *lhs, Expr *rhs);
     bool equals(Expr *e) override;
-    int interp() override;
+    Val* interp() override;
     bool has_variable() override;
     Expr* subst(const string& givenVarName, Expr* e) override;
     void print(ostream &ot) const override;
@@ -68,7 +65,7 @@ public:
     int _val;
     NumExpr(int _val);
     bool equals(Expr *e) override;
-    int interp() override;
+    Val* interp() override;
     bool has_variable() override;
     Expr* subst(const string& givenVarName, Expr* e) override;
     void print(ostream &ot) const override;
@@ -80,7 +77,7 @@ public:
     string _val;
     VarExpr(string val);
     bool equals(Expr *e) override;
-    int interp() override;
+    Val* interp() override;
     bool has_variable() override;
     Expr* subst(const string& givenVarName, Expr* e) override;
     void print(ostream &ot) const override;
@@ -96,11 +93,9 @@ private:
 public:
     LetExpr(const string &var, Expr* boundExpr, Expr* bodyExpr);
     bool equals(Expr *e) override;
-    int interp() override;
-
+    Val* interp() override;
     bool has_variable() override;
     Expr* subst(const string& givenVarName, Expr* e) override;
-
     void print(ostream &ot) const override;
     void pretty_print(std::ostream &ostream) const override;
     void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const override;

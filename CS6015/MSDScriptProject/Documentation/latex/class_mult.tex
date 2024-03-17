@@ -1,6 +1,6 @@
-\doxysection{Mult Class Reference}
-\hypertarget{class_mult}{}\label{class_mult}\index{Mult@{Mult}}
-Inheritance diagram for Mult\+:\begin{figure}[H]
+\doxysection{MultExpr Class Reference}
+\hypertarget{class_mult}{}\label{class_mult}\index{MultExpr@{MultExpr}}
+Inheritance diagram for MultExpr\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[height=2.000000cm]{class_mult}
@@ -9,7 +9,7 @@ Inheritance diagram for Mult\+:\begin{figure}[H]
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{class_mult_ace9998f1dc023823e04c15bb359ea79c}{Mult}} (\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}lhs, \mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}rhs)
+\mbox{\hyperlink{class_mult_ace9998f1dc023823e04c15bb359ea79c}{MultExpr}} (\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}lhs, \mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}rhs)
 \begin{DoxyCompactList}\small\item\em Constructs a multiplication expression with left side and right wide multiplication operands. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{class_mult_aa64da9a8fc6b019f8a2db6f813d9a4e6}{equals}} (\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}e) override
 \begin{DoxyCompactList}\small\item\em Checks if this multiplication expression equals another expression. \end{DoxyCompactList}\item 
@@ -48,10 +48,10 @@ string \mbox{\hyperlink{class_expr_a716cbe983dfa2edf43527facbc6332a5}{to\+\_\+pr
 
 \doxysubsection{Constructor \& Destructor Documentation}
 \Hypertarget{class_mult_ace9998f1dc023823e04c15bb359ea79c}\label{class_mult_ace9998f1dc023823e04c15bb359ea79c} 
-\index{Mult@{Mult}!Mult@{Mult}}
-\index{Mult@{Mult}!Mult@{Mult}}
-\doxysubsubsection{\texorpdfstring{Mult()}{Mult()}}
-{\footnotesize\ttfamily Mult\+::\+Mult (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{lhs,  }\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{rhs }\end{DoxyParamCaption})}
+\index{MultExpr@{MultExpr}!MultExpr@{MultExpr}}
+\index{MultExpr@{MultExpr}!MultExpr@{MultExpr}}
+\doxysubsubsection{\texorpdfstring{MultExpr()}{MultExpr()}}
+{\footnotesize\ttfamily MultExpr\+::\+MultExpr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{lhs,  }\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{rhs }\end{DoxyParamCaption})}
 
 
 
@@ -68,10 +68,10 @@ Constructs a multiplication expression with left side and right wide multiplicat
 
 \doxysubsection{Member Function Documentation}
 \Hypertarget{class_mult_aa64da9a8fc6b019f8a2db6f813d9a4e6}\label{class_mult_aa64da9a8fc6b019f8a2db6f813d9a4e6} 
-\index{Mult@{Mult}!equals@{equals}}
-\index{equals@{equals}!Mult@{Mult}}
+\index{MultExpr@{MultExpr}!equals@{equals}}
+\index{equals@{equals}!MultExpr@{MultExpr}}
 \doxysubsubsection{\texorpdfstring{equals()}{equals()}}
-{\footnotesize\ttfamily bool Mult\+::equals (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{e }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+{\footnotesize\ttfamily bool MultExpr\+::equals (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{e }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
 
 
 
@@ -90,10 +90,10 @@ True if the expressions are equal, otherwise false.
 Implements \mbox{\hyperlink{class_expr}{Expr}}.
 
 \Hypertarget{class_mult_a214c39d71da10d21bdbd7fbc70032357}\label{class_mult_a214c39d71da10d21bdbd7fbc70032357} 
-\index{Mult@{Mult}!has\_variable@{has\_variable}}
-\index{has\_variable@{has\_variable}!Mult@{Mult}}
+\index{MultExpr@{MultExpr}!has\_variable@{has\_variable}}
+\index{has\_variable@{has\_variable}!MultExpr@{MultExpr}}
 \doxysubsubsection{\texorpdfstring{has\_variable()}{has\_variable()}}
-{\footnotesize\ttfamily bool Mult\+::has\+\_\+variable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+{\footnotesize\ttfamily bool MultExpr\+::has\+\_\+variable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
 
 
 
@@ -107,10 +107,10 @@ True if the expression contains variables, otherwise false.
 Implements \mbox{\hyperlink{class_expr}{Expr}}.
 
 \Hypertarget{class_mult_a0ae0098f4a1adaef9686983f263ab35a}\label{class_mult_a0ae0098f4a1adaef9686983f263ab35a} 
-\index{Mult@{Mult}!interp@{interp}}
-\index{interp@{interp}!Mult@{Mult}}
+\index{MultExpr@{MultExpr}!interp@{interp}}
+\index{interp@{interp}!MultExpr@{MultExpr}}
 \doxysubsubsection{\texorpdfstring{interp()}{interp()}}
-{\footnotesize\ttfamily int Mult\+::interp (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+{\footnotesize\ttfamily int MultExpr\+::interp (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
 
 
 
@@ -124,10 +124,10 @@ The integer result of the multiplication.
 Implements \mbox{\hyperlink{class_expr}{Expr}}.
 
 \Hypertarget{class_mult_a5b3c9fc286e386322c4dde0be2ff6285}\label{class_mult_a5b3c9fc286e386322c4dde0be2ff6285} 
-\index{Mult@{Mult}!pretty\_print@{pretty\_print}}
-\index{pretty\_print@{pretty\_print}!Mult@{Mult}}
+\index{MultExpr@{MultExpr}!pretty\_print@{pretty\_print}}
+\index{pretty\_print@{pretty\_print}!MultExpr@{MultExpr}}
 \doxysubsubsection{\texorpdfstring{pretty\_print()}{pretty\_print()}}
-{\footnotesize\ttfamily void Mult\+::pretty\+\_\+print (\begin{DoxyParamCaption}\item[{ostream \&}]{ot }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}}
+{\footnotesize\ttfamily void MultExpr\+::pretty\+\_\+print (\begin{DoxyParamCaption}\item[{ostream \&}]{ot }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}}
 
 
 
@@ -139,10 +139,10 @@ Prints the multiplication expression in a pretty-\/printed format, using precede
 \hline
 \end{DoxyParams}
 \Hypertarget{class_mult_a29ccaad519d15e1feecb35a46746e7bc}\label{class_mult_a29ccaad519d15e1feecb35a46746e7bc} 
-\index{Mult@{Mult}!subst@{subst}}
-\index{subst@{subst}!Mult@{Mult}}
+\index{MultExpr@{MultExpr}!subst@{subst}}
+\index{subst@{subst}!MultExpr@{MultExpr}}
 \doxysubsubsection{\texorpdfstring{subst()}{subst()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*} Mult\+::subst (\begin{DoxyParamCaption}\item[{const string \&}]{target\+Var\+Name,  }\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{replacement\+Var }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*} MultExpr\+::subst (\begin{DoxyParamCaption}\item[{const string \&}]{target\+Var\+Name,  }\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{replacement\+Var }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
 
 
 

@@ -1,8 +1,8 @@
 CXX=c++
 CFLAGS=-std=c++17
-CCSOURCE = cmdline.cpp TESTS.cpp main.cpp parse.cpp expr.cpp
-HEADERS = cmdline.hpp TESTS.h expr.hpp catch.hpp parse.hpp
-OBJSOURCE = cmdline.o TESTS.o main.o parse.o expr.o
+CCSOURCE = cmdline.cpp TESTS.cpp main.cpp parse.cpp expr.cpp val.cpp
+HEADERS = cmdline.hpp TESTS.h expr.hpp catch.hpp parse.hpp Val.h
+OBJSOURCE = cmdline.o TESTS.o main.o parse.o expr.o val.o
 
 compile:
 	c++ -std=c++17 $(CCSOURCE) -o build
@@ -11,7 +11,7 @@ compile:
 #this Object file is the binary file
 object: cmdline.hpp TESTS.h expr.hpp parse.hpp main.cpp catch.hpp
 #compile -c will give object files?
-	c++ -c -std=c++17 main.cpp expr.cpp cmdline.cpp parse.cpp TESTS.cpp
+	c++ -c -std=c++17 main.cpp expr.cpp cmdline.cpp parse.cpp TESTS.cpp val.cpp
 
 .PHONY: build
 test: build compile
