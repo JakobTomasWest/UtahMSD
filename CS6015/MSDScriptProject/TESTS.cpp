@@ -8,7 +8,7 @@
 #include "parse.hpp"
 #include "Val.h"
 #include <sstream>
-#include "stdlib.h"
+#include <cstdlib>
 TEST_CASE("TEST"){
 printf("TESTS RAN");
 
@@ -295,5 +295,26 @@ TEST_CASE("parse") {
     CHECK( parseString("_let x = 5 _in ((_let x = 5 _in x + 1) + x)")->equals(new LetExpr("x", new NumExpr(5), new AddExpr(new LetExpr("x", new NumExpr(5), new AddExpr(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
     CHECK( parseString("_let x = 5 _in ((_let x = 5 _in x * 1) * x)")->equals(new LetExpr("x", new NumExpr(5), new MultExpr(new LetExpr("x", new NumExpr(5), new MultExpr(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
     CHECK( parseString("x * ((_let x = 5 _in x * 1) * x)")->equals(new MultExpr(new VarExpr("x"), new MultExpr(new LetExpr("x", new NumExpr(5), new MultExpr(new VarExpr("x"), new NumExpr(1))), new VarExpr("x")))));
+
+    printf("HERE");
+    CHECK((new BooleanExpr(true))->to_string()=="_true");
+    CHECK(parseString("_true ")->to_string()=="_true");
+    CHECK(parseString("_false")->equals(new BooleanExpr(false)));
+    CHECK(parseString("1 == 2")->equals(new EqualsExpr(new NumExpr(1), new NumExpr(2))));
+    CHECK(parseString("_if _true _then 10 _else 20")->equals(new IfExpr(new BooleanExpr(true), new NumExpr(10), new NumExpr(20))));
+    CHECK(parseString("_let x = _true _in x")->equals(new LetExpr("x", new BooleanExpr(true), new VarExpr("x"))));
+
+    CHECK((new EqualsExpr(new NumExpr(1), new NumExpr(1)))->interp()->equals(new BoolVal(true)));
+    CHECK((new EqualsExpr(new BooleanExpr(true), new BooleanExpr(false)))->interp()->equals(new BoolVal(false)));
+    CHECK((new IfExpr(new BooleanExpr(true), new NumExpr(10), new NumExpr(20)))->interp()->equals(new NumVal(10)));
+    CHECK((new IfExpr(new BooleanExpr(false), new NumExpr(10), new NumExpr(20)))->interp()->equals(new NumVal(20)));
+    CHECK_THROWS_WITH((new AddExpr(new BooleanExpr(true), new NumExpr(10)))->interp(), "have to add to a number");
+
+    CHECK(parseString("_true")->to_string() == "_true");
+    CHECK(parseString("_false")->to_string() == "_false");
+    CHECK(parseString("1 == 2")->to_string() == "(1 == 2)");
+//    CHECK(parseString("_if _true _then 10 _else 20")->to_string() == "(_if _true _then 10 _else 20)");
+//    CHECK(parseString("_let x = _true _in x")->to_pretty_string() == "_let x = _true\n_in  x");
+    CHECK(parseString("1 == (2 + 3)")->to_pretty_string() == "1 == (2 + 3)");
 
 }

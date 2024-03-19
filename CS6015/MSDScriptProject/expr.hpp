@@ -105,6 +105,45 @@ public:
     }
 
 };
+class BooleanExpr:public Expr{
+public:
+    bool _boolean;
+    explicit BooleanExpr(bool val);
+    bool equals(Expr* e) override;
+    Val* interp() override;
+    bool has_variable() override;
+    Expr* subst(const string& givenVarName, Expr* e) override;
+    void print(std::ostream& ostream) const override;
+};
+
+class IfExpr:public Expr{
+public:
+    Expr* _condition;
+    Expr* _true;
+    Expr* _false;
+    IfExpr(Expr* cond,Expr* thenTrue, Expr* elseFalse);
+    bool equals(Expr *e) override;
+    Val* interp() override;
+    bool has_variable() override;
+    Expr* subst(const string& givenVarName, Expr* e) override;
+    void print(std::ostream& out) const override;
+    virtual void pretty_print(std::ostream& out) const;
+    void pretty_printHelper(std::ostream& out, precedence_t precedence, bool needsParen, std::streampos spaces) const override;
+};
+
+class EqualsExpr:public Expr{
+public:
+    Expr* _lhs;
+    Expr* _rhs;
+    EqualsExpr(Expr* lhs,Expr* rhs);
+    bool equals(Expr *e) override;
+    Val* interp() override;
+    bool has_variable() override;
+    Expr* subst(const string& givenVarName, Expr* e) override;
+    void print(std::ostream& ostream) const override;
+    virtual void pretty_print(std::ostream& out) const;
+    void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const override;
+};
 
 
 

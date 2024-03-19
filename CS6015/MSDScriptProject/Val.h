@@ -13,7 +13,7 @@ public:
     virtual Val* add_to(Val* val) = 0;
     virtual Val* mult_with(Val* val) = 0;
     std::string to_string();
-    virtual void print(std::ostream& ostream)=0;
+    virtual void print(std::ostream& out)=0;
     virtual bool is_true() =0;
 };
 
@@ -25,20 +25,20 @@ public:
     Expr* to_expr() override;
     Val* add_to(Val* val) override;
     Val* mult_with(Val* val) override;
-    void print(std::ostream& ostream) override;
+    void print(std::ostream& out) override;
     bool is_true() override;
 };
 
 
-//class BoolVal:public Val{
-//public:
-//    bool _val;
-//    explicit BoolVal( bool val);
-//    bool equals(Val* val) override;
-//    Expr* to_expr() override;
-//    Val* add_to(Val* val) override;
-//    Val* mult_with(Val* val) override;
-//    void print(std::ostream& ostream) override;
-//    bool is_true() override;
-//};
+class BoolVal:public Val{
+public:
+    bool _value;
+    explicit BoolVal( bool val);
+    bool equals(Val* val) override;
+    Expr* to_expr() override;
+    Val* add_to(Val* val) override;
+    Val* mult_with(Val* val) override;
+    void print(std::ostream& out) override;
+    bool is_true() override;
+};
 #endif //LAB03_VAL_H

@@ -4,8 +4,11 @@ project(Lab03)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Lab03 main.cpp
+        catch.hpp
+        parse.cpp
         cmdline.cpp
         expr.cpp
         TESTS.cpp
         Val.h
-        val.cpp)
+        val.cpp
+        parse.cpp)

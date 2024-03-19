@@ -14,7 +14,7 @@ object: cmdline.hpp TESTS.h expr.hpp parse.hpp main.cpp catch.hpp
 	c++ -c -std=c++17 main.cpp expr.cpp cmdline.cpp parse.cpp TESTS.cpp val.cpp
 
 .PHONY: build
-test: build compile
+test:
 	./build --test
 
 run: build

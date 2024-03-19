@@ -552,6 +552,262 @@ void LetExpr::pretty_printHelper(std::ostream &ostream, precedence_t precedence,
     }
 
 }
+/**
+ * \brief Constructor for the BooleanExpr class
+ * This method Initializes a new BooleanExpr object with the boolean value provided in the val parameter
+ * @param val is the true and false val
+ */
+BooleanExpr::BooleanExpr(bool val) {
+    _boolean = val;
+}
+/** \brief Determines if the current BooleanExpr object is equivalent to another expression object pointed to by expr.
+ *
+ * @param e
+ * @return if both are boolean objects it returns the same boolean value, otherwise false
+ */
+
+bool BooleanExpr::equals(Expr *e) {
+    auto* val = dynamic_cast<BooleanExpr*>(e);
+    if (val== nullptr){
+        throw std::runtime_error("not a boolean");
+    }
+    return _boolean==val->_boolean;
+}
+
+/**
+ * \brief Interprets the current BooleanExpr as a Boolean value
+ * @return returns a pointer to a new BoolVal object that represents the boolean value of the expression
+ */
+Val* BooleanExpr::interp() {
+    return new BoolVal(_boolean);
+}
+/**
+ *  \brief boolean expressions do not return variables
+ * @return false
+ */
+bool BooleanExpr::has_variable() {
+    return false;
+}
+/**
+ * \brief Cannot produce any substitution because BooleanExprs do not contain variables
+ * @param givenVarName
+ * @param e
+ * @return null pointer
+ */
+ Expr* BooleanExpr::subst(const string& givenVarName, Expr* e){
+    return nullptr;
+}
+/**
+ * \brief Prints to the ostream the boolean expression values
+ * @param ostream The output stream where the expression will be pritned too.
+ */
+void BooleanExpr::print(std::ostream &ostream) const {
+    if (_boolean){
+        ostream<<"_true";
+    } else{
+        ostream<<"_false";
+    }
+}
+
+/**
+ * \brief Constructs the If then else expression
+ * @param cond if condition
+ * @param thenTrue if condition is true then provide result
+ * @param elseFalse else condition is true if condition is false providing secondary result
+ */
+IfExpr::IfExpr(Expr* cond, Expr *thenTrue, Expr *elseFalse) {
+    _condition = cond;
+    _true=thenTrue;
+    _false=elseFalse;
+}
+/**
+ * \brief IfExpr equals checks whether the provided expression is an instance of IfExpr and affirms that the variables are equivalent
+ * This method compares the current IfExpr object with another object that's being pointed to.
+ * @param expr is the object we are comparing this expression to
+ * @return If the provided expression is an IfExpr, the method returns true if all the components are the same, otherwise it returns false
+ */
+bool IfExpr::equals(Expr* e) {
+    auto* ifExpr = dynamic_cast<IfExpr*>(e);
+    if (ifExpr== nullptr){
+        throw std::runtime_error("not an if expression");
+    }
+    return _condition->equals(ifExpr->_condition)&&_true->equals(ifExpr->_true)&&_false->equals(ifExpr->_false);
+}
+/**
+ * \brief Interprets whether teh condition is true by calling the is_true function on teh Val object
+ * @return If the condition is true we interpret the then condition . If the condition was false we interpret the false condition branch
+ */
+Val *IfExpr::interp() {
+    if (_condition->interp()->is_true()){
+        return _true->interp();
+    } else{
+        return _false->interp();
+    }
+}
+/**
+ * \brief No part of the if expression is a variable
+ * @return false
+ */
+bool IfExpr::has_variable() {
+    return false;
+}
+/**
+ * \brief If the condition is true substitute given a varible substitute expressions
+ * @param givenVarName variable qualifier
+ * @param e expression to substitute
+ * @return return substituted expression
+ */
+Expr *IfExpr::subst(const string& givenVarName, Expr* e) {
+    if (_condition->interp()->is_true()){
+        return _true->subst(givenVarName,e);
+    } else{
+        return _false->subst(givenVarName,e);
+    }
+}
+/**
+ * \brief Prints IfExpression object to the output stream
+ * @param ostream the output stream we are using to print the conditional expression
+ */
+void IfExpr::print(std::ostream &out) const{
+    out<<"(_if ";
+    _condition->print(out);
+    out<<"_then ";
+    _true->print(out);
+    out<<"_else ";
+    _false->print(out);
+    out<<")";
+}
+/**
+ * \brief Pretty print IfExpression object to output stream
+ * @param out the ostream to pretty-print to
+ */
+void IfExpr::pretty_print(std::ostream& out) const {
+    pretty_printHelper(out,prec_none, false,0);
+}
+/**
+ * \brief actually handles the spacing of printing the IfExpression in the pretty format
+ * @param out stream we are using to print
+ * @param precedence to categorize how we will have to print different IfExprs
+ * @param needsParen statement for parenthesis formatting
+ * @param spaces number of spaces
+ */
+void IfExpr::pretty_printHelper(std::ostream &out, precedence_t precedence, bool needsParen, std::streampos spaces) const {
+    if (!needsParen and precedence!= prec_none){
+        out << "(";
+        std::streampos sPosition  = out.tellp();
+        std::streampos numSpaces = sPosition - spaces;
+        out << "_if ";
+        _condition->pretty_printHelper(out, prec_none, true, spaces);
+        //separate condition from then portion
+        out << "\n";
+        std::streampos spacesBeforeNext = out.tellp();
+        for (int i = 0; i < numSpaces; i++) {
+            out << " ";
+        }
+        out << "_then ";
+        _true->pretty_printHelper(out, prec_none, true, spacesBeforeNext);
+        out << "\n";
+        for (int i = 0; i < numSpaces; i++) {
+            out << " ";
+        }
+        out << "_else ";
+        _false->pretty_printHelper(out, prec_none, true, spacesBeforeNext);
+        out<<")";
+    } else {
+        std::streampos sPosition  = out.tellp();
+        std::streampos numSpaces = sPosition - spaces;
+        out << "_if ";
+        _condition->pretty_printHelper(out, prec_none, false, spaces);
+        out << "\n";
+        std::streampos spacesBeforeNext = out.tellp();
+        for (int i = 0; i < numSpaces; i++) {
+            out << " ";
+        }
+        out << "_then ";
+        _true->pretty_printHelper(out, prec_none, false, spacesBeforeNext);
+        out << "\n";
+        for (int i = 0; i < numSpaces; i++) {
+            out << " ";
+        }
+        out << "_else ";
+        _false->pretty_printHelper(out, prec_none, false, spacesBeforeNext);
+    }
+}
+
+/**
+ * \brief Constructor for the Equals method
+ * @param lhs expression on the left side of equals expression
+ * @param rhs expression on the right side of equals expression
+ */
+EqualsExpr::EqualsExpr(Expr *lhs, Expr *rhs) {
+    _lhs = lhs;
+    _rhs = rhs;
+}
+/**
+ * \brief Attempts to cast expression e to the EqualsExpression type
+ * The equals() method of the resulting Val objects is then called to determine if the evaluated results are equivalent.
+ * @param e expression for casting
+ * @return true if results are equal, false otherwise
+ */
+bool EqualsExpr::equals(Expr *e) {
+    auto equalsEx = dynamic_cast<EqualsExpr*>(e);
+    if (equalsEx == nullptr){
+        throw std::runtime_error("not a equal expression");
+    }
+    //Compare the interpreted values of the current EqualsExpr and the equalsEx
+    return interp()->equals(equalsEx->interp());
+}
+
+/**
+ *\brief Take left and ride expression objects and interpret them to Val objects, if they are equal construct a true bool val otherwise construct a false bool Val
+ * @return new BoolVal object
+ */
+Val* EqualsExpr::interp() {
+    return new BoolVal(_lhs->interp()->equals(_rhs->interp()));
+}
+
+bool EqualsExpr::has_variable() {
+    return false;
+}
+
+Expr* EqualsExpr::subst(const string& givenVarName, Expr* e) {
+    return nullptr;
+}
+/**
+ * \brief Prints the EqualsExpression using the ostream
+ * @param out
+ */
+void EqualsExpr::print(std::ostream& out) const{
+    out<<"(";
+    _lhs->print(out);
+    out<<" == ";
+    _rhs->print(out);
+    out<<")";
+}
+
+void EqualsExpr::pretty_print(std::ostream& out) const {
+    pretty_printHelper(out,prec_none, false,0);
+}
+/**
+ * \brief Pretty prints the Equals Expression to the ostream
+ * @param out ostream we are using
+ * @param precedence for deciding how we need to print the expression
+ * @param needsParen if prec is none we don't need another set of parenthesis
+ * @param spaces
+ */
+void EqualsExpr::pretty_printHelper(std::ostream &out, precedence_t precedence, bool needsParen, std::streampos spaces) const {
+    if (!needsParen and precedence!= prec_none){
+        out << "(";
+        _lhs->pretty_printHelper(out, prec_mult, true, spaces);
+        out << " == ";
+        _rhs->pretty_printHelper(out, prec_mult, true, spaces);
+        out<<")";
+    } else {
+        _lhs->pretty_printHelper(out, prec_mult, false, spaces);
+        out << " == ";
+        _rhs->pretty_printHelper(out, prec_mult, false, spaces);
+    }
+}
 
 
 

@@ -23,46 +23,20 @@
     <list default="true" id="0ba017bc-fb7f-47a9-8bb1-df680b90c8e6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/annotated.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/annotated.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/class_expr.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/class_expr.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/class_mult-members.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/class_mult-members.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/class_mult.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/class_mult.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/class_num_expr.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/class_num_expr.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/class_var_expr-members.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/class_var_expr-members.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/class_var_expr.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/class_var_expr.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/classes.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/classes.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/expr_8hpp_source.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/expr_8hpp_source.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/functions.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/functions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/functions_func.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/functions_func.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/html/hierarchy.html" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/html/hierarchy.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/annotated.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/annotated.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/catch_8hpp_source.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/catch_8hpp_source.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/class_expr.eps" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/class_expr.eps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/class_expr.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/class_expr.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/class_mult.eps" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/class_mult.eps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/class_mult.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/class_mult.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/class_num_expr.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/class_num_expr.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/class_var_expr.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/class_var_expr.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/expr_8hpp_source.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/expr_8hpp_source.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/hierarchy.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/hierarchy.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/refman.aux" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/refman.aux" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/refman.idx" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/refman.idx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/latex/refman.toc" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/latex/refman.toc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TESTS.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/TESTS.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/cmakeFiles-v1-3849adf8a370dc7eb773.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/codemodel-v2-313a29827f189ae17ef8.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/index-2024-02-12T19-44-44-0082.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/target-Lab03-Debug-bbd9f9d45dbd9c548881.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Val.h" beforeDir="false" afterPath="$PROJECT_DIR$/Val.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/codemodel-v2-9fd69b93d188e74d3d86.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/index-2024-03-12T00-28-18-0180.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/target-Lab03-Debug-97741232032d3b42c055.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/build.ninja" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/build.ninja" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expr.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/expr.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/expr.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/expr.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parse.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/parse.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parse.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/parse.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/val.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/val.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,7 +85,7 @@
   }
 }</component>
   <component name="RunManager" selected="Catch.parse">
-    <configuration name="parse" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Lab03" TARGET_NAME="Lab03" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Lab03" RUN_TARGET_NAME="Lab03" TEST_METHOD="parse" TEST_MODE="SUITE_TEST">
+    <configuration name="parse" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" temporary="true" PROGRAM_PARAMS="--test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Lab03" TARGET_NAME="Lab03" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Lab03" RUN_TARGET_NAME="Lab03" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
         <option name="BeforeTestRunTask" enabled="true" />
@@ -155,7 +129,7 @@
       <workItem from="1709173684031" duration="1972000" />
       <workItem from="1709176012914" duration="857000" />
       <workItem from="1710203200203" duration="3343000" />
-      <workItem from="1710638417596" duration="4176000" />
+      <workItem from="1710638417596" duration="25540000" />
     </task>
     <servers />
   </component>
@@ -166,5 +140,16 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticReloadCMake value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/TESTS.cpp</url>
+          <line>300</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
