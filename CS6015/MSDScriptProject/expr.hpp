@@ -22,7 +22,6 @@ public:
     virtual Val* interp() = 0;
     virtual Expr* subst(const string& givenVarName, Expr* e) = 0;
     virtual void print(std::ostream& out) const = 0;
-    virtual ~Expr() = default;
     virtual void pretty_print(std::ostream& out) const;
     virtual void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen,
                                     std::streampos spaces) const;
@@ -99,10 +98,6 @@ public:
     void print(ostream &ot) const override;
     void pretty_print(std::ostream &ostream) const override;
     void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const override;
-    virtual ~LetExpr() {
-        delete _boundExpr;
-        delete _bodyExpr;
-    }
 
 };
 class BooleanExpr:public Expr{

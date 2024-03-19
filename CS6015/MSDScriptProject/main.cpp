@@ -11,23 +11,24 @@
 #include "expr.hpp"
 #include "parse.hpp"
 #include "TESTS.h"
+#include "Val.h"
 
 int main(int argc, char **argv) {
     try {
         run_mode_t mode = use_arguments(argc, argv);
         if (mode != do_nothing) {
-            Expr *e = parse(cin);
+            Expr *e = parseInput();
             switch (mode) {
 //            case do_nothing:
 //                break;
                 case do_interp:
-                    cout << e->interp() << "\n";
+                    std::cout << e->interp()->to_string() << "\n";
                     break;
                 case do_print:
-                    cout << e->to_string() << "\n";
+                    cout << e->interp()->to_string() << "\n";
                     break;
                 case do_pretty_print:
-                    cout << e->to_pretty_string() << "\n";
+                    cout << e->interp()->to_string() << "\n";
                 case do_nothing:
                 default:
                     // Print usage information or an error message if needed

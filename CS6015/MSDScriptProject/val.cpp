@@ -44,7 +44,7 @@ Val* NumVal::add_to(Val* val) {
         throw std::runtime_error("have to add to a number");
     }
     //add the integer value numV of the current object to the integer value of numVal
-    return new NumVal(numV+numVal->numV);
+    return new NumVal((unsigned)numV+(unsigned)numVal->numV);
 }
 /**
  * \brief Multiplies the integer values of the current NumVal Object to another Val Object
@@ -56,7 +56,7 @@ Val* NumVal::mult_with(Val *val) {
     if(numVal== nullptr){
         throw std::runtime_error("have to multiply to a number");
     }
-    return new NumVal(numV*numVal->numV);
+    return new NumVal((unsigned)numV*(unsigned)numVal->numV);
 }
 /**
  * \brief  take numVal and print it the ostream in string format

@@ -17,7 +17,6 @@ Expr *parse_num(std::istream &inn) {
             throw std::runtime_error("no following digit after the negative sign, invalid input");
         }
     }
-
     while (1) {
         int c = inn.peek();
         if (isdigit(c))
@@ -141,7 +140,7 @@ Expr* parse_expr(std::istream &in){
     skip_whitespace(in);
     int c = in.peek();
     if(c=='='){
-        //parse equality expression 
+        //parse equality expression
         consume(in, '=');
         consume(in, '=');
         Expr* rhs = parse_expr(in);
@@ -218,7 +217,7 @@ Expr* parseInput(){
     std::string input;
     getline( std::cin, input);
     std::stringstream ss(input);
-    return parse_comparg(ss);
+    return parse(ss);
 }
 
 static void consume(std::istream &in, int expect) {

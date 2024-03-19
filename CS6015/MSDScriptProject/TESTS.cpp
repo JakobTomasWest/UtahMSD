@@ -313,8 +313,18 @@ TEST_CASE("parse") {
     CHECK(parseString("_true")->to_string() == "_true");
     CHECK(parseString("_false")->to_string() == "_false");
     CHECK(parseString("1 == 2")->to_string() == "(1 == 2)");
-//    CHECK(parseString("_if _true _then 10 _else 20")->to_string() == "(_if _true _then 10 _else 20)");
-//    CHECK(parseString("_let x = _true _in x")->to_pretty_string() == "_let x = _true\n_in  x");
+
     CHECK(parseString("1 == (2 + 3)")->to_pretty_string() == "1 == (2 + 3)");
 
 }
+
+
+
+
+
+
+
+
+
+//    CHECK(parseString("_if _true _then 10 _else 20")->to_string() == "(_if _true _then 10 _else 20)");
+//    CHECK(parseString("_let x = _true _in x")->to_pretty_string() == "_let x = _true\n_in  x");
