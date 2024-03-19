@@ -37,4 +37,7 @@ test_msdscript: test_msdscript.cpp exec.cpp exec.h
 clean:
 	rm -rf *.o build
 	
-	
+
+
+#c++ -std=c++17 -fsanitize=undefined -fno-sanitize-recover=undefined cmdline.cpp TESTS.cpp main.cpp parse.cpp expr.cpp val.cpp -o build
+#c++ -std=c++17 -fsanitize=undefined cmdline.cpp TESTS.cpp main.cpp parse.cpp expr.cpp val.cpp -o build

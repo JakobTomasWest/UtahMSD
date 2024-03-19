@@ -51,37 +51,37 @@ build cmake_object_order_depends_target_Lab03: phony || CMakeFiles/Lab03.dir
 
 build CMakeFiles/Lab03.dir/main.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users/jakobwest/UtahMSD/CS6015/MSDScriptProject/main.cpp || cmake_object_order_depends_target_Lab03
   DEP_FILE = CMakeFiles/Lab03.dir/main.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  FLAGS = -fsanitize=undefined -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/Lab03.dir
   OBJECT_FILE_DIR = CMakeFiles/Lab03.dir
 
 build CMakeFiles/Lab03.dir/parse.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users/jakobwest/UtahMSD/CS6015/MSDScriptProject/parse.cpp || cmake_object_order_depends_target_Lab03
   DEP_FILE = CMakeFiles/Lab03.dir/parse.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  FLAGS = -fsanitize=undefined -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/Lab03.dir
   OBJECT_FILE_DIR = CMakeFiles/Lab03.dir
 
 build CMakeFiles/Lab03.dir/cmdline.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users/jakobwest/UtahMSD/CS6015/MSDScriptProject/cmdline.cpp || cmake_object_order_depends_target_Lab03
   DEP_FILE = CMakeFiles/Lab03.dir/cmdline.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  FLAGS = -fsanitize=undefined -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/Lab03.dir
   OBJECT_FILE_DIR = CMakeFiles/Lab03.dir
 
 build CMakeFiles/Lab03.dir/expr.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users/jakobwest/UtahMSD/CS6015/MSDScriptProject/expr.cpp || cmake_object_order_depends_target_Lab03
   DEP_FILE = CMakeFiles/Lab03.dir/expr.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  FLAGS = -fsanitize=undefined -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/Lab03.dir
   OBJECT_FILE_DIR = CMakeFiles/Lab03.dir
 
 build CMakeFiles/Lab03.dir/TESTS.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users/jakobwest/UtahMSD/CS6015/MSDScriptProject/TESTS.cpp || cmake_object_order_depends_target_Lab03
   DEP_FILE = CMakeFiles/Lab03.dir/TESTS.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  FLAGS = -fsanitize=undefined -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/Lab03.dir
   OBJECT_FILE_DIR = CMakeFiles/Lab03.dir
 
 build CMakeFiles/Lab03.dir/val.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users/jakobwest/UtahMSD/CS6015/MSDScriptProject/val.cpp || cmake_object_order_depends_target_Lab03
   DEP_FILE = CMakeFiles/Lab03.dir/val.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  FLAGS = -fsanitize=undefined -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/Lab03.dir
   OBJECT_FILE_DIR = CMakeFiles/Lab03.dir
 
@@ -94,7 +94,8 @@ build CMakeFiles/Lab03.dir/val.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users
 # Link the executable Lab03
 
 build Lab03: CXX_EXECUTABLE_LINKER__Lab03_Debug CMakeFiles/Lab03.dir/main.cpp.o CMakeFiles/Lab03.dir/parse.cpp.o CMakeFiles/Lab03.dir/cmdline.cpp.o CMakeFiles/Lab03.dir/expr.cpp.o CMakeFiles/Lab03.dir/TESTS.cpp.o CMakeFiles/Lab03.dir/val.cpp.o
-  FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk
+  FLAGS = -fsanitize=undefined -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk
+  LINK_FLAGS = -fsanitize=undefined
   OBJECT_DIR = CMakeFiles/Lab03.dir
   POST_BUILD = :
   PRE_LINK = :
