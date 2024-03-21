@@ -72,7 +72,7 @@ int main()
   size2 = readFile(input2, records2);
 
   //sorting arrays
-  sort(records1, size1);
+  sort1(records1, size1);
   sort(records2, size2);
 
   //search for add-ons and print to output files
