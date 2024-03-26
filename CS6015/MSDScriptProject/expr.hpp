@@ -18,10 +18,11 @@ public:
         prec_mult       // = 2
     } precedence_t;
     virtual bool equals(Expr *e) = 0;
-    virtual bool has_variable() =0;
+
     virtual Val* interp() = 0;
     virtual Expr* subst(const string& givenVarName, Expr* e) = 0;
     virtual void print(std::ostream& out) const = 0;
+    virtual bool has_variable() = 0;
     virtual void pretty_print(std::ostream& out) const;
     virtual void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen,
                                     std::streampos spaces) const;
@@ -140,7 +141,29 @@ public:
     void pretty_printHelper(std::ostream &ostream, precedence_t precedence, bool needsParen, std::streampos spaces) const override;
 };
 
+class FunExpr:public Expr {
+public:
+    string formal_arg;
+    Expr* body;
+    FunExpr(std::string formal_arg, Expr* body);
+    bool equals(Expr* e) override;
+    Val* interp() override;
+    bool has_variable() override;
+    void print(std::ostream &out) const override;
+    Expr* subst(const string& givenVarName, Expr* e) override;
+};
 
+class CallExpr:public Expr {
+public:
+    Expr* to_be_called;
+    Expr* actual_arg;
+    CallExpr(Expr* to_be_called, Expr* actual_arg);
+    bool equals(Expr* e) override;
+    Val* interp() override;
+    bool has_variable() override;
+    void print(std::ostream &out) const override;
+    Expr* subst(const string& givenVarName, Expr* e) override;
+};
 
 
 

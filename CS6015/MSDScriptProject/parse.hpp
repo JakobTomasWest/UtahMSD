@@ -20,5 +20,7 @@ Expr* parse(std::istream &in);
 Expr* parseInput();
 Expr* parseString(const std::string &s);
 Expr* parse_if(std::istream &in);
+Expr *parse_inner(std::istream &in);
+Expr *parse_fun(std::istream &in);
 
 #endif

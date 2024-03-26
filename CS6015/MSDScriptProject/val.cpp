@@ -70,6 +70,10 @@ void NumVal::print(std::ostream &out) {
 bool NumVal::is_true() {
     throw std::runtime_error("NumVal is not true/false");
 }
+
+Val* NumVal::call(Val* actual_arg) {
+    throw std::runtime_error("NumVal cannot call");
+}
 /**
  * \brief convert current val object to string
  * @return returns resulting string of print method on stringstream
@@ -132,6 +136,7 @@ bool BoolVal::is_true() {
 Val* BoolVal::mult_with(Val *val) {
     throw std::runtime_error("mult doesn't work on boolean");
 }
+
 /**
  * \brief Prints the boolean value of the BoolVal object to the provided output stream.
  * @param out The output stream where the boolean value will be printed.
@@ -139,4 +144,52 @@ Val* BoolVal::mult_with(Val *val) {
 
 void BoolVal::print(std::ostream &out) {
     out<<std::to_string(_value);
+}
+
+Val *BoolVal::call(Val* actual_arg) {
+    throw std::runtime_error("BoolVal cannot call");
+}
+
+FunVal::FunVal(std::string formal_arg, Expr *body) {
+    this->formal_arg = formal_arg;
+    this->body = body;
+}
+
+Expr* FunVal::to_expr() {
+    return new FunExpr(this->formal_arg, this->body);
+}
+
+bool FunVal::equals(Val* rhs) {
+    FunVal* expr = dynamic_cast<FunVal *>(rhs);
+    if (expr == nullptr) {
+        return false;
+    }
+    else {
+        return this->formal_arg == expr->formal_arg && this->body->equals(expr->body);
+    }
+
+}
+
+Val* FunVal::add_to(Val* rhs) {
+    throw std::runtime_error("Addition cannot be performed on a function-value.");
+}
+
+Val* FunVal::mult_with(Val* rhs) {
+    throw std::runtime_error("Multiplication cannot be performed on a function-value.");
+}
+
+
+Val* FunVal::call(Val *actual_arg) {
+    return body->subst(formal_arg, actual_arg->to_expr())->interp();
+}
+void FunVal::print(std::ostream& out){
+    out << "(_fun (";
+    out << this->formal_arg;
+    out << ") ";
+    this->body->print(out);
+    out << ")";
+}
+
+bool FunVal::is_true() {
+    throw std::runtime_error("A function cannot be used as a boolean value.");
 }

@@ -21,8 +21,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0ba017bc-fb7f-47a9-8bb1-df680b90c8e6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Lab7_files/Report.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab7_files/Report.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TESTS.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/TESTS.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TESTS.o" beforeDir="false" afterPath="$PROJECT_DIR$/TESTS.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Val.h" beforeDir="false" afterPath="$PROJECT_DIR$/Val.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build" beforeDir="false" afterPath="$PROJECT_DIR$/build" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpphpptestandmakefile.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/expr.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/expr.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expr.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/expr.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expr.o" beforeDir="false" afterPath="$PROJECT_DIR$/expr.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hw*cppHppfiles.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.o" beforeDir="false" afterPath="$PROJECT_DIR$/main.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msdscriptS" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/parse.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/parse.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parse.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/parse.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parse.o" beforeDir="false" afterPath="$PROJECT_DIR$/parse.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_msdscript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/val.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/val.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/val.o" beforeDir="false" afterPath="$PROJECT_DIR$/val.o" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,6 +130,7 @@
       <workItem from="1710203200203" duration="3343000" />
       <workItem from="1710638417596" duration="26716000" />
       <workItem from="1710862722330" duration="9622000" />
+      <workItem from="1711314974841" duration="20362000" />
     </task>
     <servers />
   </component>

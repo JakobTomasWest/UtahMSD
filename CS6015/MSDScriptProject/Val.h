@@ -12,9 +12,10 @@ public:
     virtual Expr* to_expr() = 0;
     virtual Val* add_to(Val* val) = 0;
     virtual Val* mult_with(Val* val) = 0;
-    std::string to_string();
+    virtual std::string to_string();
     virtual void print(std::ostream& out)=0;
     virtual bool is_true() =0;
+    virtual Val *call(Val* actual_arg) = 0;
 };
 
 class NumVal:public Val{
@@ -27,6 +28,7 @@ public:
     Val* mult_with(Val* val) override;
     void print(std::ostream& out) override;
     bool is_true() override;
+    Val *call(Val* actual_arg) override;
 };
 
 
@@ -40,5 +42,21 @@ public:
     Val* mult_with(Val* val) override;
     void print(std::ostream& out) override;
     bool is_true() override;
+    Val* call(Val* actual_arg) override;
+};
+
+class FunVal : public Val {
+    std::string formal_arg;
+    Expr* body;
+
+public:
+    FunVal(std::string formal_arg, Expr *body);
+    Expr* to_expr() override;
+    bool equals(Val* rhs) override;
+    Val* add_to(Val* rhs)override;
+    Val* mult_with(Val* rhs) override;
+    void print(std::ostream& out) override;
+    bool is_true() override;
+    Val *call(Val* actual_arg) override;
 };
 #endif //LAB03_VAL_H

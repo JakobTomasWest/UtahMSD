@@ -116,6 +116,7 @@ Val* AddExpr::interp() {
 bool AddExpr::has_variable() {
     return lhs->has_variable() || rhs->has_variable();
 }
+
 /**
  * \brief Prints the addition expression
  * \param ot The output stream to print to.
@@ -395,7 +396,7 @@ void VarExpr::print(std::ostream& ot) const {
 
 
 
-LetExpr::LetExpr(const string& var, Expr *boundExpr, Expr *bodyExpr) {
+LetExpr::LetExpr(const string& var, Expr* boundExpr, Expr* bodyExpr) {
     varName = var;
     _boundExpr = boundExpr;
     _bodyExpr = bodyExpr;
@@ -501,7 +502,7 @@ Expr *LetExpr::subst(const string &givenVarName, Expr *newExpression) {
  * \param out The output stream we will print the expression to.
  */
 void LetExpr::print(ostream &out) const {
-    out << "(_let " <<varName << " = " << _boundExpr->to_string() << " _in " << _bodyExpr->to_string() <<")";
+    out << "(_let " <<varName << "=" << _boundExpr->to_string() << " _in " << _bodyExpr->to_string() <<")";
 }
 /**
  * \brief Initiates the pretty-printing process for a LetExpr object.
@@ -566,7 +567,7 @@ BooleanExpr::BooleanExpr(bool val) {
  * @return if both are boolean objects it returns the same boolean value, otherwise false
  */
 
-bool BooleanExpr::equals(Expr *e) {
+bool BooleanExpr::equals(Expr* e) {
     auto* val = dynamic_cast<BooleanExpr*>(e);
     if (val== nullptr){
         throw std::runtime_error("not a boolean");
@@ -615,7 +616,7 @@ void BooleanExpr::print(std::ostream &ostream) const {
  * @param thenTrue if condition is true then provide result
  * @param elseFalse else condition is true if condition is false providing secondary result
  */
-IfExpr::IfExpr(Expr* cond, Expr *thenTrue, Expr *elseFalse) {
+IfExpr::IfExpr(Expr* cond, Expr* thenTrue, Expr* elseFalse) {
     _condition = cond;
     _true=thenTrue;
     _false=elseFalse;
@@ -637,7 +638,7 @@ bool IfExpr::equals(Expr* e) {
  * \brief Interprets whether teh condition is true by calling the is_true function on teh Val object
  * @return If the condition is true we interpret the then condition . If the condition was false we interpret the false condition branch
  */
-Val *IfExpr::interp() {
+Val* IfExpr::interp() {
     if (_condition->interp()->is_true()){
         return _true->interp();
     } else{
@@ -657,12 +658,13 @@ bool IfExpr::has_variable() {
  * @param e expression to substitute
  * @return return substituted expression
  */
-Expr *IfExpr::subst(const string& givenVarName, Expr* e) {
-    if (_condition->interp()->is_true()){
-        return _true->subst(givenVarName,e);
-    } else{
-        return _false->subst(givenVarName,e);
-    }
+Expr* IfExpr::subst(const string& givenVarName, Expr* e) {
+//    if (_condition->interp()->is_true()){
+//        return _true->subst(givenVarName,e);
+//    } else{
+//        return _false->subst(givenVarName,e);
+//    }
+    return new IfExpr( _condition->subst(givenVarName,e), _true->subst(givenVarName,e),_false->subst(givenVarName,e));
 }
 /**
  * \brief Prints IfExpression object to the output stream
@@ -749,7 +751,7 @@ EqualsExpr::EqualsExpr(Expr *lhs, Expr *rhs) {
  * @param e expression for casting
  * @return true if results are equal, false otherwise
  */
-bool EqualsExpr::equals(Expr *e) {
+bool EqualsExpr::equals(Expr* e) {
     auto equalsEx = dynamic_cast<EqualsExpr*>(e);
     if (equalsEx == nullptr){
         throw std::runtime_error("not a equal expression");
@@ -780,7 +782,7 @@ Expr* EqualsExpr::subst(const string& givenVarName, Expr* e) {
 void EqualsExpr::print(std::ostream& out) const{
     out<<"(";
     _lhs->print(out);
-    out<<" == ";
+    out<<"==";
     _rhs->print(out);
     out<<")";
 }
@@ -809,6 +811,89 @@ void EqualsExpr::pretty_printHelper(std::ostream &out, precedence_t precedence, 
     }
 }
 
+
+FunExpr::FunExpr(string formal_arg, Expr* body) {
+    this->formal_arg = formal_arg;
+    this->body = body;
+}
+
+bool FunExpr::equals(Expr* e) {
+    FunExpr* expr = dynamic_cast<FunExpr*>(e);
+    if (expr == nullptr) {
+        return false;
+    }
+    else {
+        return this->formal_arg == expr->formal_arg && this->body->equals(expr->body);
+    }
+}
+
+Val* FunExpr::interp() {
+    return new FunVal(this->formal_arg, this->body);
+}
+
+void FunExpr::print(std::ostream &out) const{
+    out << "(_fun (" << formal_arg <<") ";
+    body->print(out);
+    out << ")";
+}
+
+Expr* FunExpr::subst(const string& givenVarName, Expr* e) {
+    if (this->formal_arg != givenVarName) {
+        return new FunExpr(this->formal_arg, this->body->subst(givenVarName, e));
+    }
+    else {
+        return this;
+    }
+}
+
+bool FunExpr::has_variable() {
+    return false;
+}
+
+CallExpr::CallExpr(Expr* to_be_called, Expr* actual_arg) {
+    this->to_be_called = to_be_called;
+    this->actual_arg = actual_arg;
+}
+
+bool CallExpr::equals(Expr* e) {
+    auto* expr = dynamic_cast<CallExpr*>(e);
+    if (expr == nullptr) {
+        return false;
+    }
+    else {
+        return this->to_be_called->equals(expr->to_be_called) && this->actual_arg->equals(expr->actual_arg);
+    }
+}
+
+void CallExpr::print(std::ostream &out) const{
+    to_be_called->print(out);
+    out << " ";
+    actual_arg->print(out);
+}
+
+
+Expr* CallExpr::subst(const string& givenVarName, Expr* e) {
+    return new CallExpr(to_be_called->subst(givenVarName, e), actual_arg->subst(givenVarName, e));
+}
+
+Val* CallExpr::interp() {
+    return to_be_called->interp()->call(actual_arg->interp());
+}
+//Val* CallExpr::interp() {
+//    // Interpret the function part of the call expression
+//    Val* function = to_be_called->interp();
+//    FunVal* funVal = dynamic_cast<FunVal*>(function);
+//    if (!funVal) {
+//        throw std::runtime_error("Trying to call a non-function value");
+//    }
+//    Val* argument = actual_arg->interp();
+//    return funVal->call(argument);
+//}
+
+
+bool CallExpr::has_variable() {
+    return false;
+}
 
 
 
