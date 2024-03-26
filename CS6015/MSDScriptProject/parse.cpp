@@ -32,27 +32,47 @@ Expr *parse_num(std::istream &inn) {
     return new NumExpr(n);
 }
 
-Expr* parse_var(std::istream &inn) {
-    std::string varName;
-    skip_whitespace(inn);
-    //while we have alphabetic entries take the stream in and concatenate each char to the string
-    if(std::isalpha(inn.peek())){
-        varName +=static_cast<char>(inn.get());
-    } else {
-        throw std::runtime_error("Expected a variable name to start with a letter");
+//Expr* parse_var(std::istream &inn) {
+//    std::string varName;
+//    skip_whitespace(inn);
+//    //while we have alphabetic entries take the stream in and concatenate each char to the string
+//    if(std::isalpha(inn.peek())){
+//        varName +=static_cast<char>(inn.get());
+//    } else {
+//        throw std::runtime_error("Expected a variable name to start with a letter");
+//    }
+//    //variables can have numbers or other strings after the starting alphabet char
+//    while (std::isalpha(inn.peek()) || inn.peek() == '_') {
+//        if (inn.peek() == '_') {
+//            throw std::runtime_error("invalid input: variable names cannot contain underscores or alphanum");
+//        }
+//        varName += static_cast<char>(inn.get());
+//    }
+//    if (varName.empty()){
+//        throw std::runtime_error("Expected a variable name");
+//    }
+//    return new VarExpr(varName);
+//}
+Expr *parse_var(std::istream &inn) {
+    std::string res;
+    if (!isalpha(inn.peek())) {
+        throw std::runtime_error("invalid input in parse var") ;
     }
-    //variables can have numbers or other strings after the starting alphabet char
-    while (std::isalpha(inn.peek()) || inn.peek() == '_') {
-        if (inn.peek() == '_') {
-            throw std::runtime_error("invalid input: variable names cannot contain underscores or alphanum");
+    while (true) {
+        int c = inn.peek();
+        if (isalpha(c))
+        {
+            consume(inn, c);
+            res +=c;
         }
-        varName += static_cast<char>(inn.get());
+        else {
+            break;
+        }
     }
-    if (varName.empty()){
-        throw std::runtime_error("Expected a variable name");
-    }
-    return new VarExpr(varName);
+    return new VarExpr(res);
 }
+
+
 Expr* parse_fun(std::istream & in){
     skip_whitespace(in);
     consume(in,'(');
@@ -67,7 +87,7 @@ std::string parse_keyword(std::istream &in){
     skip_whitespace(in);
     int c = in.peek();
     //while the peek is a valid character append the characters to form the keyword
-    while (c!=' ' and c!=-1){
+    while (c!=' ' and c!=-1 and c!='('){
         keyword +=(char)c;
         consume(in,c);
         c = in.peek();
@@ -75,15 +95,16 @@ std::string parse_keyword(std::istream &in){
     return keyword;
 }
 
-Expr *parse_addend (std::istream &in) {
+Expr* parse_addend (std::istream &in) {
     Expr *e = parse_multicand(in);
     skip_whitespace(in);
     int c = in.peek();
     //if we see * we are gonna create a multiplication expression
     if (c == '*') {
         consume(in, '*');
+        skip_whitespace(in);
         //parse rhs expression
-        Expr *rhs = parse_addend(in);
+        Expr* rhs = parse_addend(in);
         return new MultExpr(e, rhs);
     } else
         //otherwise return parsed multicand
@@ -116,7 +137,7 @@ Expr* parse_inner(std::istream &in) {
     } //otherwise if we have a parenthesis we have to run it all back with the new expression to parse denoted by (
     else if (c == '(') {
         consume(in, '(');
-        Expr *e = parse_comparg(in);
+        Expr *e = parse_expr(in);
         skip_whitespace(in);
         c = in.get();
         if (c != ')') {
@@ -130,11 +151,10 @@ Expr* parse_inner(std::istream &in) {
 }
 Expr* parse_multicand(std::istream &in) {
     Expr* e;
-    Expr* actual_arg;
     e = parse_inner(in);
     while (in.peek() == '(') {
         consume(in, '(');
-        actual_arg = parse_expr(in);
+        Expr* actual_arg = parse_expr(in);
         consume(in, ')');
         e = new CallExpr(e, actual_arg);
     }
@@ -142,7 +162,7 @@ Expr* parse_multicand(std::istream &in) {
 }
 
 Expr *parse_comparg(std::istream &in) {
-    Expr *e;
+    Expr* e;
     e = parse_addend(in);
     skip_whitespace(in);
     int c = in.peek();
@@ -157,7 +177,7 @@ Expr *parse_comparg(std::istream &in) {
 }
 
 Expr* parse_expr(std::istream &in){
-    Expr *e;
+    Expr* e;
     e= parse_comparg(in);
     skip_whitespace(in);
     int c = in.peek();
@@ -257,11 +277,13 @@ void skip_whitespace(std::istream &in) {
     consume(in, c);
       }
 }
+
+
 //
+// Created by Shane Chen on 2/8/24.
 //
 //
 //#include <sstream>
-//#include <iostream>
 //#include "parse.hpp"
 //
 //

@@ -664,7 +664,7 @@ Expr* IfExpr::subst(const string& givenVarName, Expr* e) {
 //    } else{
 //        return _false->subst(givenVarName,e);
 //    }
-    return new IfExpr( _condition->subst(givenVarName,e), _true->subst(givenVarName,e),_false->subst(givenVarName,e));
+    return new IfExpr( _condition->subst(givenVarName, e), _true->subst(givenVarName,e),_false->subst(givenVarName,e));
 }
 /**
  * \brief Prints IfExpression object to the output stream
@@ -757,7 +757,8 @@ bool EqualsExpr::equals(Expr* e) {
         throw std::runtime_error("not a equal expression");
     }
     //Compare the interpreted values of the current EqualsExpr and the equalsEx
-    return interp()->equals(equalsEx->interp());
+//    return interp()->equals(equalsEx->interp());
+      return equalsEx->_lhs->equals(this->_lhs) && equalsEx->_rhs->equals(this->_rhs);
 }
 
 /**
@@ -773,7 +774,7 @@ bool EqualsExpr::has_variable() {
 }
 
 Expr* EqualsExpr::subst(const string& givenVarName, Expr* e) {
-    return nullptr;
+    return new EqualsExpr(_lhs->subst(givenVarName, e), _rhs->subst(givenVarName, e));
 }
 /**
  * \brief Prints the EqualsExpression using the ostream

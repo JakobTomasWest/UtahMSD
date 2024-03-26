@@ -11,10 +11,10 @@ compile: object
 #this Object file is the binary file
 object: cmdline.hpp TESTS.h expr.hpp parse.hpp main.cpp catch.hpp Val.h
 #compile -c will give object files?
-	c++ -c -std=c++17 main.cpp expr.cpp cmdline.cpp parse.cpp TESTS.cpp val.cpp
+	c++ -c -std=c++17 -fsanitize=address  main.cpp expr.cpp cmdline.cpp parse.cpp TESTS.cpp val.cpp
 
 buildS: expr.cpp expr.hpp main.cpp cmdline.hpp cmdline.cpp catch.hpp  parse.cpp val.cpp Val.h
-	g++ -std=c++11 -fsanitize=undefined -fno-sanitize-recover=undefined main.cpp expr.cpp cmdline.cpp parse.cpp val.cpp -o msdscriptS
+	g++ -std=c++11 -fsanitize=address -fno-sanitize-recover=undefined main.cpp expr.cpp cmdline.cpp parse.cpp val.cpp -o msdscriptS
 
 .PHONY: build
 test:

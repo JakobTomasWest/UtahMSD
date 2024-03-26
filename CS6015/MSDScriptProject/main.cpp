@@ -14,6 +14,12 @@
 #include "Val.h"
 
 int main(int argc, char **argv) {
+
+//
+//
+//    Expr* e = parseString("_let factrl = _fun (factrl) _fun (x) _if x == 1 _then 1 _else x * factrl(factrl)(x + -1) _in  factrl(factrl)(10)");
+////    std::cout<< e->to_string();
+//    std::cout<< e->interp()->to_string();
     try {
         run_mode_t mode = use_arguments(argc, argv);
         if (mode != do_nothing) {
