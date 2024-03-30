@@ -22,13 +22,10 @@
   <component name="ChangeListManager">
     <list default="true" id="0ba017bc-fb7f-47a9-8bb1-df680b90c8e6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../Lab7_files/Report.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab7_files/Report.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TESTS.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmdline.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/expr.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/parse.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/val.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hppscppsmakefile.zip" beforeDir="false" afterPath="$PROJECT_DIR$/hppscppsmakefile.zip" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +115,7 @@
       <workItem from="1710203200203" duration="3343000" />
       <workItem from="1710638417596" duration="26716000" />
       <workItem from="1710862722330" duration="9622000" />
-      <workItem from="1711314974841" duration="27322000" />
+      <workItem from="1711314974841" duration="28793000" />
     </task>
     <servers />
   </component>

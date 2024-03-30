@@ -13,4 +13,6 @@ add_executable(Lab03 main.cpp
         TESTS.cpp
         Val.h
         val.cpp
-        parse.cpp)
+        parse.cpp
+        pointer.hpp
+        pointer.hpp)
