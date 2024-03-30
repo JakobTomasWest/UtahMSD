@@ -12,12 +12,12 @@
 TEST_CASE("TEST"){
 printf("TESTS RAN");
     CHECK( (new VarExpr("x"))->equals(NEW(VarExpr)("x")) == true );
-//    CHECK( (new VarExpr("x"))->equals(NEW(VarExpr)("y")) == false );
-//    CHECK( (new VarExpr("!@#$%^&*()"))->equals(NEW(VarExpr)("!@#$%^&*()")) == true );
-//    CHECK( (new NumExpr(1))->equals(NEW(VarExpr)("x")) == false );
-//    CHECK( (new NumExpr(1))->equals(NEW (NumExpr)(1)) == true );
-//    CHECK( (NEW (AddExpr)(new NumExpr(2),NEW (NumExpr)(3)))->equals(NEW (AddExpr)(new NumExpr(2),new NumExpr(3)))==true );
-//    CHECK( (NEW (AddExpr)(new NumExpr(2),NEW (NumExpr)(3)))->equals(new AddExpr(new NumExpr(3),new NumExpr(2)))==false );
+    CHECK( (new VarExpr("x"))->equals(NEW(VarExpr)("y")) == false );
+    CHECK( (new VarExpr("!@#$%^&*()"))->equals(NEW(VarExpr)("!@#$%^&*()")) == true );
+    CHECK( (new NumExpr(1))->equals(NEW(VarExpr)("x")) == false );
+    CHECK( (new NumExpr(1))->equals(NEW (NumExpr)(1)) == true );
+//    CHECK( (NEW(AddExpr)(NEW (NumExpr)(2),NEW (NumExpr)(3)))->equals(NEW(AddExpr)(NEW (NumExpr)(2),NEW (NumExpr)(3)))==true );
+//    CHECK( (NEW (AddExpr)(NEW (NumExpr)(2),NEW (NumExpr)(3)))->equals(NEW (AddExpr)(NEW (NumExpr)(3),NEW (NumExpr)(2)))==false );
 //    Expr* addExpr =(new AddExpr(new NumExpr(1), new NumExpr(2)));
 //    Expr* numExpr = new NumExpr(3);
 //    CHECK(addExpr->equals(numExpr) == false);
