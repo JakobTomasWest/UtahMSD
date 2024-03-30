@@ -17,8 +17,8 @@ NumVal::NumVal(int num) {
  * @param otherVal the object we are trying to attempt to cast to type NumVal
  * @return
  */
-bool NumVal::equals(Val* otherVal) {
-    auto* numVal = dynamic_cast<NumVal*>(otherVal);
+bool NumVal::equals(PTR(Val) otherVal) {
+    PTR(NumVal)  numVal = CAST(NumVal)(otherVal);
     if(numVal== nullptr){
         throw std::runtime_error("have to compare against another number");
     }
@@ -29,34 +29,34 @@ bool NumVal::equals(Val* otherVal) {
  * \brief Creating an expression from the integer value of the NumVal Object
  * @return returns a Num expr
  */
-Expr* NumVal::to_expr() {
-    return new NumExpr(numV);
+PTR(Expr) NumVal::to_expr() {
+    return NEW(NumExpr)(numV);
 }
 /**
  * \brief Adds the integer values of the current NumVal Object to another Val Object
  * @param val object to add to
  * @return added NumVal
  */
-Val* NumVal::add_to(Val* val) {
+PTR(Val) NumVal::add_to(PTR(Val) val) {
     //ensure that val is an instance of NumVal so we can add
-    auto* numVal = dynamic_cast<NumVal*>(val);
+    PTR(NumVal)  numVal = CAST(NumVal)(val);
     if(numVal== nullptr){
         throw std::runtime_error("have to add to a number");
     }
     //add the integer value numV of the current object to the integer value of numVal
-    return new NumVal((unsigned)numV+(unsigned)numVal->numV);
+    return NEW(NumVal)((unsigned)numV+(unsigned)numVal->numV);
 }
 /**
  * \brief Multiplies the integer values of the current NumVal Object to another Val Object
  * @param val object to add to
  * @return multiplied NumVal
  */
-Val* NumVal::mult_with(Val *val) {
-    auto* numVal = dynamic_cast<NumVal*>(val);
+PTR(Val) NumVal::mult_with(PTR(Val) val) {
+    PTR(NumVal) numVal = CAST(NumVal)(val);
     if(numVal== nullptr){
         throw std::runtime_error("have to multiply to a number");
     }
-    return new NumVal((unsigned)numV*(unsigned)numVal->numV);
+    return NEW(NumVal)((unsigned)numV*(unsigned)numVal->numV);
 }
 /**
  * \brief  take numVal and print it the ostream in string format
@@ -71,7 +71,7 @@ bool NumVal::is_true() {
     throw std::runtime_error("NumVal is not true/false");
 }
 
-Val* NumVal::call(Val* actual_arg) {
+PTR(Val) NumVal::call(PTR(Val) actual_arg) {
     throw std::runtime_error("NumVal cannot call");
 }
 /**
@@ -95,8 +95,8 @@ BoolVal::BoolVal(bool val) {
  * @param val
  * @return returns true if the boolValue object and our member are the same
  */
-bool BoolVal::equals(Val* val) {
-    auto* booleanValue = dynamic_cast<BoolVal*>(val);
+bool BoolVal::equals(PTR(Val) val) {
+    PTR(BoolVal) booleanValue = CAST(BoolVal)(val);
     if(booleanValue== nullptr){
         throw std::runtime_error("compare to non-boolean");
     }
@@ -107,8 +107,8 @@ bool BoolVal::equals(Val* val) {
  * @return Returns a new BooleanExpr object initialized with the BoolVal's boolean value.
  */
 
-Expr* BoolVal::to_expr() {
-    return new BooleanExpr(_value);
+PTR(Expr)BoolVal::to_expr() {
+    return NEW(BooleanExpr) (_value);
 }
 /**
  * \brief Throws an error because addition operation is not applicable for boolean values.
@@ -116,7 +116,7 @@ Expr* BoolVal::to_expr() {
  * @throw Throws a runtime_error indicating that addition operation is invalid for boolean types.
  */
 
-Val* BoolVal::add_to(Val* val) {
+PTR(Val) BoolVal::add_to(PTR(Val) al) {
     throw std::runtime_error("add doesn't work on boolean");
 }
 /**
@@ -133,7 +133,7 @@ bool BoolVal::is_true() {
  * @throw Throws a runtime_error indicating that multiplication operation is invalid for boolean types.
  */
 
-Val* BoolVal::mult_with(Val *val) {
+PTR(Val) BoolVal::mult_with(PTR(Val) val) {
     throw std::runtime_error("mult doesn't work on boolean");
 }
 
@@ -146,21 +146,21 @@ void BoolVal::print(std::ostream &out) {
     out<<std::to_string(_value);
 }
 
-Val *BoolVal::call(Val* actual_arg) {
+PTR(Val) BoolVal::call(PTR(Val) actual_arg) {
     throw std::runtime_error("BoolVal cannot call");
 }
 
-FunVal::FunVal(std::string formal_arg, Expr *body) {
+FunVal::FunVal(std::string formal_arg, PTR(Expr) body) {
     this->formal_arg = formal_arg;
     this->body = body;
 }
 
-Expr* FunVal::to_expr() {
-    return new FunExpr(this->formal_arg, this->body);
+PTR(Expr) FunVal::to_expr() {
+    return NEW (FunExpr)(this->formal_arg, this->body);
 }
 
-bool FunVal::equals(Val* rhs) {
-    FunVal* expr = dynamic_cast<FunVal *>(rhs);
+bool FunVal::equals(PTR(Val) rhs) {
+    PTR(FunVal) expr = CAST(FunVal) (rhs);
     if (expr == nullptr) {
         return false;
     }
@@ -170,16 +170,16 @@ bool FunVal::equals(Val* rhs) {
 
 }
 
-Val* FunVal::add_to(Val* rhs) {
+PTR(Val) FunVal::add_to(PTR(Val) rhs) {
     throw std::runtime_error("Addition cannot be performed on a function-value.");
 }
 
-Val* FunVal::mult_with(Val* rhs) {
+PTR(Val) FunVal::mult_with(PTR(Val) rhs) {
     throw std::runtime_error("Multiplication cannot be performed on a function-value.");
 }
 
 
-Val* FunVal::call(Val *actual_arg) {
+PTR(Val) FunVal::call(PTR(Val) actual_arg) {
     return body->subst(formal_arg, actual_arg->to_expr())->interp();
 }
 void FunVal::print(std::ostream& out){

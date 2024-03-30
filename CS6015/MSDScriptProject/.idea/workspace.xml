@@ -23,9 +23,12 @@
     <list default="true" id="0ba017bc-fb7f-47a9-8bb1-df680b90c8e6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../Lab7_files/Report.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab7_files/Report.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hppscppsmakefile.zip" beforeDir="false" afterPath="$PROJECT_DIR$/hppscppsmakefile.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Val.h" beforeDir="false" afterPath="$PROJECT_DIR$/Val.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expr.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/expr.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expr.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/expr.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parse.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/parse.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parse.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/parse.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/val.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/val.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +77,11 @@
   }
 }</component>
   <component name="RunManager" selected="CMake Application.Lab03">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="parse" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" temporary="true" PROGRAM_PARAMS="--test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Lab03" TARGET_NAME="Lab03" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Lab03" RUN_TARGET_NAME="Lab03" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -115,7 +123,7 @@
       <workItem from="1710203200203" duration="3343000" />
       <workItem from="1710638417596" duration="26716000" />
       <workItem from="1710862722330" duration="9622000" />
-      <workItem from="1711314974841" duration="28793000" />
+      <workItem from="1711314974841" duration="32835000" />
     </task>
     <servers />
   </component>

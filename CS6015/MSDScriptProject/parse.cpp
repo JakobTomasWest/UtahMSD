@@ -7,7 +7,7 @@ void skip_whitespace(std::istream &in);
 //Expr *parse_addend(std::istream &inn);
 //Expr *parse_multicand (std::istream & inn);
 
-Expr *parse_num(std::istream &inn) {
+PTR(Expr) parse_num(std::istream &inn) {
     int n = 0;
     bool negative = false;
     if (inn.peek() == '-') {
@@ -29,7 +29,7 @@ Expr *parse_num(std::istream &inn) {
     }
     if (negative)
         n = -n;
-    return new NumExpr(n);
+    return NEW (NumExpr)(n);
 }
 
 //Expr* parse_var(std::istream &inn) {
@@ -53,7 +53,7 @@ Expr *parse_num(std::istream &inn) {
 //    }
 //    return new VarExpr(varName);
 //}
-Expr *parse_var(std::istream &inn) {
+PTR(Expr) parse_var(std::istream &inn) {
     std::string res;
     if (!isalpha(inn.peek())) {
         throw std::runtime_error("invalid input in parse var") ;
@@ -69,17 +69,17 @@ Expr *parse_var(std::istream &inn) {
             break;
         }
     }
-    return new VarExpr(res);
+    return NEW (VarExpr) (res);
 }
 
 
-Expr* parse_fun(std::istream & in){
+PTR(Expr) parse_fun(std::istream & in){
     skip_whitespace(in);
     consume(in,'(');
-    Expr* formal_arg = parse_var(in);
+    PTR(Expr) formal_arg = parse_var(in);
     consume(in,')');
-    Expr* body = parse_expr(in);
-    return new FunExpr(formal_arg->to_string(),body);
+    PTR(Expr) body = parse_expr(in);
+    return NEW (FunExpr) (formal_arg->to_string(),body);
 }
 
 std::string parse_keyword(std::istream &in){
@@ -95,8 +95,8 @@ std::string parse_keyword(std::istream &in){
     return keyword;
 }
 
-Expr* parse_addend (std::istream &in) {
-    Expr *e = parse_multicand(in);
+PTR(Expr) parse_addend (std::istream &in) {
+    PTR(Expr) e = parse_multicand(in);
     skip_whitespace(in);
     int c = in.peek();
     //if we see * we are gonna create a multiplication expression
@@ -104,14 +104,14 @@ Expr* parse_addend (std::istream &in) {
         consume(in, '*');
         skip_whitespace(in);
         //parse rhs expression
-        Expr* rhs = parse_addend(in);
-        return new MultExpr(e, rhs);
+        PTR(Expr) rhs = parse_addend(in);
+        return NEW (MultExpr) (e, rhs);
     } else
         //otherwise return parsed multicand
         return e;
 }
 
-Expr* parse_inner(std::istream &in) {
+PTR(Expr) parse_inner(std::istream &in) {
     skip_whitespace(in);
     int c = in.peek();
     //if we have a negative parse as number
@@ -126,9 +126,9 @@ Expr* parse_inner(std::istream &in) {
         if (kw == "_let"){
             return parse_let(in);
         }else if (kw == "_true"){
-            return new BooleanExpr(true);
+            return NEW (BooleanExpr) (true);
         } else if(kw=="_false"){
-            return new BooleanExpr(false);
+            return NEW (BooleanExpr) (false);
         } else if (kw =="_if"){
             return parse_if(in);
         } else if (kw =="_fun"){
@@ -137,7 +137,7 @@ Expr* parse_inner(std::istream &in) {
     } //otherwise if we have a parenthesis we have to run it all back with the new expression to parse denoted by (
     else if (c == '(') {
         consume(in, '(');
-        Expr *e = parse_expr(in);
+        PTR(Expr) e = parse_expr(in);
         skip_whitespace(in);
         c = in.get();
         if (c != ')') {
@@ -149,35 +149,35 @@ Expr* parse_inner(std::istream &in) {
         throw std::runtime_error("bad input");
     }
 }
-Expr* parse_multicand(std::istream &in) {
-    Expr* e;
+PTR(Expr) parse_multicand(std::istream &in) {
+    PTR(Expr) e;
     e = parse_inner(in);
     while (in.peek() == '(') {
         consume(in, '(');
-        Expr* actual_arg = parse_expr(in);
+        PTR(Expr) actual_arg = parse_expr(in);
         consume(in, ')');
-        e = new CallExpr(e, actual_arg);
+        e = NEW (CallExpr)(e, actual_arg);
     }
     return e;
 }
 
-Expr *parse_comparg(std::istream &in) {
-    Expr* e;
+PTR(Expr) parse_comparg(std::istream &in) {
+    PTR(Expr) e;
     e = parse_addend(in);
     skip_whitespace(in);
     int c = in.peek();
     if (c == '+') {
         consume(in, '+');
-        Expr *rhs = parse_comparg(in);
-        return new AddExpr(e, rhs);
+        PTR(Expr) rhs = parse_comparg(in);
+        return NEW (AddExpr)(e, rhs);
     }
     else{
         return  e;
     }
 }
 
-Expr* parse_expr(std::istream &in){
-    Expr* e;
+PTR(Expr) parse_expr(std::istream &in){
+    PTR(Expr) e;
     e= parse_comparg(in);
     skip_whitespace(in);
     int c = in.peek();
@@ -185,14 +185,14 @@ Expr* parse_expr(std::istream &in){
         //parse equality expression
         consume(in, '=');
         consume(in, '=');
-        Expr* rhs = parse_expr(in);
-        return new EqualsExpr(e,rhs);
+        PTR(Expr) rhs = parse_expr(in);
+        return NEW (EqualsExpr)(e,rhs);
     } else{
         return e;
     }
 }
 //TODO: fix
-Expr* parse_let(std::istream &in){
+PTR(Expr) parse_let(std::istream &in){
     skip_whitespace(in);
     std::string variable;
     //take parsed variable expression and convert it to a string representation
@@ -203,36 +203,36 @@ Expr* parse_let(std::istream &in){
         consume(in, '=');
     }
     //parse first expression and assign to the bound variable for the letExpr return
-    Expr* bound = parse_expr(in);
-    Expr* body;
+    PTR(Expr) bound = parse_expr(in);
+    PTR(Expr) body;
     if (parse_keyword(in) == "_in"){
         //take the keyword and then parse the body expr
         body= parse_expr(in);
     } else{
         throw std::runtime_error("there needs to be an '_in' after _let");
     }
-    return new LetExpr(variable,bound,body);
+    return NEW (LetExpr)(variable,bound,body);
 }
 
-Expr* parse_if(std::istream &in) {
+PTR(Expr) parse_if(std::istream &in) {
     //The first parse just like the branches has to be an expression, a condition that we can branch from using true and false
-    Expr* cond = parse_expr(in);
+    PTR(Expr) cond = parse_expr(in);
     skip_whitespace(in);
     if (parse_keyword(in) != "_then") {
         throw std::runtime_error("There needs to be a '_then' after the '_if' condition");
     }
-    Expr* thenExpr = parse_expr(in);
+    PTR(Expr) thenExpr = parse_expr(in);
     skip_whitespace(in);
     if (parse_keyword(in) != "_else") {
         throw std::runtime_error("There needs to be an '_else' statement after the '_then' expression");
     }
-    Expr* elseExpr = parse_expr(in);
+    PTR(Expr) elseExpr = parse_expr(in);
 
-    return new IfExpr(cond, thenExpr, elseExpr);
+    return NEW(IfExpr) (cond, thenExpr, elseExpr);
 }
 
-Expr *parse(std::istream &in) {
-    Expr* e;
+PTR(Expr) parse(std::istream &in) {
+    PTR(Expr) e;
     e = parse_comparg(in);
     skip_whitespace(in);
     int c = in.peek();
@@ -240,8 +240,8 @@ Expr *parse(std::istream &in) {
     if(c =='='){
         consume(in,'=');
         consume(in,'=');
-        Expr* rhs = parse_expr(in);
-        return new EqualsExpr(e, rhs);
+        PTR(Expr) rhs = parse_expr(in);
+        return NEW (EqualsExpr)(e, rhs);
     } else {
         if (!in.eof()) {
             throw std::runtime_error("invalid input in parse");
@@ -250,12 +250,12 @@ Expr *parse(std::istream &in) {
     }
 }
 //Use parseString as a means to parse a stream of strings
-Expr* parseString(const std::string &s) {
+PTR(Expr) parseString(const std::string &s) {
     std::istringstream in(s);
     return parse(in);
 }
 
-Expr* parseInput(){
+PTR(Expr) parseInput(){
     std::string input;
     getline( std::cin, input);
     std::stringstream ss(input);

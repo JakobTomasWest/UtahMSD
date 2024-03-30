@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     try {
         run_mode_t mode = use_arguments(argc, argv);
         if (mode != do_nothing) {
-            Expr *e = parseInput();
+            PTR(Expr) e = parseInput();
             switch (mode) {
 //            case do_nothing:
 //                break;
