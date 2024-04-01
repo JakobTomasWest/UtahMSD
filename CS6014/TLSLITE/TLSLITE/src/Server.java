@@ -49,16 +49,13 @@ public class Server {
         //create input and output stream
         ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
         ObjectInputStream input = new ObjectInputStream(client.getInputStream());
-
-        // handshake
-        // receive nonce
         byte[] nonce = (byte[]) input.readObject();
 
 
-        //server sends the server certificate, serverDHPub and a signed Diffie-Hellman public key as Enc(serverRSAPriv, serveDHPub)
-        // server certificate is the RSA certificate=> serverCertificate
+        //server sends the server certificate, serverDHPublicKey and a signed Diffie-Hellman public key as Enc(serverRSAPriv, serveDHPub)
+        //RSA certificate
         output.writeObject(serverCertificate);
-        // Generate server's Diffie-Hellman key pair
+        //Generate server's Diffie-Hellman key pair
         BigInteger[] serverDHKeyPair = KeyGeneration.generateKeyPair();
         BigInteger serverDHPrivateKP = serverDHKeyPair[0];
         BigInteger serverDHPublicKP = serverDHKeyPair[1];
@@ -71,7 +68,7 @@ public class Server {
         output.writeObject(DHPublicServer);
         output.flush();
 
-        //server receives client certification clientDHPub and a signed+Encrypt DH public key
+        //read clients cert and publickey and verify
         Certificate clientCertificate = (Certificate) input.readObject();
         BigInteger clientDHPublicKey = (BigInteger) input.readObject();
         byte[] signedClientDHPublicKey =(byte[]) input.readObject();
@@ -79,15 +76,15 @@ public class Server {
         System.out.println("Certification verified.");
 
         //generate the shared secrete
-        byte[] sharedSecrete = KeyGeneration.generateShareKey(clientDHPublicKey,serverDHPrivateKP);
+        byte[] sharedSecret = KeyGeneration.generateShareKey(clientDHPublicKey,serverDHPrivateKP);
 
         //session keys using HKDF
-        KeyGeneration.makeSecretKeys(nonce,sharedSecrete);
-        //send HMAC of handshake history
+        KeyGeneration.makeSecretKeys(nonce,sharedSecret);
+        //write hmac history
         byte[] hmac = KeyGeneration.calculateHmac(KeyGeneration.serverMac,nonce,serverCertificate.getEncoded(),serverDHPublicKP.toByteArray(),DHPublicServer,clientCertificate.getEncoded(),clientDHPublicKey.toByteArray(),signedClientDHPublicKey);
         output.writeObject(hmac);
         output.flush();
-        //receive HMAC of handshake history
+        //read history
         byte[] receivedHmac = (byte[]) input.readObject();
 
 
@@ -98,6 +95,7 @@ public class Server {
         byte[] receivedHmac2 = new byte[32];
         System.arraycopy(decryptedMessageBytes, 0, receivedMessage, 0, receivedMessage.length);
         System.arraycopy(decryptedMessageBytes, receivedMessage.length, receivedHmac2, 0, 32);
+        //print example message from client
         System.out.println(new String(receivedMessage,"UTF-8"));
     }
 }

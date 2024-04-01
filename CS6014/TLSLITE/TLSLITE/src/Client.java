@@ -63,17 +63,17 @@ public class Client {
         serverCertificate.verify(CACertificate.getPublicKey());
         //send client certificate
         output.writeObject(clientCertificate);
-        //send  clientDHPublicKP, and signed Diffie-Hellman public key
+        //send clientDHPublicKP, and signed Diffie-Hellman public key
         BigInteger[] clientDHKeyPair = KeyGeneration.generateKeyPair();
         BigInteger clientDHPrivateKP = clientDHKeyPair[0];
         BigInteger clientDHPublicKP = clientDHKeyPair[1];
         output.writeObject(clientDHPublicKP);
 
-        // signed client public key
+        //signed client public key
         Cipher clientDHPublicKey = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         clientDHPublicKey.init(Cipher.ENCRYPT_MODE,clientPrivateKey);
-        byte[] DHPubClient = clientDHPublicKey.doFinal(clientDHPublicKP.toByteArray());
-        output.writeObject(DHPubClient);
+        byte[] DHPublicClient = clientDHPublicKey.doFinal(clientDHPublicKP.toByteArray());
+        output.writeObject(DHPublicClient);
         output.flush();
 
         //generate the share secret
@@ -81,13 +81,13 @@ public class Client {
 
         //session keys using HKDF
         KeyGeneration.makeSecretKeys(nonce,sharedSecret);
-        byte[] expectHMAC = KeyGeneration.calculateHmac(KeyGeneration.serverMac,nonce,serverCertificate.getEncoded(),serverDHPublicKey.toByteArray(),signedServerDHPublic,clientCertificate.getEncoded(),clientDHPublicKP.toByteArray(),DHPubClient);
+        byte[] expectHMAC = KeyGeneration.calculateHmac(KeyGeneration.serverMac,nonce,serverCertificate.getEncoded(),serverDHPublicKey.toByteArray(),signedServerDHPublic,clientCertificate.getEncoded(),clientDHPublicKP.toByteArray(),DHPublicClient);
         byte[] receivedHMAC = (byte[]) input.readObject();
         if (!Arrays.equals(expectHMAC,receivedHMAC)){
             throw new Exception("HMAC verification failed");
         }
 
-        byte[]hmac = KeyGeneration.calculateHmac(KeyGeneration.clientMAC,nonce,serverDHPublicKey.toByteArray(),DHPubClient,clientCertificate.getEncoded(),clientDHPublicKP.toByteArray(),DHPubClient,nonce,serverCertificate.getEncoded(),serverDHPublicKey.toByteArray(),signedServerDHPublic,clientCertificate.getEncoded(),clientDHPublicKP.toByteArray(),DHPubClient);
+        byte[]hmac = KeyGeneration.calculateHmac(KeyGeneration.clientMAC,nonce,serverDHPublicKey.toByteArray(),DHPublicClient,clientCertificate.getEncoded(),clientDHPublicKP.toByteArray(),DHPublicClient,nonce,serverCertificate.getEncoded(),serverDHPublicKey.toByteArray(),signedServerDHPublic,clientCertificate.getEncoded(),clientDHPublicKP.toByteArray(),DHPublicClient);
 //        System.out.println(hmac.length);
         output.writeObject(hmac);
         output.flush();
