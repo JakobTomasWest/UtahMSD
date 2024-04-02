@@ -75,7 +75,7 @@ public class Server {
         clientCertificate.verify(CACertificate.getPublicKey());
         System.out.println("Certification verified.");
 
-        //generate the shared secrete
+        //generate the shared secret
         byte[] sharedSecret = KeyGeneration.generateShareKey(clientDHPublicKey,serverDHPrivateKP);
 
         //session keys using HKDF
