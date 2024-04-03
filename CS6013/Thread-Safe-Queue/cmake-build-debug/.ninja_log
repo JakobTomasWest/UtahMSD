@@ -1,0 +1,5 @@
+# ninja log v5
+3	298	1712106723870195840	CMakeFiles/Thread_Safe_Queue.dir/SerialQueueTests.cpp.o	b54d82b57b4afa1a
+4	267	1712105283602847203	CMakeFiles/Thread_Safe_Queue.dir/main.cpp.o	ad30fe0a015fbb08
+0	39	1712180980383173851	build.ninja	b0f5e27902a44f75
+298	336	1712106723908150393	Thread_Safe_Queue	4311581534a9e751
