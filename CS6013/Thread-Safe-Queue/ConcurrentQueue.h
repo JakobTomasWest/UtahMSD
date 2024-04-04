@@ -1,4 +1,5 @@
-
+#pragma once
+#include <mutex>
 using namespace std;
 ////////////////////////////////////////////////////////////////////////
 //
@@ -14,8 +15,7 @@ using namespace std;
 
 #ifndef THREAD_SAFE_QUEUE_CONCURRENTQUEUE_H
 #define THREAD_SAFE_QUEUE_CONCURRENTQUEUE_H
-#pragma once
-#include <mutex>
+
 template <typename T>
 class ConcurrentQueue {
 
@@ -89,5 +89,4 @@ private:
     int    size_;
     mutable mutex mutex_;
 };
-
 #endif //THREAD_SAFE_QUEUE_CONCURRENTQUEUE_H
