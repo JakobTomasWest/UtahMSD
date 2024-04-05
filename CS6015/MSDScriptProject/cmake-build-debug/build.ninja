@@ -85,6 +85,12 @@ build CMakeFiles/Lab03.dir/val.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users
   OBJECT_DIR = CMakeFiles/Lab03.dir
   OBJECT_FILE_DIR = CMakeFiles/Lab03.dir
 
+build CMakeFiles/Lab03.dir/env.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users/jakobwest/UtahMSD/CS6015/MSDScriptProject/env.cpp || cmake_object_order_depends_target_Lab03
+  DEP_FILE = CMakeFiles/Lab03.dir/env.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/Lab03.dir
+  OBJECT_FILE_DIR = CMakeFiles/Lab03.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Lab03
@@ -93,7 +99,7 @@ build CMakeFiles/Lab03.dir/val.cpp.o: CXX_COMPILER__Lab03_unscanned_Debug /Users
 #############################################
 # Link the executable Lab03
 
-build Lab03: CXX_EXECUTABLE_LINKER__Lab03_Debug CMakeFiles/Lab03.dir/main.cpp.o CMakeFiles/Lab03.dir/parse.cpp.o CMakeFiles/Lab03.dir/cmdline.cpp.o CMakeFiles/Lab03.dir/expr.cpp.o CMakeFiles/Lab03.dir/TESTS.cpp.o CMakeFiles/Lab03.dir/val.cpp.o
+build Lab03: CXX_EXECUTABLE_LINKER__Lab03_Debug CMakeFiles/Lab03.dir/main.cpp.o CMakeFiles/Lab03.dir/parse.cpp.o CMakeFiles/Lab03.dir/cmdline.cpp.o CMakeFiles/Lab03.dir/expr.cpp.o CMakeFiles/Lab03.dir/TESTS.cpp.o CMakeFiles/Lab03.dir/val.cpp.o CMakeFiles/Lab03.dir/env.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk
   OBJECT_DIR = CMakeFiles/Lab03.dir
   POST_BUILD = :

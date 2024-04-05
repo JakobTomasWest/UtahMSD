@@ -15,4 +15,6 @@ add_executable(Lab03 main.cpp
         val.cpp
         parse.cpp
         pointer.hpp
-        pointer.hpp)
+        pointer.hpp
+        env.h
+        env.cpp)

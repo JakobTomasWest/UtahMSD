@@ -1,7 +1,7 @@
 CXX=c++
 CFLAGS=-fsanitize=undefined -fno-sanitize-recover=undefined
-CCSOURCE = cmdline.cpp TESTS.cpp main.cpp parse.cpp expr.cpp val.cpp
-HEADERS = cmdline.hpp TESTS.h expr.hpp catch.hpp parse.hpp Val.h pointer.hpp
+CCSOURCE = cmdline.cpp TESTS.cpp main.cpp parse.cpp expr.cpp val.cpp env.cpp
+HEADERS = cmdline.hpp TESTS.h expr.hpp catch.hpp parse.hpp Val.h pointer.hpp env.hpp
 OBJSOURCE = cmdline.o TESTS.o main.o parse.o expr.o val.o
 
 compile: object
@@ -9,12 +9,12 @@ compile: object
 
 #target : prequsites
 #this Object file is the binary file
-object: cmdline.hpp TESTS.h expr.hpp parse.hpp main.cpp catch.hpp Val.h pointer.hpp
+object: cmdline.hpp TESTS.h expr.hpp parse.hpp main.cpp catch.hpp Val.h pointer.hpp env.hpp
 #compile -c will give object files?
-	c++ -c -std=c++17 -fsanitize=address  main.cpp expr.cpp cmdline.cpp parse.cpp TESTS.cpp val.cpp
+	c++ -c -std=c++17 -fsanitize=address  main.cpp expr.cpp cmdline.cpp parse.cpp TESTS.cpp val.cpp env.cpp
 
-buildS: expr.cpp expr.hpp main.cpp cmdline.hpp cmdline.cpp catch.hpp  parse.cpp val.cpp Val.h pointer.hpp
-	g++ -std=c++11 -fsanitize=address -fno-sanitize-recover=undefined main.cpp expr.cpp cmdline.cpp parse.cpp val.cpp -o msdscriptS
+buildS: expr.cpp expr.hpp main.cpp cmdline.hpp cmdline.cpp catch.hpp  parse.cpp val.cpp Val.h pointer.hpp env.hpp
+	g++ -std=c++11 -fsanitize=address -fno-sanitize-recover=undefined main.cpp expr.cpp cmdline.cpp parse.cpp val.cpp env.cpp -o msdscriptS
 
 .PHONY: build
 test:
