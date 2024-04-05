@@ -41,19 +41,20 @@ public:
         tail_ = newNode;
         size_++;
     }
-
+    //note if head pointer and tail pointer are = we are empty and pointing to dummy node
+    //tail pointer is not used during dequeue event w/ dummy implementation
     bool dequeue( T* ret ) {
         std::unique_lock<std::mutex> lock(mutex_);
         if (size_ == 0) {
             return false;
         }
         //dummys next is node to remove
-        Node* temp = head_->next;
+        Node* temp = head_->next; // could be head_ -> next -> data
         *ret = temp->data;
         //make head point to where it's next node was pointing to we are still linked
         head_->next = temp->next;
         if (size_ == 1) {
-            tail_ = head_; // Reset tail to the dummy node when queue is empty
+            tail_ = head_; //reset tail to the dummy node when queue is empty -- new dnummy
         }
         //get rid of og head next node (dequeue)
         delete temp;

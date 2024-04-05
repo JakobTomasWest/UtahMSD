@@ -26,9 +26,10 @@ bool testQueue( int num_producers, int num_consumers, int num_ints ) {
     //persists for the scope of the function
     ConcurrentQueue<int> queue;
     std::vector<std::thread> threads;
-        threads.reserve(num_producers + num_consumers);
+    //reserve space in this vector for all producer and consumer threads
+    threads.reserve(num_producers + num_consumers);
 
-    // Create producer threads
+    //create producer threads
     for (int i = 0; i < num_producers; ++i) {
         threads.emplace_back(producer<int>, std::ref(queue), num_ints);
 
@@ -39,29 +40,30 @@ bool testQueue( int num_producers, int num_consumers, int num_ints ) {
         threads.emplace_back(consumer<int>, std::ref(queue), num_ints);
     }
 
-    // Wait for all threads to finish
+    //wait for all threads to join (ie,finish).
     for (auto& thread : threads) {
         thread.join();
     }
-    // Check if the number of elements in the queue matches the expected value
+    //check if the number of elements in the queue matches the expected value
     return queue.size() == (num_producers - num_consumers) * num_ints;
     }
 
 int main(int argc, char **argv) {
-
+    //   /.Thread_Safe_Queue num_producers num_consumers num ints
     if( argc != 4){
         std::cerr << "Usage: " << argv[0] << " <num_producers> <num_consumers> <num_ints>\n";
         return 1;
     }
-    int num_producers = std::stoi(argv[1]);
-    int num_consumers = std::stoi(argv[2]);
-    int num_ints = std::stoi(argv[3]);
+    //take string arguments and convert them into integers for teh Queuing Test
+    int num_producers = stoi(argv[1]);
+    int num_consumers = stoi(argv[2]);
+    int num_ints = stoi(argv[3]);
 
     bool result = testQueue(num_producers, num_consumers, num_ints);
     if (result) {
-        std::cout << "Test passed.\n";
+        cout << "Test passed.\n";
     } else {
-        std::cout << "Test failed.\n";
+        cout << "Test failed.\n";
     }
     return 0;
 }
