@@ -28,13 +28,13 @@ int main(int argc, char **argv) {
 //            case do_nothing:
 //                break;
                 case do_interp:
-                    std::cout << e->interp()->to_string() << "\n";
+                    std::cout << e->interp(Env::empty)->to_string() << "\n";
                     break;
                 case do_print:
-                    cout << e->interp()->to_string() << "\n";
+                    cout << e->interp(Env::empty)->to_string() << "\n";
                     break;
                 case do_pretty_print:
-                    cout << e->interp()->to_string() << "\n";
+                    cout << e->interp(Env::empty)->to_string() << "\n";
                 case do_nothing:
                 default:
                     // Print usage information or an error message if needed

@@ -104,10 +104,10 @@ PTR(Expr)AddExpr::subst(const string& targetVarName, PTR(Expr) replacementVar){
  * \brief Evaluates the addition expression and return the sum
  * \return The integer result of the summed addition.
  */
-PTR(Val)AddExpr::interp() {
+PTR(Val)AddExpr::interp(PTR(Env) env) {
     //return an int for the value of the expression
     // the value of addition expression is the sum of teh two subexpressions
-    return rhs->interp()->add_to( lhs->interp());
+    return rhs->interp(env)->add_to( lhs->interp(env));
 }
 /**
  *\brief Determines if the addition expression contains a variable
@@ -193,8 +193,8 @@ bool MultExpr::equals(PTR(Expr) e){
  *\brief Evaluates the multiplication expression and returns its value.
  *\return The integer result of the multiplication.
  */
-PTR(Val) MultExpr::interp() {
-    return rhs->interp()->mult_with(lhs->interp());
+PTR(Val) MultExpr::interp(PTR(Env) env) {
+    return rhs->interp(env)->mult_with(lhs->interp(env));
 }
 /**
  *\brief Determines if the multiplication expression contains any variables.
@@ -292,9 +292,9 @@ bool NumExpr::equals(PTR(Expr) e){
  *\brief Evaluates the numerical expression and returns its value.
  *\return The int value of the numerical expression.
  */
-PTR(Val) NumExpr::interp() {
+PTR(Val) NumExpr::interp(PTR(Env) env) {
     //just return the new numVal when interpreting the number
-    return NEW (NumVal)(_val);
+    return NEW (NumVal)(this->_val);
 }
 /**
  *\brief Determines if the numerical expression contains any variables.
@@ -350,7 +350,7 @@ bool VarExpr::equals(PTR(Expr) e){
  *\brief Throws an exception as variable expressions cannot be directly evaluated without a context that assigns values to variables.
  *\throw runtime_error indicating there is no numerical value for the variable
 */
-PTR(Val) VarExpr::interp()
+PTR(Val) VarExpr::interp(PTR(Env) env)
 {
      throw runtime_error("no value for variable");
 }
@@ -441,17 +441,20 @@ bool LetExpr::equals(PTR(Expr) otherExpression) {
  *
  * @return the evaluated expression as an int
  */
-PTR(Val) LetExpr::interp() {
+PTR(Val) LetExpr::interp(PTR(Env) env) {
     //let x=boundExpr, bodyExpr
+//
+////    int boundExprValue = this->_boundExpr->interp();
+//    //send boundExprValue into body for varName
+////    Expr* substitutedBody = _bodyExpr->subst(varName,new NumExpr(boundExprValue));
+//    PTR(Expr)  interpretedExpression = _bodyExpr->subst(varName,_boundExpr);
+////    int interpretedExpression = substitutedBody->interp();
+    PTR(Val) rhs_val = _bodyExpr->interp(env);
+    PTR(Env) new_env = NEW(ExtendedEnv)(varName, rhs_val, env);
+    return _bodyExpr->interp(new_env);
 
-//    int boundExprValue = this->_boundExpr->interp();
-    //send boundExprValue into body for varName
-//    Expr* substitutedBody = _bodyExpr->subst(varName,new NumExpr(boundExprValue));
-    PTR(Expr)  interpretedExpression = _bodyExpr->subst(varName,_boundExpr);
-//    int interpretedExpression = substitutedBody->interp();
 
-
-    return interpretedExpression->interp();
+   // return interpretedExpression->interp(env);
 }
 /**
  * \brief Determines whether the bodyExpression has a variable
@@ -579,7 +582,7 @@ bool BooleanExpr::equals(PTR(Expr) e) {
  * \brief Interprets the current BooleanExpr as a Boolean value
  * @return returns a pointer to a new BoolVal object that represents the boolean value of the expression
  */
-PTR(Val) BooleanExpr::interp() {
+PTR(Val) BooleanExpr::interp(PTR(Env) env) {
     return NEW(BoolVal)(_boolean);
 }
 /**
@@ -638,11 +641,11 @@ bool IfExpr::equals(PTR(Expr) e) {
  * \brief Interprets whether teh condition is true by calling the is_true function on teh Val object
  * @return If the condition is true we interpret the then condition . If the condition was false we interpret the false condition branch
  */
-PTR(Val) IfExpr::interp() {
-    if (_condition->interp()->is_true()){
-        return _true->interp();
+PTR(Val) IfExpr::interp(PTR(Env) env) {
+    if (_condition->interp(env)->is_true()){
+        return _true->interp(env);
     } else{
-        return _false->interp();
+        return _false->interp(env);
     }
 }
 /**
@@ -765,8 +768,8 @@ bool EqualsExpr::equals(PTR(Expr) e) {
  *\brief Take left and ride expression objects and interpret them to Val objects, if they are equal construct a true bool val otherwise construct a false bool Val
  * @return new BoolVal object
  */
-PTR(Val)EqualsExpr::interp() {
-    return NEW(BoolVal)(_lhs->interp()->equals(_rhs->interp()));
+PTR(Val)EqualsExpr::interp(PTR(Env) env) {
+    return NEW(BoolVal)(_lhs->interp(env)->equals(_rhs->interp(env)));
 }
 
 bool EqualsExpr::has_variable() {
@@ -828,8 +831,8 @@ bool FunExpr::equals(PTR(Expr) e) {
     }
 }
 
-PTR(Val) FunExpr::interp() {
-    return NEW(FunVal)(this->formal_arg, this->body);
+PTR(Val) FunExpr::interp(PTR(Env) env) {
+    return NEW(FunVal)(this->formal_arg, this->body, env);
 }
 
 void FunExpr::print(std::ostream &out) const{
@@ -877,9 +880,13 @@ PTR(Expr) CallExpr::subst(const string& givenVarName, PTR(Expr) e) {
     return NEW(CallExpr)(to_be_called->subst(givenVarName, e), actual_arg->subst(givenVarName, e));
 }
 
-PTR(Val) CallExpr::interp() {
-    return to_be_called->interp()->call(actual_arg->interp());
+PTR(Val) CallExpr::interp(PTR(Env) env) {
+    return to_be_called->interp(env)->call(actual_arg->interp(env));
+//    PTR(Val) toBeCalledVal = to_be_called->interp(env);
+//    PTR(Val) argVal = actual_arg->interp(env);
+//    return toBeCalledVal->call(argVal, env);
 }
+
 
 bool CallExpr::has_variable() {
     return false;

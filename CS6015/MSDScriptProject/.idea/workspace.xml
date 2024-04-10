@@ -24,12 +24,21 @@
       <change beforePath="$PROJECT_DIR$/../../CS6013/Thread-Safe-Queue/cpphppfilesCmake.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../Lab7_files/Report.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab7_files/Report.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/build.ninja" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/build.ninja" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TESTS.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/TESTS.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TESTS.o" beforeDir="false" afterPath="$PROJECT_DIR$/TESTS.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Val.h" beforeDir="false" afterPath="$PROJECT_DIR$/Val.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build" beforeDir="false" afterPath="$PROJECT_DIR$/build" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/env.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/env.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expr.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/expr.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expr.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/expr.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/expr.o" beforeDir="false" afterPath="$PROJECT_DIR$/expr.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.o" beforeDir="false" afterPath="$PROJECT_DIR$/main.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parse.o" beforeDir="false" afterPath="$PROJECT_DIR$/parse.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pointer.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/pointer.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/val.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/val.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/val.o" beforeDir="false" afterPath="$PROJECT_DIR$/val.o" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,7 +143,7 @@
       <workItem from="1710638417596" duration="26716000" />
       <workItem from="1710862722330" duration="9622000" />
       <workItem from="1711314974841" duration="34868000" />
-      <workItem from="1712344369002" duration="1125000" />
+      <workItem from="1712344369002" duration="14388000" />
     </task>
     <servers />
   </component>
@@ -145,5 +154,16 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticReloadCMake value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/pointer.hpp</url>
+          <line>13</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

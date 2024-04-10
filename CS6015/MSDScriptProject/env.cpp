@@ -14,7 +14,7 @@ PTR(Val) EmptyEnv::lookup(std::string find_name) {
     throw std::runtime_error("free variable: "
                              + find_name);
 }
-ExtendedEnv::ExtendedEnv(string name, std::shared_ptr<Val> val, std::shared_ptr<Env> rest) {
+ExtendedEnv::ExtendedEnv(string name, PTR(Val) val, PTR(Env) rest) {
 
     this-> name =  name;
     this-> val = val;
@@ -22,8 +22,8 @@ ExtendedEnv::ExtendedEnv(string name, std::shared_ptr<Val> val, std::shared_ptr<
 }
 
 PTR(Val) ExtendedEnv::lookup(std::string find_name) {
-    if (find_name == name)
-        return val;
+    if (this -> name == find_name)
+        return this -> val;
     else
-        return rest->lookup(find_name);
+        return this -> rest->lookup(find_name);
 }

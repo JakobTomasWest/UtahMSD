@@ -7,7 +7,7 @@
 #include"pointer.hpp"
 #include <stdio.h>
 #include <string>
-
+#include "env.h"
 using namespace std;
 class Val;
 CLASS (Expr) {
@@ -19,7 +19,7 @@ public:
     } precedence_t;
     virtual ~Expr() {};
     virtual bool equals(PTR(Expr) e) = 0;
-    virtual PTR(Val)interp() = 0;
+    virtual PTR(Val)interp(PTR(Env) env) = 0;
     virtual PTR(Expr) subst(const string& givenVarName, PTR(Expr) e) = 0;
     virtual void print(std::ostream& out) const = 0;
     virtual bool has_variable() = 0;
@@ -35,7 +35,7 @@ public:
     PTR(Expr) rhs;
     AddExpr(PTR(Expr) lhs, PTR(Expr) rhs);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     PTR(Expr) subst(const string& givenVarName, PTR(Expr) e) override;
     void print(ostream &ot) const override;
@@ -51,7 +51,7 @@ public:
     PTR(Expr) rhs;
     MultExpr(PTR(Expr) lhs, PTR(Expr) rhs);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     PTR(Expr) subst(const string& givenVarName, PTR(Expr) e) override;
     void print(ostream &ot) const override;
@@ -65,7 +65,7 @@ public:
     int _val;
     NumExpr(int _val);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     PTR(Expr) subst(const string& givenVarName, PTR(Expr) e) override;
     void print(ostream &ot) const override;
@@ -77,7 +77,7 @@ public:
     string _val;
     VarExpr(string val);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     PTR(Expr) subst(const string& givenVarName, PTR(Expr) e) override;
     void print(ostream &ot) const override;
@@ -93,7 +93,7 @@ private:
 public:
     LetExpr(const string &var, PTR(Expr) boundExpr, PTR(Expr) bodyExpr);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     PTR(Expr) subst(const string& givenVarName, PTR(Expr) e) override;
     void print(ostream &ot) const override;
@@ -106,7 +106,7 @@ public:
     bool _boolean;
     explicit BooleanExpr(bool val);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     PTR(Expr) subst(const string& givenVarName, PTR(Expr) e) override;
     void print(std::ostream& ostream) const override;
@@ -119,7 +119,7 @@ public:
     PTR(Expr) _false;
     IfExpr(PTR(Expr) cond,PTR(Expr) thenTrue, PTR(Expr) elseFalse);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     PTR(Expr) subst(const string& givenVarName, PTR(Expr) e) override;
     void print(std::ostream& out) const override;
@@ -133,7 +133,7 @@ public:
     PTR(Expr) _rhs;
     EqualsExpr(PTR(Expr) lhs,PTR(Expr) rhs);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     PTR(Expr)  subst(const string& givenVarName, PTR(Expr) e) override;
     void print(std::ostream& ostream) const override;
@@ -147,7 +147,7 @@ public:
     PTR(Expr) body;
     FunExpr(std::string formal_arg, PTR(Expr) body);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     void print(std::ostream &out) const override;
     PTR(Expr)  subst(const string& givenVarName, PTR(Expr) e) override;
@@ -159,7 +159,7 @@ public:
     PTR(Expr) actual_arg;
     CallExpr(PTR(Expr) to_be_called, PTR(Expr) actual_arg);
     bool equals(PTR(Expr) e) override;
-    PTR(Val) interp() override;
+    PTR(Val) interp(PTR(Env) env) override;
     bool has_variable() override;
     void print(std::ostream &out) const override;
     PTR(Expr)  subst(const string& givenVarName, PTR(Expr) e) override;

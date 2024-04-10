@@ -6,6 +6,7 @@
 #define LAB03_VAL_H
 #include <iostream>
 #include "pointer.hpp"
+#include "env.h"
 class Expr;
 CLASS(Val) {
 public:
@@ -50,9 +51,11 @@ public:
 class FunVal : public Val {
     std::string formal_arg;
     PTR(Expr) body;
+    PTR(Env) env;
 
 public:
-    FunVal(std::string formal_arg, PTR(Expr) body);
+
+    FunVal(std::string formal_arg, PTR(Expr) body, PTR(Env) env);
     PTR(Expr)  to_expr() override;
     bool equals(PTR(Val)  rhs) override;
     PTR(Val)  add_to(PTR(Val)  rhs)override;

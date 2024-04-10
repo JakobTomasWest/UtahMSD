@@ -116,7 +116,7 @@ PTR(Expr)BoolVal::to_expr() {
  * @throw Throws a runtime_error indicating that addition operation is invalid for boolean types.
  */
 
-PTR(Val) BoolVal::add_to(PTR(Val) al) {
+PTR(Val) BoolVal::add_to(PTR(Val) val) {
     throw std::runtime_error("add doesn't work on boolean");
 }
 /**
@@ -150,9 +150,10 @@ PTR(Val) BoolVal::call(PTR(Val) actual_arg) {
     throw std::runtime_error("BoolVal cannot call");
 }
 
-FunVal::FunVal(std::string formal_arg, PTR(Expr) body) {
+FunVal::FunVal(std::string formal_arg, PTR(Expr) body, PTR(Env) env) {
     this->formal_arg = formal_arg;
     this->body = body;
+    this->env = env;
 }
 
 PTR(Expr) FunVal::to_expr() {
@@ -180,7 +181,8 @@ PTR(Val) FunVal::mult_with(PTR(Val) rhs) {
 
 
 PTR(Val) FunVal::call(PTR(Val) actual_arg) {
-    return body->subst(formal_arg, actual_arg->to_expr())->interp();
+    return body->interp(NEW(ExtendedEnv)(formal_arg, actual_arg, env));
+
 }
 void FunVal::print(std::ostream& out){
     out << "(_fun (";
