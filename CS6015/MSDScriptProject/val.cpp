@@ -5,6 +5,8 @@
 #include "expr.hpp"
 #include <string>
 #include <sstream>
+#include "env.h"
+class Env;
 /**
  * \brief Constructor for NumVal class
  * @param num value we are giving it
@@ -181,7 +183,7 @@ PTR(Val) FunVal::mult_with(PTR(Val) rhs) {
 
 
 PTR(Val) FunVal::call(PTR(Val) actual_arg) {
-    return body->interp(NEW(ExtendedEnv)(formal_arg, actual_arg, env));
+    return body->interp(NEW(ExtendedEnv)(formal_arg,actual_arg,env));
 
 }
 void FunVal::print(std::ostream& out){

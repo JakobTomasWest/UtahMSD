@@ -352,7 +352,7 @@ bool VarExpr::equals(PTR(Expr) e){
 */
 PTR(Val) VarExpr::interp(PTR(Env) env)
 {
-     throw runtime_error("no value for variable");
+    return env->lookup(_val);
 }
 /**
  * \brief Decides if the variable expression contains any variables.

@@ -15,7 +15,6 @@ PTR(Val) EmptyEnv::lookup(std::string find_name) {
                              + find_name);
 }
 ExtendedEnv::ExtendedEnv(string name, PTR(Val) val, PTR(Env) rest) {
-
     this-> name =  name;
     this-> val = val;
     this -> rest = rest;
