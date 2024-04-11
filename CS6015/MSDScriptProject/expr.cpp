@@ -449,12 +449,16 @@ PTR(Val) LetExpr::interp(PTR(Env) env) {
 ////    Expr* substitutedBody = _bodyExpr->subst(varName,new NumExpr(boundExprValue));
 //    PTR(Expr)  interpretedExpression = _bodyExpr->subst(varName,_boundExpr);
 ////    int interpretedExpression = substitutedBody->interp();
-    PTR(Val) rhs_val = _bodyExpr->interp(env);
-    PTR(Env) new_env = NEW(ExtendedEnv)(varName, rhs_val, env);
+
+    //First interpr the bound expression in the current environment to get its value.
+    PTR(Val) bound_val = _boundExpr->interp(env);
+
+    //Create a new environment that extends the current one by binding varName to bound_val.
+    PTR(Env) new_env = NEW(ExtendedEnv)(varName, bound_val, env);
+
+    //Now interp the body expression in the new environment.
     return _bodyExpr->interp(new_env);
 
-
-   // return interpretedExpression->interp(env);
 }
 /**
  * \brief Determines whether the bodyExpression has a variable

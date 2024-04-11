@@ -283,34 +283,34 @@ TEST_CASE("parse") {
 
 }
 TEST_CASE("Nested Functions and Scope [Function]") {
-//    CHECK(parseString("_let outer = _fun (x) _fun (y) x + y _in (outer(5))(3)")->interp(Env::empty)->to_string() == "8");
-////
-//    CHECK(parseString("_let x = 10 _in (_let f = _fun (x) x * 2 _in f(5))")->interp(Env::empty)->to_string() == "10");
-//    CHECK((NEW(LetExpr)("factrl", NEW(FunExpr)("factrl", NEW(FunExpr)("x", NEW(IfExpr)(NEW(EqualsExpr)(NEW(VarExpr)("x"), NEW(NumExpr)(1)), NEW(NumExpr)(1), NEW(MultExpr)(NEW(VarExpr)("x"), NEW(CallExpr)( NEW(CallExpr)( NEW(VarExpr)("factrl"), NEW(VarExpr)("factrl")),NEW(AddExpr)( NEW(VarExpr)("x"), NEW(NumExpr)(-1))))))), NEW(CallExpr)( NEW(CallExpr)( NEW(VarExpr)("factrl"), NEW(VarExpr)("factrl")), NEW(NumExpr)(10))))->interp(Env::empty)->equals(NEW(NumVal)(3628800)));
-//    SECTION("FunExpr")
-//    {
-//        CHECK(parseString("_fun (x) x + 2")->equals(NEW(FunExpr)("x", NEW(AddExpr)(NEW(VarExpr)("x"), NEW(NumExpr)(2)))));
+    CHECK(parseString("_let outer = _fun (x) _fun (y) x + y _in (outer(5))(3)")->interp(Env::empty)->to_string() == "8");
 //
-//        //FunExpr with AddExpr
-//        CHECK(parseString("_fun (x)\n"
-//                          "  2 + x")->equals(NEW(FunExpr)("x", NEW(AddExpr)(NEW(NumExpr)(2), NEW(VarExpr)("x")))));
-//
-////        FunExpr with nested LetExpr
-//        CHECK(parseString("_fun (x)\n  x + _let y = 5\n      _in  y + 6")->equals(NEW(FunExpr)("x", NEW(AddExpr)(
-//                NEW(VarExpr)("x"), NEW(LetExpr)("y", NEW(NumExpr)(5), NEW(AddExpr)(NEW(VarExpr)("y"), NEW(NumExpr)(6)))))));
-//
-//        //FunExpr nested within AddExpr
-//        CHECK(parseString("4 + _fun (x)\n5 * x")->equals(
-//                NEW(AddExpr)(NEW(NumExpr)(4), NEW(FunExpr)("x", NEW(MultExpr)(NEW(NumExpr)(5), NEW(VarExpr)("x"))))));
-//
-//        //FunExpr nested within LetExpr
-//        CHECK(parseString("_let x = 3\n_in  _fun (y)\ny + x")->equals(
-//                NEW(LetExpr)("x", NEW(NumExpr)(3), NEW(FunExpr)("y", NEW(AddExpr)(NEW(VarExpr)("y"), NEW(VarExpr)("x"))))));
-//
-//        //FunExp nested within FunExpr
-//        CHECK(parseString("_fun (x)\n      x * (_fun (y)\n  \n \n 4 + y)")->equals(NEW(FunExpr)("x", NEW(MultExpr)(
-//                NEW(VarExpr)("x"), NEW(FunExpr)("y", NEW(AddExpr)(NEW(NumExpr)(4), NEW(VarExpr)("y")))))));
-//    }
+    CHECK(parseString("_let x = 10 _in (_let f = _fun (x) x * 2 _in f(5))")->interp(Env::empty)->to_string() == "10");
+    CHECK((NEW(LetExpr)("factrl", NEW(FunExpr)("factrl", NEW(FunExpr)("x", NEW(IfExpr)(NEW(EqualsExpr)(NEW(VarExpr)("x"), NEW(NumExpr)(1)), NEW(NumExpr)(1), NEW(MultExpr)(NEW(VarExpr)("x"), NEW(CallExpr)( NEW(CallExpr)( NEW(VarExpr)("factrl"), NEW(VarExpr)("factrl")),NEW(AddExpr)( NEW(VarExpr)("x"), NEW(NumExpr)(-1))))))), NEW(CallExpr)( NEW(CallExpr)( NEW(VarExpr)("factrl"), NEW(VarExpr)("factrl")), NEW(NumExpr)(10))))->interp(Env::empty)->equals(NEW(NumVal)(3628800)));
+    SECTION("FunExpr")
+    {
+        CHECK(parseString("_fun (x) x + 2")->equals(NEW(FunExpr)("x", NEW(AddExpr)(NEW(VarExpr)("x"), NEW(NumExpr)(2)))));
+
+        //FunExpr with AddExpr
+        CHECK(parseString("_fun (x)\n"
+                          "  2 + x")->equals(NEW(FunExpr)("x", NEW(AddExpr)(NEW(NumExpr)(2), NEW(VarExpr)("x")))));
+
+//        FunExpr with nested LetExpr
+        CHECK(parseString("_fun (x)\n  x + _let y = 5\n      _in  y + 6")->equals(NEW(FunExpr)("x", NEW(AddExpr)(
+                NEW(VarExpr)("x"), NEW(LetExpr)("y", NEW(NumExpr)(5), NEW(AddExpr)(NEW(VarExpr)("y"), NEW(NumExpr)(6)))))));
+
+        //FunExpr nested within AddExpr
+        CHECK(parseString("4 + _fun (x)\n5 * x")->equals(
+                NEW(AddExpr)(NEW(NumExpr)(4), NEW(FunExpr)("x", NEW(MultExpr)(NEW(NumExpr)(5), NEW(VarExpr)("x"))))));
+
+        //FunExpr nested within LetExpr
+        CHECK(parseString("_let x = 3\n_in  _fun (y)\ny + x")->equals(
+                NEW(LetExpr)("x", NEW(NumExpr)(3), NEW(FunExpr)("y", NEW(AddExpr)(NEW(VarExpr)("y"), NEW(VarExpr)("x"))))));
+
+        //FunExp nested within FunExpr
+        CHECK(parseString("_fun (x)\n      x * (_fun (y)\n  \n \n 4 + y)")->equals(NEW(FunExpr)("x", NEW(MultExpr)(
+                NEW(VarExpr)("x"), NEW(FunExpr)("y", NEW(AddExpr)(NEW(NumExpr)(4), NEW(VarExpr)("y")))))));
+    }
 
     SECTION("CallExpr")
     {
@@ -337,9 +337,9 @@ TEST_CASE("Nested Functions and Scope [Function]") {
         CHECK(parseString("(_fun (y)\n   \n \n  \n \n \n y + 7)(0)")->equals(
                 NEW(CallExpr)(NEW(FunExpr)("y", NEW(AddExpr)(NEW(VarExpr)("y"), NEW(NumExpr)(7))), NEW(NumExpr)(0))));
 
-//        CHECK(parseString((
-//                "_let factrl = _fun (factrl) _fun (x) _if x == 1 _then 1 _else x * factrl(factrl)(x + -1) _in  factrl(factrl)(10)"))->interp(Env::empty)->equals(
-//                NEW(NumVal)(3628800)));
+        CHECK(parseString((
+                "_let factrl = _fun (factrl) _fun (x) _if x == 1 _then 1 _else x * factrl(factrl)(x + -1) _in  factrl(factrl)(10)"))->interp(Env::empty)->equals(
+                NEW(NumVal)(3628800)));
     }
 //369
     SECTION("FunExpr::Equals")
