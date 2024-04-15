@@ -17,6 +17,7 @@ game1scene::game1scene(QObject *parent) : QGraphicsScene(parent) {
     bucketItem->setFocus();
     addItem(bucketItem);
 
+
     cloud *cloud1 = new cloud();
     cloud1->setupGraphics(":/images/cloud.png", 200, 50);
     cloud1->setPos(50,0);
