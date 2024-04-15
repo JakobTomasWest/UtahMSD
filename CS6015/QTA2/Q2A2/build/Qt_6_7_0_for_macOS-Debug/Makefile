@@ -297,10 +297,10 @@ DIST          = /Users/jakobwest/Qt/6.7.0/macos/mkspecs/features/spec_pre.prf \
 		/Users/jakobwest/Qt/6.7.0/macos/mkspecs/features/exceptions.prf \
 		/Users/jakobwest/Qt/6.7.0/macos/mkspecs/features/yacc.prf \
 		/Users/jakobwest/Qt/6.7.0/macos/mkspecs/features/lex.prf \
-		../../../../Q2A2.pro ../../bucket.h \
+		../../../../Q2A2.pro ../../bucket.hpp \
 		../../cloud.h \
-		../../droplet.h \
-		../../game1scene.h ../../bucket.cpp \
+		../../droplet.hpp \
+		../../game1scene.hpp ../../bucket.cpp \
 		../../cloud.cpp \
 		../../droplet.cpp \
 		../../main.cpp
@@ -823,8 +823,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../../resources.qrc ../../resources.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../../bucket.h ../../cloud.h ../../droplet.h ../../game1scene.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../resources.qrc $(DISTDIR)/
+	$(COPY_FILE) --parents ../../bucket.hpp ../../cloud.h ../../droplet.hpp ../../game1scene.hpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../bucket.cpp ../../cloud.cpp ../../droplet.cpp ../../game1scene.cpp ../../main.cpp $(DISTDIR)/
 
 
@@ -852,17 +852,9 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all: qrc_resources.cpp qrc_resources.cpp
+compiler_rcc_make_all: qrc_resources.cpp
 compiler_rcc_clean:
-	-$(DEL_FILE) qrc_resources.cpp qrc_resources.cpp
-qrc_resources.cpp: ../../resources.qrc \
-		/Users/jakobwest/Qt/6.7.0/macos/libexec/rcc \
-		../../bucket.png \
-		../../cloud.png \
-		../../water.gif \
-		../../background.jpg
-	/Users/jakobwest/Qt/6.7.0/macos/libexec/rcc -name resources --no-zstd ../../resources.qrc -o qrc_resources.cpp
-
+	-$(DEL_FILE) qrc_resources.cpp
 qrc_resources.cpp: ../../resources.qrc \
 		/Users/jakobwest/Qt/6.7.0/macos/libexec/rcc \
 		../../bucket.png \
@@ -874,7 +866,7 @@ qrc_resources.cpp: ../../resources.qrc \
 compiler_moc_header_make_all: moc_bucket.cpp moc_droplet.cpp moc_game1scene.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_bucket.cpp moc_droplet.cpp moc_game1scene.cpp
-moc_bucket.cpp: ../../bucket.h \
+moc_bucket.cpp: ../../bucket.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QObject \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qobject.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
@@ -882,9 +874,9 @@ moc_bucket.cpp: ../../bucket.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/QKeyEvent \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/qevent.h \
 		/Users/jakobwest/Qt/6.7.0/macos/libexec/moc
-	/Users/jakobwest/Qt/6.7.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=15 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jakobwest/Qt/6.7.0/macos/mkspecs/macx-clang -I/Users/jakobwest/UtahMSD/CS6015/QTA2/Q2A2 -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jakobwest/Qt/6.7.0/macos/lib ../../bucket.h -o moc_bucket.cpp
+	/Users/jakobwest/Qt/6.7.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=15 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jakobwest/Qt/6.7.0/macos/mkspecs/macx-clang -I/Users/jakobwest/UtahMSD/CS6015/QTA2/Q2A2 -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jakobwest/Qt/6.7.0/macos/lib ../../bucket.hpp -o moc_bucket.cpp
 
-moc_droplet.cpp: ../../droplet.h \
+moc_droplet.cpp: ../../droplet.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QObject \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qobject.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
@@ -892,20 +884,23 @@ moc_droplet.cpp: ../../droplet.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QTimer \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/jakobwest/Qt/6.7.0/macos/libexec/moc
-	/Users/jakobwest/Qt/6.7.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=15 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jakobwest/Qt/6.7.0/macos/mkspecs/macx-clang -I/Users/jakobwest/UtahMSD/CS6015/QTA2/Q2A2 -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jakobwest/Qt/6.7.0/macos/lib ../../droplet.h -o moc_droplet.cpp
+	/Users/jakobwest/Qt/6.7.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=15 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jakobwest/Qt/6.7.0/macos/mkspecs/macx-clang -I/Users/jakobwest/UtahMSD/CS6015/QTA2/Q2A2 -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jakobwest/Qt/6.7.0/macos/lib ../../droplet.hpp -o moc_droplet.cpp
 
-moc_game1scene.cpp: ../../game1scene.h \
+moc_game1scene.cpp: ../../game1scene.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
-		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
-		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
-		../../bucket.h \
+		../../bucket.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QObject \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qobject.h \
+		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
+		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/QKeyEvent \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/qevent.h \
+		../../droplet.hpp \
+		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QTimer \
+		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/jakobwest/Qt/6.7.0/macos/libexec/moc
-	/Users/jakobwest/Qt/6.7.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=15 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jakobwest/Qt/6.7.0/macos/mkspecs/macx-clang -I/Users/jakobwest/UtahMSD/CS6015/QTA2/Q2A2 -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jakobwest/Qt/6.7.0/macos/lib ../../game1scene.h -o moc_game1scene.cpp
+	/Users/jakobwest/Qt/6.7.0/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=15 -D__clang_minor__=0 -D__clang_patchlevel__=0 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/jakobwest/Qt/6.7.0/macos/mkspecs/macx-clang -I/Users/jakobwest/UtahMSD/CS6015/QTA2/Q2A2 -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers -I/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/jakobwest/Qt/6.7.0/macos/lib ../../game1scene.hpp -o moc_game1scene.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -925,7 +920,7 @@ compiler_clean: compiler_rcc_clean compiler_moc_header_clean
 
 ####### Compile
 
-bucket.o: ../../bucket.cpp ../../bucket.h \
+bucket.o: ../../bucket.cpp ../../bucket.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QObject \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qobject.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
@@ -941,18 +936,18 @@ cloud.o: ../../cloud.cpp ../../cloud.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/qpixmap.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cloud.o ../../cloud.cpp
 
-droplet.o: ../../droplet.cpp ../../droplet.h \
+droplet.o: ../../droplet.cpp ../../droplet.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QObject \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qobject.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QTimer \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qtimer.h \
-		../../bucket.h \
+		../../bucket.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/QKeyEvent \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/qevent.h \
 		../../game1scene.cpp \
-		../../game1scene.h \
+		../../game1scene.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/QBrush \
@@ -963,16 +958,19 @@ droplet.o: ../../droplet.cpp ../../droplet.h \
 
 main.o: ../../main.cpp /Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QApplication \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qapplication.h \
-		../../game1scene.h \
+		../../game1scene.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsScene \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qgraphicsscene.h \
-		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
-		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
-		../../bucket.h \
+		../../bucket.hpp \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QObject \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qobject.h \
+		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsPixmapItem \
+		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qgraphicsitem.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/QKeyEvent \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtGui.framework/Headers/qevent.h \
+		../../droplet.hpp \
+		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/QTimer \
+		/Users/jakobwest/Qt/6.7.0/macos/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/QGraphicsView \
 		/Users/jakobwest/Qt/6.7.0/macos/lib/QtWidgets.framework/Headers/qgraphicsview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../main.cpp

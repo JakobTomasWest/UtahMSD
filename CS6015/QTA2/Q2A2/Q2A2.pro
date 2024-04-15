@@ -9,10 +9,10 @@ SOURCES += \
 RESOURCES += \
     images.qrc \
     resources.qrc \
-    resources.qrc
+
 
 HEADERS += \
-    bucket.h \
+    bucket.hpp \
     cloud.h \
-    droplet.h \
-    game1scene.h
+    droplet.hpp \
+    game1scene.hpp

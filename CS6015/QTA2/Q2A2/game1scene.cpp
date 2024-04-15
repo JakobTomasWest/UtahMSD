@@ -1,7 +1,7 @@
-#include "game1scene.h"
+#include "game1scene.hpp"
 #include <QBrush>
 #include <QTimer>
-#include "droplet.h"
+#include "droplet.hpp"
 #include "cloud.h"
 #include "QGraphicsPixmapItem"
 game1scene::game1scene(QObject *parent) : QGraphicsScene(parent) {

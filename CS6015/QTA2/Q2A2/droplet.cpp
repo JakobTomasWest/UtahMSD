@@ -1,5 +1,5 @@
-#include "droplet.h"
-#include "bucket.h"
+#include "droplet.hpp"
+#include "bucket.hpp"
 #include "game1scene.cpp"
 #include <QGraphicsItem>
 #include <QGraphicsScene>

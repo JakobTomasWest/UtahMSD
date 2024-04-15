@@ -1,4 +1,4 @@
-#include "bucket.h"
+#include "bucket.hpp"
 
 bucket::bucket(QObject *parent) : QObject(parent), QGraphicsPixmapItem() {
     setPixmap(QPixmap(":/images/bucket.png").scaled(150, 150));
