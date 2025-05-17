@@ -1,0 +1,16 @@
+//
+// Created by Jakob West on 4/15/24.
+//
+
+#ifndef REDUCTIONSASSIGNMENT_PARALLELSUM_H
+#define REDUCTIONSASSIGNMENT_PARALLELSUM_H
+
+
+
+class ParallelSum {
+
+};
+
+
+
+#endif //REDUCTIONSASSIGNMENT_PARALLELSUM_H
