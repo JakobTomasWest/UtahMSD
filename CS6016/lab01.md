@@ -8,6 +8,7 @@
 
 A grocery store needs to track an inventory of products for sale. It has zero or more of each type of product for sale, and needs to track the quantity and price for each product.
 
+**Schemas**\
 Inventory [__SKU(string)__, quantity(integer), price(real)]\
 Product [__SKU(string)__, name(string)]
 
@@ -15,6 +16,7 @@ Product [__SKU(string)__, name(string)]
 
 A product can be within multiple aisles of the store with speciality racks, however, a product can only be displayed in one place per aisle.
 
+**Schemas**\
 Product [__SKU(string)__, name(string)]\
 Location [__SKU(string)__, aisle(integer)]
 
@@ -22,6 +24,7 @@ Location [__SKU(string)__, aisle(integer)]
 
 A car has a: make, model, year, color, vin. A salesperson has a: name, social security number (SSN) and sales. A dealership has an inventory of cars, and Salespersons. The dealership needs to assign cars to sell for salespersons. More than one salesperson can be assigned to any given car, but a car does not necessarily have any salespeople assigned to it.
 
+**Schemas**\
 Car [__VIN(string)__, make (string),model (string), year(integer), color(string)]\
 Salesperson[__SSN(integer)__, name(string), sales(integer)]\
 CarAssignment [__VIN(string)__, __SSN(integer)__]
@@ -39,35 +42,30 @@ CREATE TABLE Patrons (
 
 CREATE TABLE Phones (
     CardNum (integer),
-    PhoneNum (integer),
+    PhoneNum (string),
     PRIMARY KEY(CardNum, PhoneNum)
+    FOREIGN KEY (CardNum) REFERENCES Patrons (CardNum),
 );
 CREATE TABLE CheckedOut (
     CardNum (integer),
     Serial (integer),
-    --hmmm
     PRIMARY KEY(Serial),
-    FOREIGN KEY (CardNum) REFERENCES Patrons (CardNum),
-    FOREIGN KEY (Serial) REFERENCES Inventory (Serial),
-    -- dont need serial unique b/c i already have primary key (serial)?
-    UNIQUE (Serial)
+    FOREIGN KEY (CardNum) REFERENCES Patrons (CardNum)
     
 );
 
 CREATE TABLE Inventory(
     Serial (integer),
-    ISBN(integer),
+    ISBN(string),
     PRIMARY KEY ( Serial),
     FOREIGN KEY (ISBN) REFERENCES Titles (ISBN)
-    --hmm
-    UNIQUE( Serial, ISBN)
 );
 
 CREATE TABLE Titles(
-    ISBN(integer) PRIMARY KEY,
+    ISBN(string),
     Title(string),
     Author(string)
-    UNIQUE (Title, Author)
+    PRIMARY KEY (ISBN)
 );
 
 ```
@@ -76,15 +74,15 @@ CREATE TABLE Titles(
  
 Cars:
 
-Red Toyota Tacoma, 2008
-Green Toyota Tacoma, 1999
-White Tesla Model 3, 2018
-Blue Subaru WRX, 2016
-Red Ford F150, 2004
-Salespeople:
+Red Toyota Tacoma, 2008\
+Green Toyota Tacoma, 1999\
+White Tesla Model 3, 2018\
+Blue Subaru WRX, 2016\
+Red Ford F150, 2004\
 
-Arnold, trying to sell all Toyotas
-Hannah, trying to sell all red cars
+Salespeople:
+Arnold, trying to sell all Toyotas\
+Hannah, trying to sell all red cars\
 Steve, selling the Tesla
 
 Car [__VIN(string)__, make (string), year(integer), color(string)]\
@@ -116,7 +114,7 @@ CarAssignment [__VIN(string)__, __SSN(integer)__]
 |123456789|1A   |     
 |123456789|2A   | 
 |123456781|1A   | 
-|123456781|2A   | 
+|123456781|5A   | 
 |123456782|3A   | 
 
 
@@ -127,8 +125,8 @@ Consider the following instance:
 |:----|:-----|:----|
 | x   | 4.0  | q   |
 | y   | 4.0  | p   |
-| z   | 3.1  | q   |
-| z   | 4.0  | q   |
+| z   | 3.1  | p   |
+| z   | 4.0  | p   |
 
 Assume that the instance data is complete: in other words, if a set of fields is unique among all tuples, then it can be considered always unique (no new additions to the table will ever change that).
 
