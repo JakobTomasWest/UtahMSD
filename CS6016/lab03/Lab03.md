@@ -124,16 +124,16 @@ Answer: $π_{Name}(σ_{Elo \geq 2850 (Players)})$
 Answer: $π_{Name}(Players ⨝_{Players.pID = Games.wpID} Games)$
 
 3. *Find the names of any player who has ever won a game as white.*\
-Answer: $π Name (Players ⨝_{Players.pID = Games.wpID} (σ_{Result = '1-0' (Games)}))$
+Answer: $π_{Name}(Players ⨝_{Players.pID = Games.wpID} (σ_{Result = '1-0' (Games)}))$
 
 4. *Find the names of any player who played any games in 2018.*\
-Answer: $\pi_{Name}(Players ⨝_{Players.pID = Games.wpID}(σ_{Year = 2018 (Games ⨝ Events)})) ∪  π_{Name}(Players ⨝_{Players.pID = Games.bpID}(σ_{Year = 2018 (Games ⨝ Events)}))$
+Answer: $π_{Name}(Players ⨝_{Players.pID = Games.wpID}(σ_{Year = 2018 (Games ⨝ Events)})) ∪  π_{Name}(Players ⨝_{Players.pID = Games.bpID}(σ_{Year = 2018 (Games ⨝ Events)}))$
 
 5. *Find the names and dates of any event in which Magnus Carlsen lost a game.*\
-Answer: $\pi_{Name},_{Year}(σ_{(Games.wpID =1 ∧ Games.Result = '0-1') ∨ (Games.bpID =1 ∧ Games.Result = '1-0')})$
+Answer: $π_{Name},_{Year}(σ_{(Games.wpID =1 ∧ Games.Result = '0-1') ∨ (Games.bpID =1 ∧ Games.Result = '1-0')})$
 
 6. *Find the names of all opponents of Magnus Carlsen.*\
-Answer: $\pi_{Name}(Players ⨝_{Player.pID = Games.bID} (σ_{Games.wpID = 1 (Games)}))\cup \pi_{Name}(Players ⨝_{Players.pID = Games.wpID} (σ_{Games.bpID = 1 (Games)}))$
+Answer: $π_{Name}(Players ⨝_{Player.pID = Games.bID} (σ_{Games.wpID = 1 (Games)}))\cup π_{Name}(Players ⨝_{Players.pID = Games.wpID} (σ_{Games.bpID = 1 (Games)}))$
 
 
 # Part 3 - LMS Queries
