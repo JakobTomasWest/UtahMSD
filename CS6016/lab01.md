@@ -1,4 +1,5 @@
 # Lab 01 – Relational Schema Design
+**Jakob West u0675702**
 
 ## Part 1 – English to Schema
 
