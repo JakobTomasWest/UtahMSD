@@ -6,8 +6,9 @@ public partial class MainPage : ContentPage
   private int workItemsCompleted = 0;
 
   public MainPage()
-	{
-		InitializeComponent();
+  {
+    InitializeComponent();
+    System.Diagnostics.Debug.WriteLine("MainPage constructor hit!");
 	}
 
   /// <summary>
@@ -33,7 +34,7 @@ public partial class MainPage : ContentPage
                 ChessGame g = games[0];
                 outputText.Text =
                     $"Loaded {games.Count} games\n\n" +
-                    $"▶ First Game:\n" +
+                    $"First Game:\n" +
                     $"Event: {g.Event}\n" +
                     $"White: {g.White} ({g.WhiteElo})\n" +
                     $"Black: {g.Black} ({g.BlackElo})\n" +
@@ -43,17 +44,17 @@ public partial class MainPage : ContentPage
             }
             else
             {
-                outputText.Text = "⚠️ No games found in file.";
+                outputText.Text = "No games found in file.";
             }
 
-            // ⚠️ Only call DB insert AFTER you see the output
+            // this will insert the game data into the database
             await Queries.InsertGameData(filePath, this);
         }
     }
     catch (Exception ex)
     {
-        outputText.Text = $"Error: {ex.Message}";
-        System.Diagnostics.Debug.WriteLine(ex);
+        outputText.Text = $"Error (in OnFileUpload): {ex.Message}";
+        Console.WriteLine(ex);
     }
 }
 
@@ -66,6 +67,9 @@ public partial class MainPage : ContentPage
   /// <param name="e"></param>
   private void OnGoClicked( object sender, EventArgs e )
   {
+    Console.WriteLine("Go button clicked!");
+    
+
     string winner = null;
     if ( whiteWon.IsChecked )
     {
@@ -85,7 +89,7 @@ public partial class MainPage : ContentPage
     var res = Queries.PerformQuery(wp, bp, open,
             winner, filterByDate.IsChecked, startDate.Date, endDate.Date,
             showMoves.IsChecked, this);
-
+    // Console.WriteLine("Query performed, result: " + res);
     outputText.Text = res;
   }
 

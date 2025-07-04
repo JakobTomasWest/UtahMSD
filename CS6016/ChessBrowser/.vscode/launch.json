@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET MAUI: MacCatalyst",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/ChessBrowser/bin/Debug/net9.0-maccatalyst/maccatalyst-arm64/ChessBrowser.app/Contents/MacOS/ChessBrowser",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      // "preLaunchTask": "build"
+    }
+  ]
+}

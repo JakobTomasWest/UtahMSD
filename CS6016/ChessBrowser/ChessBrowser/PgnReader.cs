@@ -18,15 +18,18 @@ public static class PgnReader
 
         // and parse them to create our list of games
         foreach (var line in lines)
-        {
+        {   
+            // once we hit a blank line, we know that we have reached the end of a game entry so wecan parse the tags and moves into a ChessGame object
             if (string.IsNullOrWhiteSpace(line))
             {
                 if (tagData.Count > 0 && movesBuilder.Count > 0)
                 {
                     try
                     {
+                        // if we have a tag and moves, parse them into a game object using the ParseGame method
+                        // and add it to the games list
                         games.Add(ParseGame(tagData, movesBuilder));
-                        Console.WriteLine($"Parsed game: {CleanTag(tagData, "White")} vs {CleanTag(tagData, "Black")}");
+                        // Console.WriteLine($"Parsed game: {CleanTag(tagData, "White")} vs {CleanTag(tagData, "Black")}");
 
                     }
                     catch (Exception exception)
@@ -34,15 +37,19 @@ public static class PgnReader
                         Console.WriteLine("Skipping the invalid ChessGame Entry " + exception.Message);
 
                     }
+                    // clear the tag and moves so that we can start fresh for the next game
                     tagData.Clear();
                     movesBuilder.Clear();
                 }
                 continue;
             }
-            //deconstruct line and parse ------- (.*) captures everything inside the quotes for the tag value 
+            // deconstruct line and parse ------- (.*) captures everything inside the quotes for the tag value 
             if (line.StartsWith("["))
             //^ we got a valid entry for tag 
             {
+                // \w+ matches one or more word characters like "Event" or "Site"
+                // \s lends us the whitespace between the tag name and the value
+                // and ""(.*)"" gives us "Australia Open 2019" or "Melbourne" etc
                 var match = Regex.Match(line, @"\[(\w+)\s+""(.*)""\]");
                 if (match.Success)
                 {
@@ -54,13 +61,14 @@ public static class PgnReader
                 movesBuilder.Add(line);
             }
 
-        }
+        } 
+        // make sure to get last game even if there is no blank line at the end of the file 
         if (tagData.Count > 0 && movesBuilder.Count > 0)
         {
             try
             {
                 games.Add(ParseGame(tagData, movesBuilder));
-                Console.WriteLine($"Parsed game: {CleanTag(tagData, "White")} vs {CleanTag(tagData, "Black")}");
+                // Console.WriteLine($"Parsed game: {CleanTag(tagData, "White")} vs {CleanTag(tagData, "Black")}");
 
             }
             catch (Exception ex)
@@ -72,7 +80,7 @@ public static class PgnReader
     }
 
 
-    // for each line in car lines we are going to 
+    // given a dictionary of tags and a list of moves, parse them into a cleaned up ChessGame object. 
     private static ChessGame ParseGame(Dictionary<string, string> tags, List<string> moves)
     {
         return new ChessGame
@@ -94,6 +102,10 @@ public static class PgnReader
 
     private static string CleanTag(Dictionary<string, string> tags, string key)
     {
+        // try to get the value associated with the given key in the tags dictionary.
+        // for example, if key is "Event" and tags contains ["Event" => "Australia Open 2019"], it will return "Australia Open 2019".
+        // if the key is not found in Tags, return an empty string instead of throwing an error.
+
         if (tags.TryGetValue(key, out string value))
             return value;
         else
@@ -119,7 +131,7 @@ public static class PgnReader
 
     private static DateTime ParseDate(string rawDate)
     {
-        // Handles dates like "2007.??.??"
+        // handle dates like "2007.??.??"
         try
         {
             var cleaned = rawDate.Replace("??", "01").Replace('.', '-');

@@ -15,7 +15,7 @@ public class ChessGame
     //white player and black player reference Players pID in sql
     //eID referenes eID in Events and that is the same as the top 3 as events pk
 
-    public string White { get; set; } //Players.Name for white
+    public string White { get; set; } //Players.Name for white 
     public int WhiteElo { get; set; } //Players.Elo for white
     public string Black { get; set; } //Players.Name for black
     public int BlackElo { get; set; } // Players.Elo for black
