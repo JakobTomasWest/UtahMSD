@@ -1,7 +1,0 @@
-# ninja log v5
-317	349	1710545495013850090	MallocReplacement	dc0fa9ac7a333ae
-4	731	1710544049634629937	CMakeFiles/MallocReplacement.dir/hashTable.cpp.o	df6b7c90c387c799
-4	317	1710545494980106859	CMakeFiles/MallocReplacement.dir/main.cpp.o	1c8bb869df3c66bd
-1	326	1710378050256809944	CMakeFiles/MallocReplacement.dir/MyAllocator.cpp.o	7b31cb9f274b600
-1	49	1710637136888784107	build.ninja	1222dc1ea335da72
-4	515	1710544049414319095	CMakeFiles/MallocReplacement.dir/MyMalloc.cpp.o	d82d2cec1b8f37e9

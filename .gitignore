@@ -1,4 +1,26 @@
-# macOS system files
 .DS_Store
-Thumbs.db
+
+# IDE
+.idea/
+*.iml
+
+# Gradle/Android
+**/build/
+.gradle/
+.kotlin/
+
+# CMake/CLion
+**/cmake-build-*/
+**/CMakeFiles/
+**/.ninja_*
+**/CMakeCache.txt
+**/Testing/
+
+# .NET / MAUI
+**/bin/
+**/obj/
+
+# Logs
+*.log
+logs/
 
