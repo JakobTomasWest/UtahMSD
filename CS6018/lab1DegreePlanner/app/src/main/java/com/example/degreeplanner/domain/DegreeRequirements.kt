@@ -20,3 +20,28 @@ class DegreeRequirements(val items: List<DegreeRequirement>) {
     fun allSatisfied(planned: Collection<Course>): Boolean =
         satisfiedCount(planned) == items.size
 }
+
+object Degrees {
+    val csDegree = DegreeRequirements(
+        listOf(
+            DegreeRequirement("Intro to CS", setOf(Course("CS", 101))),
+            DegreeRequirement(
+                "Programming (must take 2)",
+                setOf(
+                    Course("CS", 6010),
+                    Course("CS", 6011),
+                    Course("CS", 6012)
+                ),
+                minCount = 2
+            ),
+            DegreeRequirement(
+                "Writing (must take 1)",
+                setOf(Course("WRTG", 1010), Course("WRTG", 2010))
+            ),
+            DegreeRequirement(
+                "Humanities (must take 1)",
+                setOf(Course("PHIL", 101), Course("SOC", 101))
+            )
+        )
+    )
+}
