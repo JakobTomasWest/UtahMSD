@@ -1,0 +1,183 @@
+\doxysection{Add\+Expr Class Reference}
+\hypertarget{class_add_expr}{}\label{class_add_expr}\index{AddExpr@{AddExpr}}
+Inheritance diagram for Add\+Expr\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_add_expr}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_add_expr_a42e626ebbd6f085cf57e6cd40028cb8c}{Add\+Expr}} (\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}lhs, \mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}rhs)
+\begin{DoxyCompactList}\small\item\em Contructs an addition expression with left hand and right hand operands. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_add_expr_a99bc3ec5ceed883760fa29bf22ba469b}{equals}} (\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}e) override
+\begin{DoxyCompactList}\small\item\em Check if this addtion expression equals another expression. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{class_add_expr_a05dc1cb4091801233c41ea2aca311838}{interp}} () override
+\begin{DoxyCompactList}\small\item\em Evaluates the addition expression and return the sum. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_add_expr_a90efb4683399206101463e8cefd6e967}{has\+\_\+variable}} () override
+\begin{DoxyCompactList}\small\item\em Determines if the addition expression contains a variable. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_add_expr_a4d646d72b5d1789fe8a4d8e29b82687b}{subst}} (const string \&given\+Var\+Name, \mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}e) override
+\begin{DoxyCompactList}\small\item\em Substitutes a variable within the expression with a replacment expression. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_add_expr_aeaa8d12b6b4e78a8c84c96ccbf97913e}{print}} (ostream \&ot) const override
+\begin{DoxyCompactList}\small\item\em Prints the addition expression. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_add_expr_a46991ef57f4cf071b96e1d323c416062}{pretty\+\_\+print}} (std\+::ostream \&out) const override
+\begin{DoxyCompactList}\small\item\em Prints the addition expression in a pretty-\/printed format, using operation precedence. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_expr}{Expr}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual void {\bfseries print} (std\+::ostream \&out) const =0
+\item 
+string \mbox{\hyperlink{class_expr_a7bec2d72187b0b5228442bc03e2226b7}{to\+\_\+string}} () const
+\begin{DoxyCompactList}\small\item\em Converts the expression to a standard string representation. \end{DoxyCompactList}\item 
+string \mbox{\hyperlink{class_expr_a716cbe983dfa2edf43527facbc6332a5}{to\+\_\+pretty\+\_\+string}} () const
+\begin{DoxyCompactList}\small\item\em Converts the expression to pretty-\/printed string representation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_add_expr_a53fe7b8cc66b2f439a42092eb0eb2d43}\label{class_add_expr_a53fe7b8cc66b2f439a42092eb0eb2d43} 
+\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*} {\bfseries lhs}
+\item 
+\Hypertarget{class_add_expr_a5a4544f1e9834ff5f00af0d334ae5df5}\label{class_add_expr_a5a4544f1e9834ff5f00af0d334ae5df5} 
+\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*} {\bfseries rhs}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_add_expr_a42e626ebbd6f085cf57e6cd40028cb8c}\label{class_add_expr_a42e626ebbd6f085cf57e6cd40028cb8c} 
+\index{AddExpr@{AddExpr}!AddExpr@{AddExpr}}
+\index{AddExpr@{AddExpr}!AddExpr@{AddExpr}}
+\doxysubsubsection{\texorpdfstring{AddExpr()}{AddExpr()}}
+{\footnotesize\ttfamily Add\+Expr\+::\+Add\+Expr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{lhs,  }\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{rhs }\end{DoxyParamCaption})}
+
+
+
+Contructs an addition expression with left hand and right hand operands. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lhs} & Pointer to the left hand side expression. \\
+\hline
+{\em rhs} & Pointer to the left hand side expression. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_add_expr_a99bc3ec5ceed883760fa29bf22ba469b}\label{class_add_expr_a99bc3ec5ceed883760fa29bf22ba469b} 
+\index{AddExpr@{AddExpr}!equals@{equals}}
+\index{equals@{equals}!AddExpr@{AddExpr}}
+\doxysubsubsection{\texorpdfstring{equals()}{equals()}}
+{\footnotesize\ttfamily bool Add\+Expr\+::equals (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{e }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Check if this addtion expression equals another expression. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e} & Pointer to the expression to compare with. return True if the expression are equal, return false if the expressions are not equal. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_expr}{Expr}}.
+
+\Hypertarget{class_add_expr_a90efb4683399206101463e8cefd6e967}\label{class_add_expr_a90efb4683399206101463e8cefd6e967} 
+\index{AddExpr@{AddExpr}!has\_variable@{has\_variable}}
+\index{has\_variable@{has\_variable}!AddExpr@{AddExpr}}
+\doxysubsubsection{\texorpdfstring{has\_variable()}{has\_variable()}}
+{\footnotesize\ttfamily bool Add\+Expr\+::has\+\_\+variable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Determines if the addition expression contains a variable. 
+
+\begin{DoxyReturn}{Returns}
+True if the expression contains a variable, false if it doesn\textquotesingle{}t 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_expr}{Expr}}.
+
+\Hypertarget{class_add_expr_a05dc1cb4091801233c41ea2aca311838}\label{class_add_expr_a05dc1cb4091801233c41ea2aca311838} 
+\index{AddExpr@{AddExpr}!interp@{interp}}
+\index{interp@{interp}!AddExpr@{AddExpr}}
+\doxysubsubsection{\texorpdfstring{interp()}{interp()}}
+{\footnotesize\ttfamily int Add\+Expr\+::interp (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Evaluates the addition expression and return the sum. 
+
+\begin{DoxyReturn}{Returns}
+The integer result of the summed addition. 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_expr}{Expr}}.
+
+\Hypertarget{class_add_expr_a46991ef57f4cf071b96e1d323c416062}\label{class_add_expr_a46991ef57f4cf071b96e1d323c416062} 
+\index{AddExpr@{AddExpr}!pretty\_print@{pretty\_print}}
+\index{pretty\_print@{pretty\_print}!AddExpr@{AddExpr}}
+\doxysubsubsection{\texorpdfstring{pretty\_print()}{pretty\_print()}}
+{\footnotesize\ttfamily void Add\+Expr\+::pretty\+\_\+print (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Prints the addition expression in a pretty-\/printed format, using operation precedence. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em out} & The output stream to print to. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{class_expr_a93aeb8bee2b9a446ad14298beb12eb20}{Expr}}.
+
+\Hypertarget{class_add_expr_aeaa8d12b6b4e78a8c84c96ccbf97913e}\label{class_add_expr_aeaa8d12b6b4e78a8c84c96ccbf97913e} 
+\index{AddExpr@{AddExpr}!print@{print}}
+\index{print@{print}!AddExpr@{AddExpr}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}}
+{\footnotesize\ttfamily void Add\+Expr\+::print (\begin{DoxyParamCaption}\item[{ostream \&}]{ot }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Prints the addition expression. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ot} & The output stream to print to. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_add_expr_a4d646d72b5d1789fe8a4d8e29b82687b}\label{class_add_expr_a4d646d72b5d1789fe8a4d8e29b82687b} 
+\index{AddExpr@{AddExpr}!subst@{subst}}
+\index{subst@{subst}!AddExpr@{AddExpr}}
+\doxysubsubsection{\texorpdfstring{subst()}{subst()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*} Add\+Expr\+::subst (\begin{DoxyParamCaption}\item[{const string \&}]{target\+Var\+Name,  }\item[{\mbox{\hyperlink{class_expr}{Expr}} \texorpdfstring{$\ast$}{*}}]{replacement\+Var }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Substitutes a variable within the expression with a replacment expression. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target\+Var\+Name} & The name of the variable/string to be substituted. \\
+\hline
+{\em replacement\+Var} & Pointer to the expression that will replace the variable/string. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new expression with the variable substituted. 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_expr}{Expr}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/jakobwest/\+Desktop/\+Utah\+MSD/\+CS6015/\+MSDScript\+Project/expr.\+hpp\item 
+/\+Users/jakobwest/\+Desktop/\+Utah\+MSD/\+CS6015/\+MSDScript\+Project/expr.\+cpp\end{DoxyCompactItemize}

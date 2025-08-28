@@ -1,0 +1,33 @@
+# Gradle / Build
+.gradle/
+**/build/
+**/captures/
+.externalNativeBuild/
+.cxx/
+
+# IDE (Android Studio / IntelliJ)
+*.iml
+.idea/
+
+# Local machine config
+local.properties
+
+# OS
+.DS_Store
+
+# Logs / dumps
+*.log
+*.hprof
+
+# Artifacts
+*.apk
+*.aab
+
+# Keystores / secrets
+*.jks
+*.keystore
+*.keystore.properties
+
+# Firebase/Play (if any)
+google-services.json
+
