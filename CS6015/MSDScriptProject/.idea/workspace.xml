@@ -21,34 +21,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0ba017bc-fb7f-47a9-8bb1-df680b90c8e6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../HelloWorld/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HelloWorld/HelloWorld.pro" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HelloWorld/main.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../QTA1/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../CS6013/Thread-Safe-Queue/cpphppfilesCmake.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Lab7_files/Report.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab7_files/Report.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/MSDGUI.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/MSDGUI/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/MSDGUI/MSDGUI.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/MSDGUIpt2/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/MSDGUIpt2/MSDGUIpt2.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/Val.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/env.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/env.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/expr.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/expr.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/main.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/mainwidget.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/mainwidget.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/parse.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/parse.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/pointer.hpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MSDGUI/val.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../QTA1/QTA1.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../QTA1/main.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../QTA1/mainwidget.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../QTA1/mainwidget.h" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../CS6013/ReductionsAssignment/ParallelSum.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../CS6013/ReductionsAssignment/ParallelSum.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../CS6013/Thread-Safe-Queue/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/../../CS6013/Thread-Safe-Queue/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/Q2A2.pro.user" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/Q2A2.pro.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/integral_constant.h.6DE430EF162028D5.idx" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/integral_constant.h.6DE430EF162028D5.idx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qchar.h.F238C05E33D5F6E5.idx" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qchar.h.F238C05E33D5F6E5.idx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qgraphicsitem.h.251DBDF6B32E34F0.idx" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qgraphicsitem.h.251DBDF6B32E34F0.idx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qgraphicsscene.h.DF3A3F99FC607356.idx" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qgraphicsscene.h.DF3A3F99FC607356.idx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qobject.h.F1753B9884B2FB36.idx" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qobject.h.F1753B9884B2FB36.idx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qobjectdefs.h.A032F097CAB03DCB.idx" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qobjectdefs.h.A032F097CAB03DCB.idx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qobjectdefs.h.CBD68FEAA5929C99.idx" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/.cache/clangd/index/qobjectdefs.h.CBD68FEAA5929C99.idx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/.qtc_clangd/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/Q2A2.app/Contents/MacOS/Q2A2" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/Q2A2.app/Contents/MacOS/Q2A2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/bucket.o" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/bucket.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/droplet.o" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/droplet.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/qrc_resources.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/qrc_resources.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/qrc_resources.o" beforeDir="false" afterPath="$PROJECT_DIR$/../QTA2/Q2A2/build/Qt_6_7_0_for_macOS-Debug/qrc_resources.o" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,11 +106,6 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="Catch.TEST" />
       <item itemvalue="Catch.parse" />
@@ -154,6 +140,7 @@
       <workItem from="1710862722330" duration="9622000" />
       <workItem from="1711314974841" duration="34868000" />
       <workItem from="1712344369002" duration="18259000" />
+      <workItem from="1716513544102" duration="661000" />
     </task>
     <servers />
   </component>

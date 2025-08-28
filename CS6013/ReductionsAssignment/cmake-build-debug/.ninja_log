@@ -1,0 +1,5 @@
+# ninja log v5
+701	853	1713214140198043843	ReductionsAssignment	ca04b987d703a0f3
+0	699	1713214140040143649	CMakeFiles/ReductionsAssignment.dir/main.cpp.o	ed7baa5fc2d9b3e9
+0	406	1713219122207744054	build.ninja	c5e850456383607d
+5	305	1713226693050259150	CMakeFiles/ReductionsAssignment.dir/main.cpp.o	ed7baa5fc2d9b3e9

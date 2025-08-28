@@ -177,7 +177,7 @@ namespace ChessBrowser
 
       // Use this to count the number of rows returned by your query
       // (see below return statement)
-      int numRows = 0;
+      int numResults = 0;
 
       using (MySqlConnection conn = new MySqlConnection(connection))
       {

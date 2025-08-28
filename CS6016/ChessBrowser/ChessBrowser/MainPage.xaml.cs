@@ -8,7 +8,7 @@ public partial class MainPage : ContentPage
   public MainPage()
   {
     InitializeComponent();
-    System.Diagnostics.Debug.WriteLine("MainPage constructor hit!");
+    // System.Diagnostics.Debug.WriteLine("MainPage constructor hit!");
 	}
 
   /// <summary>
@@ -120,7 +120,7 @@ public partial class MainPage : ContentPage
   /// <returns></returns>
   internal string GetConnectionString()
   {
-    return "server=cs-db.eng.utah.edu;database=" + username.Text + ";uid=" + username.Text + ";password=" + password.Text;
+    return "server=cs-db.eng.utah.edu;database=u0675702" + ";uid=" + username.Text + ";password=" + password.Text;
   }
 }
 
