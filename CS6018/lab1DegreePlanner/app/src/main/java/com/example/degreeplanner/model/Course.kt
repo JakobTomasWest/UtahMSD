@@ -1,4 +1,4 @@
-package com.example.degreeplanner.domain
+package com.example.degreeplanner.model
 
 
 //makes both the constructor private as well as the copy that was defaulted as public

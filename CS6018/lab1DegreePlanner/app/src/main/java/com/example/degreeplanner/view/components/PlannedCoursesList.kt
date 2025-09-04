@@ -1,10 +1,12 @@
-package com.example.degreeplanner.uiComposables.components
+package com.example.degreeplanner.view.components
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import com.example.degreeplanner.domain.Course
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.degreeplanner.model.Course
 
 fun LazyListScope.PlannedCoursesList(
     planned: List<Course>,
@@ -20,3 +22,4 @@ fun LazyListScope.PlannedCoursesList(
         }
     }
 }
+

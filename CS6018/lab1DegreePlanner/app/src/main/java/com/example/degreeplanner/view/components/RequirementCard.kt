@@ -1,4 +1,4 @@
-package com.example.degreeplanner.uiComposables.components
+package com.example.degreeplanner.view.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,9 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.degreeplanner.domain.Course
-import com.example.degreeplanner.domain.DegreeRequirement
-import com.example.degreeplanner.domain.DegreeRequirements
+import com.example.degreeplanner.model.Course
+import com.example.degreeplanner.model.DegreeRequirement
+import com.example.degreeplanner.model.DegreeRequirements
 import com.example.degreeplanner.ui.theme.DegreePlannerTheme
 
 @Composable
@@ -24,7 +24,7 @@ fun RequirementCard(
     req: DegreeRequirement,
     planned: List<Course>,
     degree: DegreeRequirements,
-    modifier: Modifier = Modifier.Companion
+    modifier: Modifier = Modifier
 ) {
     val taken = degree.countTaken(req, planned)
     val needed = req.minCount
@@ -32,9 +32,9 @@ fun RequirementCard(
     val progressVal = (taken.toFloat() / needed).coerceIn(0f, 1f)
 
     ElevatedCard(modifier.fillMaxWidth()) {
-        Column(Modifier.Companion.padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(
-                Modifier.Companion.fillMaxWidth(),
+                Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(req.title, style = MaterialTheme.typography.titleMedium)
@@ -48,7 +48,7 @@ fun RequirementCard(
 
                 LinearProgressIndicator(
                     progress = { progressVal },
-                    modifier = Modifier.Companion.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     missing.forEach { m -> Text("• ${m.code}") }
@@ -64,14 +64,14 @@ fun RequirementCardPreview() {
     val req = DegreeRequirement(
         "Programming core (take 2)",
         setOf(
-            Course.Companion("CS", 6011),
-            Course.Companion("CS", 6012),
-            Course.Companion("CS", 6013)
+            Course("CS", 6011),
+            Course("CS", 6012),
+            Course("CS", 6013)
         ),
         2
     )
     val deg = DegreeRequirements(listOf(req))
     DegreePlannerTheme {
-        RequirementCard(req, planned = listOf(Course.Companion("CS", 601)), degree = deg)
+        RequirementCard(req, planned = listOf(Course("CS", 601)), degree = deg)
     }
 }

@@ -1,4 +1,4 @@
-package com.example.degreeplanner.domain
+package com.example.degreeplanner.model
 
 data class DegreeRequirement(
     val title: String,

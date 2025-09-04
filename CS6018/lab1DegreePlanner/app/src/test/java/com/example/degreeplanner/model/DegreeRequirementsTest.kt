@@ -1,4 +1,4 @@
-package com.example.degreeplanner.domain
+package com.example.degreeplanner.model
 
 import org.junit.Assert.*
 import org.junit.Test
@@ -53,5 +53,27 @@ class DegreeRequirementsTest {
 
         assertEquals(2, degree.satisfiedCount(planned))
         assertTrue(degree.allSatisfied(planned))
+    }
+
+    @Test
+    fun counts_satisfied_requirements_correctly() {
+        val cs101 = Course("CS", 101)
+        val cs200 = Course("CS", 200)
+
+        val reqs = DegreeRequirements(
+            items = listOf(
+                DegreeRequirement(title = "Take CS 101", choices = setOf(cs101), minCount = 1),
+                DegreeRequirement(title = "Pick one of CS 200", choices = setOf(cs200), minCount = 1),
+            )
+        )
+
+        // none
+        assertEquals(0, reqs.satisfiedCount(emptyList()))
+        // one
+        assertEquals(1, reqs.satisfiedCount(listOf(cs101)))
+        // both
+        assertEquals(2, reqs.satisfiedCount(listOf(cs101, cs200)))
+        // allSatisfied
+        assertTrue(reqs.allSatisfied(listOf(cs101, cs200)))
     }
 }

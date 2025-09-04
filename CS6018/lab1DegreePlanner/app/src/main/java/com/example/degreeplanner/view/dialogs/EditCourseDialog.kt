@@ -1,4 +1,4 @@
-package com.example.degreeplanner.uiComposables.dialogs
+package com.example.degreeplanner.view.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,9 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
-import com.example.degreeplanner.domain.Course
+import com.example.degreeplanner.model.Course
 
 @Composable
 fun EditCourseDialog(
@@ -24,8 +25,8 @@ fun EditCourseDialog(
     if (course == null)
         return
     // take editing state (course fields )from PS for key
-    var dept by remember(course) { mutableStateOf(course.dept) }
-    var num  by remember(course) { mutableStateOf(course.number.toString()) }
+    var dept by rememberSaveable(course) { mutableStateOf(course.dept) }
+    var num  by rememberSaveable(course) { mutableStateOf(course.number.toString()) }
     var error by remember { mutableStateOf<String?>(null) }
 
     AlertDialog(
@@ -35,10 +36,10 @@ fun EditCourseDialog(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     dept, onValueChange = { dept = it },
-                    label = { Text("Dept") })
+                    label = { Text("Dept") }, singleLine = true)
                 OutlinedTextField(
                     num, onValueChange = { num = it.filter(Char::isDigit) },
-                    label = { Text("Number") })
+                    label = { Text("Number") }, singleLine = true)
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
         },

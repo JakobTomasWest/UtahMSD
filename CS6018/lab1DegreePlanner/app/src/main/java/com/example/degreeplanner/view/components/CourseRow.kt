@@ -1,4 +1,4 @@
-package com.example.degreeplanner.uiComposables.components
+package com.example.degreeplanner.view.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.degreeplanner.domain.Course
+import com.example.degreeplanner.model.Course
 import com.example.degreeplanner.ui.theme.DegreePlannerTheme
 
 @Composable
@@ -20,13 +20,13 @@ fun CourseRow(
     course: Course,
     onEdit: (Course) -> Unit,
     onRemove: (Course) -> Unit,
-    modifier: Modifier = Modifier.Companion
+    modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier.fillMaxWidth()) {
         Row(
-            Modifier.Companion.padding(8.dp).fillMaxWidth(),
+            Modifier.padding(8.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Companion.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(course.code)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -41,6 +41,6 @@ fun CourseRow(
 @Composable
 fun CourseRowPreview() {
     DegreePlannerTheme {
-        CourseRow(course = Course.Companion("CS", 101), onEdit = {}, onRemove = {})
+        CourseRow(course = Course("CS", 101), onEdit = {}, onRemove = {})
     }
 }
