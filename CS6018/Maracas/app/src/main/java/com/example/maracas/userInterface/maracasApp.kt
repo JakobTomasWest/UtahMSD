@@ -4,6 +4,7 @@ package com.example.maracas.userInterface
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.maracas.model.Shake
+import com.example.maracas.userInterface.effects.SensorCollector
 import com.example.maracas.userInterface.screen.MaracasScreen
 import com.example.maracas.userInterface.screen.MaracasUIState
 
@@ -17,6 +18,7 @@ fun MaracasApp() {
     val capturing by vm.capturing.collectAsState()
     val shakes by vm.shakes.collectAsState()
 
+    SensorCollector(enabled = capturing,  onShakeDetected = vm::onAccelerationNewSample)
 
     MaracasScreen(
         state = MaracasUIState(capturing, shakes),
