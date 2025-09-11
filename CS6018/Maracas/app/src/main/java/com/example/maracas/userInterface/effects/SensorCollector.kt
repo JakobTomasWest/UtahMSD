@@ -18,7 +18,7 @@ import androidx.compose.runtime.*
 @Composable
 fun SensorCollector (
     enabled: Boolean,
-    onShakeDetected: (x: Float, y: Float, z: Float) -> Unit
+    onShakeDetected: (x: Float, y: Float, z: Float) -> Unit //passed from MaracasAppWith to vm::onAccelerationNewSample
 ){
     // Get Anroid Context inside a composable
     val context = LocalContext.current

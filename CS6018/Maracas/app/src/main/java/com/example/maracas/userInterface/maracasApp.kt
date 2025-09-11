@@ -10,19 +10,24 @@ import com.example.maracas.userInterface.screen.MaracasUIState
 
 
 @Composable
-fun MaracasApp() {
+fun MaracasAppWith(
+    capturing: Boolean,
+    shakes: List<Shake>,
+    onCapturingChange: (Boolean) -> Unit,
+    onDeleteOlderThan: (Long) -> Unit,
+    onClearAll: () -> Unit,
+    onShakeSample: (Float, Float, Float) -> Unit) {
 
-    val vm: MaracasViewModel = viewModel()
+//    val vm: MaracasViewModel = viewModel()
 
-    // Convert StateFlow to Compose State
-    val capturing by vm.capturing.collectAsState()
-    val shakes by vm.shakes.collectAsState()
 
-    SensorCollector(enabled = capturing,  onShakeDetected = vm::onAccelerationNewSample)
+    // Start collecting sensor data when capturing is enabled from the switch MaracasScreen ,
+    SensorCollector(enabled = capturing,  onShakeDetected = onShakeSample)
 
     MaracasScreen(
         state = MaracasUIState(capturing, shakes),
-        onCapturingChange = vm::setCapturing,
-        onDeleteOlderThan = vm::deleteOlderThan
+        onCapturingChange = onCapturingChange,
+        onDeleteOlderThan = onDeleteOlderThan,
+        onClearAll = onClearAll
     )
 }

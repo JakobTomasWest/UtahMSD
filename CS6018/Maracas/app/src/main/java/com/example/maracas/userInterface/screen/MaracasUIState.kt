@@ -13,6 +13,7 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.maracas.model.Shake
+import com.example.maracas.userInterface.components.ShakeCanvas
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,6 +27,7 @@ fun MaracasScreen(
     state: MaracasUIState,
     onCapturingChange: (Boolean) -> Unit,
     onDeleteOlderThan: (durationMs: Long) -> Unit,
+    onClearAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -59,25 +61,19 @@ fun MaracasScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            Canvas(Modifier.fillMaxWidth().height(180.dp)) {
-                val sorted = state.shakes.sortedBy { it.timestamp }
-                val maxI = (sorted.maxOfOrNull { it.intensity } ?: 1f)
-                val barW = if (sorted.isEmpty()) 0f else size.width / sorted.size
-                val barColor = Color.Black
-                sorted.forEachIndexed { i, s ->
-                    val h = (s.intensity / maxI) * size.height
-                    drawRect(
-                        color = barColor,
-                        topLeft = Offset(i * barW, size.height - h),
-                        size = Size(barW * 0.8f, h)
-                    )
-                }
-            }
+            ShakeCanvas(
+                shakes = state.shakes,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp),
+                barColor = Color.Black
+            )
+
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = onClearAll) { Text("Clear all")}
                 Button(onClick = { onDeleteOlderThan(10 * 60 * 1000L) }) { Text("Delete >10 min") }
                 Button(onClick = { onDeleteOlderThan(60 * 60 * 1000L) }) { Text("Delete >1 hr") }
-                Button(onClick = { onDeleteOlderThan(24 * 60 * 60 * 1000L) }) { Text("Delete >1 day") }
             }
 
             // List of past shakes (time + intensity).
@@ -88,7 +84,7 @@ fun MaracasScreen(
     }
 }
 
-
+// call ShakeRow in LazyColumn and display timestamp and intensity of a shake
 @Composable
 private fun ShakeRow(s: Shake) {
     val fmt = remember { SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()) }
