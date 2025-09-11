@@ -45,11 +45,11 @@ class MaracasViewModel(
     fun onAccelerationNewSample(x: Float, y: Float, z: Float, elapsedRealtime: Long = SystemClock.elapsedRealtime()) {
         if (!_capturing.value) return // Ignore if not capturing
         // Calculate the magnitude of the acceleration vector
-        val mag = Math.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+        val mag = kotlin.math.sqrt(x*x + y*y + z*z)
         // time since last shake for cooldown or debounce
-        val timeSinceLastShake = elapsedRealtime - lastShakeTimestamp
 
-        if (mag >= shakeThreshold && timeSinceLastShake >= shakeCooldownMs) {
+
+        if (mag >= shakeThreshold && elapsedRealtime - lastShakeTimestamp >= shakeCooldownMs) {
             lastShakeTimestamp = elapsedRealtime
             // Launch a coroutine in viewModelScope to call the suspend function in repo
             viewModelScope.launch {
