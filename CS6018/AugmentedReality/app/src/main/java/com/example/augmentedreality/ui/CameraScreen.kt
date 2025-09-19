@@ -28,10 +28,13 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 
 
@@ -86,39 +89,52 @@ fun CameraRoute ( vm: CameraViewModel = viewModel() ) {
     }
 
     // UI -- show the camera preview when we have a SurfaceRequest from the VM
-    Box(Modifier.fillMaxSize()) {
-
-        //If preview produced a SR, render it with CameraXViewfinder
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+        // If we have a SurfaceRequest, draw the preview + overlay, otherwise show a message
         state.surfaceRequest?.let { sr ->
-            val transformer = remember { MutableCoordinateTransformer() }
-            CameraXViewfinder(
-                modifier = Modifier.fillMaxSize(),
-                surfaceRequest = sr,
-                coordinateTransformer = transformer
-            )
-        } ?: run {
-            Text("Waiting for camera", modifier = Modifier.align(Alignment.Center))
-        }
-        // Draw point of interest
-        Canvas(Modifier.fillMaxSize()){
-            val point = state.poi ?: return@Canvas
-            val imageWidth = (state.frameWidth.takeIf { it > 0 } ?: 1).toFloat()
-            val imageHeight = (state.frameHeight.takeIf { it > 0 } ?: 1).toFloat()
+            val fw = (state.frameWidth.takeIf { it > 0 } ?: 16)
+            val fh = (state.frameHeight.takeIf { it > 0 } ?: 9)
 
-            val viewWidth = size.width
-            val viewHeight = size.height
-            val scale = kotlin.math.max(viewWidth / imageWidth, viewHeight / imageHeight)
-            val dx = (viewWidth - imageWidth * scale) /2f
-            val dy = (viewHeight - imageHeight * scale) /2f
-            val cx = dx + (point.x * imageWidth) * scale
-            val cy = dy + (point.y * imageHeight) * scale
+            // Center a box that matches the camera’s upright aspect ratio
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(fw.toFloat() / fh.toFloat())
+                    .align(Alignment.Center)
+            ) {
+                val transformer = remember { MutableCoordinateTransformer() }
 
-            drawCircle(
-                color = Color.Red,
-                center = androidx.compose.ui.geometry.Offset(cx, cy),
-                radius = 14.dp.toPx()
-            )
-        }
+                CameraXViewfinder(
+                    modifier = Modifier.matchParentSize(),
+                    surfaceRequest = sr,
+                    coordinateTransformer = transformer
+                )
+
+                // Overlay uses the exact same sized box as the viewfinder
+                Canvas(Modifier.matchParentSize()) {
+                    val poi = state.poi ?: return@Canvas
+                    val imgW = fw.toFloat()
+                    val imgH = fh.toFloat()
+
+                    val scale = kotlin.math.min(size.width / imgW, size.height / imgH)
+                    val cx = poi.x * imgW * scale
+                    val cy = poi.y * imgH * scale
+                    drawCircle(
+                        color = Color.Red,
+                        radius = 8.dp.toPx(),
+                        center = Offset(cx, cy)
+                    )
+                }
+            }
+        } ?: Text(
+            "Waiting for camera",
+            modifier = Modifier.align(Alignment.Center),
+            color = Color.White
+        )
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.TopCenter).padding(top = 48.dp)

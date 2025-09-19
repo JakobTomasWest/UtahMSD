@@ -1,6 +1,13 @@
 package com.example.augmentedreality.ui
 
 import android.app.Application
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Rational
+import android.view.Display
+import android.view.Surface
+import android.hardware.display.DisplayManager
+import android.graphics.Color as AColor
 import androidx.camera.core.AspectRatio
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +18,8 @@ import androidx.camera.core.Preview
 import java.util.concurrent.Executors
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.SurfaceRequest
+import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.ViewPort
 import androidx.camera.lifecycle.awaitInstance
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.lifecycle.viewModelScope
@@ -20,6 +29,9 @@ import com.example.augmentedreality.data.MediaStoreSaver
 import kotlin.math.max
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
+import kotlin.math.min
 
 
 // ViewModel holds UI state and business logic for the camera screen.
@@ -58,6 +70,11 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
             .requireLensFacing(_state.value.lensFacing)
             .build()
 
+    private fun displayRotation(): Int {
+        val dm = getApplication<Application>().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        val display = dm.getDisplay(Display.DEFAULT_DISPLAY)
+        return display?.rotation ?: Surface.ROTATION_0
+    }
 
     // State the camera preview and expose the SurfaceRequest for CameraXViewfinder.
     fun startPreview(owner: androidx.lifecycle.LifecycleOwner) {
@@ -74,31 +91,54 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
                 .setResolutionSelector(resolutionSelector)
                 .build()
                 .apply {
-                    setSurfaceProvider { srequest ->
-                        // Use the PREVIEW’s resolution for overlay math (this is what the viewfinder draws)
-                        val res = srequest.resolution
-                        _state.value = _state.value.copy(
-                            surfaceRequest = srequest,
-                            frameWidth = res.width,
-                            frameHeight = res.height
-                        )
+                    setSurfaceProvider { srequest: SurfaceRequest ->
+
+                        // Listen for how the preview is transformed on screen
+                        srequest.setTransformationInfoListener(
+                            ContextCompat.getMainExecutor(getApplication())
+                        ) { info: SurfaceRequest.TransformationInfo ->
+                            val res = srequest.resolution
+                            val rot = info.rotationDegrees      // {0,  90, 180, 270}
+
+                            // Use the *upright* preview size (swap when 90/270)
+                            val (wUpright, hUpright) =
+                                if (rot % 180 == 90) res.height to res.width else res.width to res.height
+
+                            _state.value = _state.value.copy(
+                                surfaceRequest = srequest,
+                                frameWidth = wUpright,
+                                frameHeight = hUpright
+                            )
+                        }
                     }
                 }
             buildAnalysis()
             // Fourth, Build the image capture
             imageCapture = ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+//                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                 .build()
 
+            val analysis = createImageAnalysis().also{
+                setBrightnessPointAnalyzer(it)
+            }
+
+            val vp = ViewPort.Builder(
+                Rational(16, 9),
+                displayRotation()
+            ).setScaleType(ViewPort.FIT).build()
+
+            val group = UseCaseGroup.Builder()
+                .setViewPort(vp)
+                .addUseCase(preview!!)
+                .addUseCase(imageCapture!!)
+                .addUseCase(analysis)
+                .build()
             // Fifth, link each case to the lifecycle owner using the current camera toggle
-            val analysis = imageAnalysis ?: return@launch
+//            val analysis = imageAnalysis ?: return@launch
             cameraProvider.bindToLifecycle(
                 owner,
                 cameraSelector(),
-                preview,
-                imageCapture,
-                analysis
-            )
+                group)
         }
     }
 
@@ -154,116 +194,105 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
             .build()
 
 
-    // Read the center pixels RGB and update brightness
-    private fun setCenterBrightnessAnalyzer(analysis: ImageAnalysis){
-        analysis.setAnalyzer(analysisExecutor){ proxy -> //runs analysis on background thread
-            try {
-                val plane = proxy.planes[0]
-                val buffer = plane.buffer
-                val rowStride = plane.rowStride
-                val pixelStride = plane.pixelStride
-                val width = proxy.width
-                val height = proxy.height
-
-                if(width > 0 && height > 0){
-                    val centerX = width / 2
-                    val centerY = height / 2
-                    val offset = centerY * rowStride + centerX * pixelStride
-                    if(offset + 2 < buffer.limit()){
-                        val r = buffer.get(offset).toInt() and 0xFF
-                        val g = buffer.get(offset + 1).toInt() and 0xFF
-                        val b = buffer.get(offset + 2).toInt() and 0xFF
-                        val average = (r + g + b) / (3 * 255f)
-
-                        val xNorm = if (width > 1) centerX.toFloat() / (width - 1) else 0.5f
-                        val yNorm = if (height > 1) centerY.toFloat() / (height - 1) else 0.5f
-
-                        // mirror X if front camera is active so that the overlay matches preview
-                        val xForUi = if (_state.value.lensFacing == CameraSelector.LENS_FACING_FRONT) 1f - xNorm
-                        else xNorm
-                        // update state with brightness value
-                        _state.value = _state.value.copy(
-                            brightness = average,
-                            poi = Offset(xForUi, yNorm)
-                        )
-                    }
-                }
-
-            } finally {
-                proxy.close() // closes frame
-            }
-        }
-    }
-
     private fun toUprightNormalized(
-        x: Int, y: Int, w: Int, h: Int, rotationDegrees: Int
+        x: Float, y: Float, w: Int, h: Int, rotationDegrees: Int
     ): Pair<Float, Float> {
-        val w1 = max(1, w - 1)
-        val h1 = max(1, h - 1)
-        return when (rotationDegrees % 360) {
-            0 -> x / w1.toFloat() to y / h1.toFloat()
-            90 -> y / h1.toFloat() to (w1 - x) / w1.toFloat()           // (x',y') = (y, w-1-x)
-            180 -> (w1 - x) / w1.toFloat() to (h1 - y) / h1.toFloat()    // (w-1-x, h-1-y)
-            270 -> (h1 - y) / h1.toFloat() to x / w1.toFloat()           // (h-1-y, x)
-            else -> x / w1.toFloat() to y / h1.toFloat()
+        val w1 = w.toFloat()
+        val h1 = h.toFloat()
+        return when ((rotationDegrees % 360 + 360) % 360) {
+            // Use pixel CENTERS: (x+0.5)/w, (y+0.5)/h
+            0   -> (x + 0.5f) / w1 to (y + 0.5f) / h1
+            90  -> (h1 - (y + 0.5f)) / h1 to (x + 0.5f) / w1      // Clockwise 90°
+            180 -> (w1 - (x + 0.5f)) / w1 to (h1 - (y + 0.5f)) / h1
+            270 -> (y + 0.5f) / h1 to (w1 - (x + 0.5f)) / w1      // Clockwise 270°
+            else-> (x + 0.5f) / w1 to (y + 0.5f) / h1
         }
     }
 
     // Scan a grid, and pick the brightest pixel, upgrade brightness and poi
-    private fun setBrightnessPointAnalyzer(analysis: ImageAnalysis, grid: Int =96){
+    private fun setBrightnessPointAnalyzer(analysis: ImageAnalysis, grid: Int =64){
         analysis.setAnalyzer(analysisExecutor){ proxy -> //runs analysis on background thread
             try {
-                val plane = proxy.planes[0]
-                val buffer = plane.buffer
-                val rowStride = plane.rowStride
-                val pixelStride = plane.pixelStride
-                val width = proxy.width
-                val height = proxy.height
+//
+                val bmp: Bitmap = proxy.toBitmap()
+                val width = bmp.width
+                val height = bmp.height
                 val rotation = proxy.imageInfo.rotationDegrees
-                var bestSum = -1
+                if (width <= 0 || height <= 0) return@setAnalyzer
+                var bestLuma = -1f
                 var bestX =0
                 var bestY = 0
-                var total = 0f
-                var totalCount = 0
+
 
                 val stepX = max(1, width / grid)
                 val stepY = max(1, height / grid)
 
-                for(y in 0 until height step stepY){
-                    val base = y * rowStride
-                    for (x in 0 until width step stepX){
-                        val offset = base + x * pixelStride
-                        if(offset + 2 < buffer.limit()){
-                            val r = buffer.get(offset).toInt() and 0xFF
-                            val g = buffer.get(offset + 1).toInt() and 0xFF
-                            val b = buffer.get(offset + 2).toInt() and 0xFF
-                            val sum = r + g + b
-                            total += sum
-                            totalCount += 3
-                            if(sum > bestSum){
-                                bestSum = sum
-                                bestX = x
-                                bestY = y
-                            }
+//
+                for (y in 0 until height step stepY){
+                    for (x in 0 until width step stepX) {
+                        val pixel = bmp.getPixel(x, y)
+                        val r = AColor.red(pixel)
+                        val g = AColor.green(pixel)
+                        val b = AColor.blue(pixel)
+                        val luma = 0.299f * r + 0.587f * g + 0.114f * b
+                        if (luma > bestLuma) {
+                            bestLuma = luma
+                            bestX = x
+                            bestY = y
                         }
                     }
                 }
 
-                var (xn, yn) = toUprightNormalized(bestX, bestY, width, height, rotation)
+                val win = 3
+                var wsum = 0f
+                var xsum = 0f
+                var ysum = 0f
+                val x0 = max(0, bestX - win)
+                val x1 = min(width - 1, bestX + win)
+                val y0 = max(0, bestY - win)
+                val y1 = min(height - 1, bestY + win)
+
+                for (yy in y0..y1){
+                    for (xx in x0..x1){
+                        val pixel = bmp.getPixel(xx, yy)
+                        val r = AColor.red(pixel)
+                        val g = AColor.green(pixel)
+                        val b = AColor.blue(pixel)
+                        val luma = 0.299f * r + 0.587f * g + 0.114f * b
+                        if (luma > 0f){
+                            wsum += luma
+                            xsum += xx * luma
+                            ysum += yy * luma
+                        }
+                    }
+                }
+                var bx = bestX.toFloat()
+                var by = bestY.toFloat()
+                if( wsum > 0f){
+                    bx = (xsum / wsum)
+                    by = (ysum / wsum)
+                }
+
+
+                var (xn, yn) = toUprightNormalized(bx, by, width, height, rotation)
                 if (_state.value.lensFacing == CameraSelector.LENS_FACING_FRONT) {
                     xn = 1f - xn
                 }
-                val average = if(totalCount == 0) 0f else total / totalCount
+                xn = xn.coerceIn(0f, 1f)
+                yn = yn.coerceIn(0f, 1f)
+                val brightness = (bestLuma.coerceAtLeast(0f))/ 255f
                 // update state
                 _state.value = _state.value.copy(
-                    brightness = average ,
+                    brightness = brightness ,
                     poi = Offset(xn, yn)
                 )
             } finally {
-            proxy.close() // closes frame}
+            proxy.close()
             }
         }
     }
+
+
 
     // Create and store an ImageAnalysis with our ( current) analyzer attached
     private fun buildAnalysis(){
