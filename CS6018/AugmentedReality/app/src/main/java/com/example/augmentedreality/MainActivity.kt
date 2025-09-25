@@ -13,6 +13,7 @@ import com.example.augmentedreality.ui.theme.AugmentedRealityTheme
 import com.example.augmentedreality.ui.CameraRoute
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

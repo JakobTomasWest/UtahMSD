@@ -36,6 +36,7 @@ android {
     }
     buildFeatures {
         compose = true
+        mlModelBinding = false
     }
 }
 
@@ -53,6 +54,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.unit)
+    implementation(libs.litert.metadata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,4 +75,20 @@ dependencies {
 
 // Coroutines (used for the analyzer executor)
     implementation(libs.kotlinx.coroutines.android)
+
+
+    // ML Kit (for the other model)
+    implementation("com.google.mlkit:object-detection:17.0.1")
+    implementation("com.google.mlkit:image-labeling:17.0.8")
+
+
+    // Task library (often used by generated bindings for detection/classification)
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+    implementation("org.tensorflow:tensorflow-lite-task-vision:0.4.4")
+
+
+    // Coroutines Guava (if you use .await() on CameraX futures)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.10.2")
+
+
 }

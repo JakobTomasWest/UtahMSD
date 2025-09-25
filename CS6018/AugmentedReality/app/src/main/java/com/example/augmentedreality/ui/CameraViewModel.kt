@@ -4,10 +4,9 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Rational
-import android.view.Display
 import android.view.Surface
 import android.hardware.display.DisplayManager
-import android.graphics.Color as AColor
+import android.os.Build
 import androidx.camera.core.AspectRatio
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,130 +16,189 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import java.util.concurrent.Executors
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.SurfaceRequest
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.ViewPort
 import androidx.camera.lifecycle.awaitInstance
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import androidx.compose.ui.geometry.Offset
 import com.example.augmentedreality.data.MediaStoreSaver
-import kotlin.math.max
-import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
-import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
-import kotlin.math.min
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.lifecycle.LifecycleOwner
 
+import kotlin.getValue
+// ML Kit
+import com.google.mlkit.vision.objects.ObjectDetection
+import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions as MlKitODOptions
+// TFLite Task Vision (EfficientDet)
+import org.tensorflow.lite.task.vision.detector.ObjectDetector
+import org.tensorflow.lite.task.vision.detector.ObjectDetector.ObjectDetectorOptions as TfLiteODOptions
+import android.view.WindowManager
+
+// RawDetection
+data class RawDetection(
+    val rectPx: androidx.compose.ui.geometry.Rect,
+    val label: String,
+    val score: Float
+)
+
+private val COCO80 = listOf(
+    "person","bicycle","car","motorcycle","airplane","bus","train","truck","boat","traffic light",
+    "fire hydrant","stop sign","parking meter","bench","bird","cat","dog","horse","sheep","cow",
+    "elephant","bear","zebra","giraffe","backpack","umbrella","handbag","tie","suitcase",
+    "frisbee","skis","snowboard","sports ball","kite","baseball bat","baseball glove","skateboard",
+    "surfboard","tennis racket","bottle","wine glass","cup","fork","knife","spoon","bowl",
+    "banana","apple","sandwich","orange","broccoli","carrot","hot dog","pizza","donut","cake",
+    "chair","couch","potted plant","bed","dining table","toilet","tv","laptop","mouse","remote",
+    "keyboard","cell phone","microwave","oven","toaster","sink","refrigerator","book","clock",
+    "vase","scissors","teddy bear","hair drier","toothbrush"
+)
 
 // ViewModel holds UI state and business logic for the camera screen.
 class CameraViewModel(app: Application) : AndroidViewModel(app) {
 
     // Backing, mutable state inside the VM
     private val _state = MutableStateFlow(CameraUiState())
-
     // RO view for Ui to collectAsState without being able to modify
     val state = _state.asStateFlow()
 
-    // Keep the use cases as fields in VM to survive recompositions and UI
-    // photo capture pipeline
+    // Matrix that maps analyzer buffer → sensor (really: inverse of sensorToBuffer for analyzer)
+    private val _analyzerToSensor = MutableStateFlow(android.graphics.Matrix())  // analysis-buffer → sensor
+    val analyzerToSensor = _analyzerToSensor.asStateFlow()
+    private val _rawDetections = MutableStateFlow<List<RawDetection>>(emptyList())
+    val rawDetections = _rawDetections.asStateFlow()
+
+    private var cameraProvider: ProcessCameraProvider? = null
+    private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
     private var imageAnalysis: ImageAnalysis? = null
-    // per frane analysis for brightest spot
-    private var preview: Preview? = null // live camera preview to feed to viewfinder
-
+    private var currentOwner: LifecycleOwner? = null
+    private var lastRotation: Int = Surface.ROTATION_0
     // Single background thread for image analysis
     private val analysisExecutor = Executors.newSingleThreadExecutor()
-
-
-    private val resolutionSelector: ResolutionSelector =
-        ResolutionSelector.Builder()
-            .setAspectRatioStrategy(
-                AspectRatioStrategy(
-                    AspectRatio.RATIO_16_9,
-                    AspectRatioStrategy.FALLBACK_RULE_AUTO
-                )
-            )
+    private val mlkitObjectDetector by lazy {
+        val options = MlKitODOptions.Builder()
+            .setDetectorMode(MlKitODOptions.STREAM_MODE) //live throughput
+            .enableMultipleObjects()
+            .enableClassification()
             .build()
-
-    /* Build a cameraSelector for matching our current choice in state */
-    private fun cameraSelector(): CameraSelector =
-        CameraSelector.Builder()
-            .requireLensFacing(_state.value.lensFacing)
-            .build()
-
-    private fun displayRotation(): Int {
-        val dm = getApplication<Application>().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
-        val display = dm.getDisplay(Display.DEFAULT_DISPLAY)
-        return display?.rotation ?: Surface.ROTATION_0
+        ObjectDetection.getClient(options)
     }
 
-    // State the camera preview and expose the SurfaceRequest for CameraXViewfinder.
-    fun startPreview(owner: androidx.lifecycle.LifecycleOwner) {
-        // Launch work on the VM's coroutine scope
-        viewModelScope.launch {
-            // First, get the cameraX provider to bind use cases to lifecycle
-            val cameraProvider = ProcessCameraProvider.awaitInstance(getApplication())
 
-            // Second, Unbind any use cases before rebinding - for camera flips
-            cameraProvider.unbindAll()
-            // Third, setup the viewfinder use case to display camera preview
-            // Capture each SurfaceRequest  and put it into our state. compose hands to CameraXViewfinder
-            preview = Preview.Builder()
-                .setResolutionSelector(resolutionSelector)
-                .build()
-                .apply {
-                    setSurfaceProvider { srequest: SurfaceRequest ->
+    private val efficientDet by lazy {
+        val opts = TfLiteODOptions.builder()
+            .setScoreThreshold(0.25f)
+            .setMaxResults(10)
+            .build()
+        ObjectDetector.createFromFileAndOptions(
+            getApplication(),
+            "efficientdet_lite4.tflite",
+            opts
+        )
+    }
 
-                        // Listen for how the preview is transformed on screen
-                        srequest.setTransformationInfoListener(
-                            ContextCompat.getMainExecutor(getApplication())
-                        ) { info: SurfaceRequest.TransformationInfo ->
-                            val res = srequest.resolution
-                            val rot = info.rotationDegrees      // {0,  90, 180, 270}
+    private val orientationListener =
+        object : android.view.OrientationEventListener(getApplication()) {
+            override fun onOrientationChanged(orientation: Int) {
+                val rot = displayRotation()
+                if (rot == lastRotation) return
+                lastRotation = rot
 
-                            // Use the *upright* preview size (swap when 90/270)
-                            val (wUpright, hUpright) =
-                                if (rot % 180 == 90) res.height to res.width else res.width to res.height
+                // keep frames correct immediately
+                preview?.targetRotation = rot
+                imageCapture?.targetRotation = rot
+                imageAnalysis?.targetRotation = rot
 
-                            _state.value = _state.value.copy(
-                                surfaceRequest = srequest,
-                                frameWidth = wUpright,
-                                frameHeight = hUpright
-                            )
-                        }
-                    }
                 }
-            buildAnalysis()
-            // Fourth, Build the image capture
-            imageCapture = ImageCapture.Builder()
-//                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
-                .build()
+        }
 
-            val analysis = createImageAnalysis().also{
-                setBrightnessPointAnalyzer(it)
+
+    fun startPreview(owner: LifecycleOwner) {
+        try {
+            currentOwner = owner
+
+            // Get or create the ProcessCameraProvider
+            val provider = cameraProvider ?: run {
+                val future = ProcessCameraProvider.getInstance(getApplication())
+                val p = future.get()
+                cameraProvider = p
+                p
             }
 
-            val vp = ViewPort.Builder(
-                Rational(16, 9),
-                displayRotation()
-            ).setScaleType(ViewPort.FIT).build()
+            val selector = ResolutionSelector.Builder()
+                .setAspectRatioStrategy(
+                    AspectRatioStrategy(
+                        AspectRatio.RATIO_4_3,
+                        AspectRatioStrategy.FALLBACK_RULE_AUTO
+                    )
+                )
+                .build()
+
+
+            val p = Preview.Builder()
+                .setResolutionSelector(selector)
+                .build()
+                .also { preview = it }
+
+
+            val ic = ImageCapture.Builder()
+                .setResolutionSelector(selector)
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .build()
+                .also { imageCapture = it }
+
+            val ia = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // drop old frames
+                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888) // better for ML Kit
+                .setOutputImageRotationEnabled(false)
+                .build()
+                .also { imageAnalysis = it }
+
+            // choose analyzer
+            when (_state.value.detectorModel) {
+                DetectorModel.MLKIT -> setMLKObjectAnalyzer(ia)
+                DetectorModel.EFFICIENTDET -> setEfficientDetAnalyzer(ia)
+            }
+            // initialize rotation and apply to all use-cases
+            val rotation = displayRotation()
+            lastRotation = rotation
+            p.targetRotation = rotation
+            ic.targetRotation = rotation
+            ia.targetRotation = rotation
+
+            // Build the initial ViewPort and group for the CURRENT rotation so all use cases see the same region of the sesor
+            val vp = ViewPort.Builder(Rational(4, 3), rotation)
+                .setScaleType(ViewPort.FIT)
+                .build()
 
             val group = UseCaseGroup.Builder()
                 .setViewPort(vp)
-                .addUseCase(preview!!)
-                .addUseCase(imageCapture!!)
-                .addUseCase(analysis)
+                .addUseCase(p)
+                .addUseCase(ic)
+                .addUseCase(ia)
                 .build()
-            // Fifth, link each case to the lifecycle owner using the current camera toggle
-//            val analysis = imageAnalysis ?: return@launch
-            cameraProvider.bindToLifecycle(
-                owner,
-                cameraSelector(),
-                group)
+
+            provider.unbindAll()
+            // Bind all to screen
+            provider.bindToLifecycle(owner, cameraSelector(), group)
+
+
+            val previous = _state.value.surfaceRequest
+            previous?.willNotProvideSurface()
+            p.setSurfaceProvider { request ->
+                // Push the request to UI; CameraXViewfinder will consume it
+                _state.value = _state.value.copy(surfaceRequest = request)
+            }
+            // finally, enable the listener so future rotations rebind correctly
+            orientationListener.enable()
+
+        } catch (t: Throwable) {
+            _state.value = _state.value.copy(message = "startPreview failed: ${t.message}")
         }
     }
+
 
     // Stop the camera preview and clear the SurfaceRequest shown by the UI
     fun stopPreview(){
@@ -148,6 +206,7 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val cameraProvider = ProcessCameraProvider.awaitInstance(getApplication())
             cameraProvider.unbindAll()
+            orientationListener.disable()
             // Clear the SurfaceRequest from state to remove the CameraXViewfinder - tell Ui there's no surface to render
             _state.value = _state.value.copy(surfaceRequest = null)
         }
@@ -179,131 +238,28 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
             // Permissions result came back from teh Activity Result API
             is CameraIntent.OnPermissionsResult -> {
                 _state.value = _state.value.copy(permissionsGranted = intent.granted)
-                // The UI can now decide to startPreview(owner) or show preview request
+
             }
-        }
 
-
-    }
-    // Build an ImageAnalysis use case which processes frames
-    private fun createImageAnalysis(): ImageAnalysis =
-        ImageAnalysis.Builder()
-            .setResolutionSelector(resolutionSelector)
-    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-            .build()
-
-
-    private fun toUprightNormalized(
-        x: Float, y: Float, w: Int, h: Int, rotationDegrees: Int
-    ): Pair<Float, Float> {
-        val w1 = w.toFloat()
-        val h1 = h.toFloat()
-        return when ((rotationDegrees % 360 + 360) % 360) {
-            // Use pixel CENTERS: (x+0.5)/w, (y+0.5)/h
-            0   -> (x + 0.5f) / w1 to (y + 0.5f) / h1
-            90  -> (h1 - (y + 0.5f)) / h1 to (x + 0.5f) / w1      // Clockwise 90°
-            180 -> (w1 - (x + 0.5f)) / w1 to (h1 - (y + 0.5f)) / h1
-            270 -> (y + 0.5f) / h1 to (w1 - (x + 0.5f)) / w1      // Clockwise 270°
-            else-> (x + 0.5f) / w1 to (y + 0.5f) / h1
-        }
-    }
-
-    // Scan a grid, and pick the brightest pixel, upgrade brightness and poi
-    private fun setBrightnessPointAnalyzer(analysis: ImageAnalysis, grid: Int =64){
-        analysis.setAnalyzer(analysisExecutor){ proxy -> //runs analysis on background thread
-            try {
-//
-                val bmp: Bitmap = proxy.toBitmap()
-                val width = bmp.width
-                val height = bmp.height
-                val rotation = proxy.imageInfo.rotationDegrees
-                if (width <= 0 || height <= 0) return@setAnalyzer
-                var bestLuma = -1f
-                var bestX =0
-                var bestY = 0
-
-
-                val stepX = max(1, width / grid)
-                val stepY = max(1, height / grid)
-
-//
-                for (y in 0 until height step stepY){
-                    for (x in 0 until width step stepX) {
-                        val pixel = bmp.getPixel(x, y)
-                        val r = AColor.red(pixel)
-                        val g = AColor.green(pixel)
-                        val b = AColor.blue(pixel)
-                        val luma = 0.299f * r + 0.587f * g + 0.114f * b
-                        if (luma > bestLuma) {
-                            bestLuma = luma
-                            bestX = x
-                            bestY = y
-                        }
+            is CameraIntent.SetModel -> {
+                if (_state.value.detectorModel != intent.model) {
+                    _state.value = _state.value.copy(
+                        detectorModel = intent.model,
+                        detections = emptyList(),
+                        poi = null
+                    )
+                    imageAnalysis?.clearAnalyzer()
+                    when (intent.model) {
+                        DetectorModel.MLKIT -> imageAnalysis?.let { setMLKObjectAnalyzer(it) }
+                        DetectorModel.EFFICIENTDET -> imageAnalysis?.let { setEfficientDetAnalyzer(it) }
                     }
                 }
-
-                val win = 3
-                var wsum = 0f
-                var xsum = 0f
-                var ysum = 0f
-                val x0 = max(0, bestX - win)
-                val x1 = min(width - 1, bestX + win)
-                val y0 = max(0, bestY - win)
-                val y1 = min(height - 1, bestY + win)
-
-                for (yy in y0..y1){
-                    for (xx in x0..x1){
-                        val pixel = bmp.getPixel(xx, yy)
-                        val r = AColor.red(pixel)
-                        val g = AColor.green(pixel)
-                        val b = AColor.blue(pixel)
-                        val luma = 0.299f * r + 0.587f * g + 0.114f * b
-                        if (luma > 0f){
-                            wsum += luma
-                            xsum += xx * luma
-                            ysum += yy * luma
-                        }
-                    }
-                }
-                var bx = bestX.toFloat()
-                var by = bestY.toFloat()
-                if( wsum > 0f){
-                    bx = (xsum / wsum)
-                    by = (ysum / wsum)
-                }
-
-
-                var (xn, yn) = toUprightNormalized(bx, by, width, height, rotation)
-                if (_state.value.lensFacing == CameraSelector.LENS_FACING_FRONT) {
-                    xn = 1f - xn
-                }
-                xn = xn.coerceIn(0f, 1f)
-                yn = yn.coerceIn(0f, 1f)
-                val brightness = (bestLuma.coerceAtLeast(0f))/ 255f
-                // update state
-                _state.value = _state.value.copy(
-                    brightness = brightness ,
-                    poi = Offset(xn, yn)
-                )
-            } finally {
-            proxy.close()
+                _state.value = _state.value.copy(poi = null)
             }
+
         }
-    }
 
 
-
-    // Create and store an ImageAnalysis with our ( current) analyzer attached
-    private fun buildAnalysis(){
-        imageAnalysis?.clearAnalyzer() // detach old analyzer for rebuild
-
-        // Make a new analysis with RGBA settings
-        val analysis = createImageAnalysis()
-
-        setBrightnessPointAnalyzer(analysis)
-        // keep a reference so startPreview() can bind it
-        imageAnalysis = analysis
     }
 
     // Take a photo with ImageCapture and save it to ARPreview by MediaStoreSaver
@@ -319,6 +275,132 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
     }
+
+
+
+    private fun setMLKObjectAnalyzer(analysis: ImageAnalysis) {
+        analysis.setAnalyzer(analysisExecutor) { imageProxy ->
+            try {
+
+                val bmp = imageProxy.toBitmap()
+
+                // Feed ML Kit the upright bitmap
+                val input = com.google.mlkit.vision.common.InputImage.fromBitmap(bmp, 0)
+
+                mlkitObjectDetector.process(input)
+                    .addOnSuccessListener { objects ->
+                        val raw = buildList {
+                            for (obj in objects) {
+                                val bb = obj.boundingBox  // coords in analyzer-buffer space
+                                val best = obj.labels.maxByOrNull { it.confidence }
+                                val label = best?.text?.takeIf { it.isNotBlank() } ?: "object"
+                                val score = best?.confidence ?: 0f
+
+                                add(
+                                    RawDetection(
+                                        rectPx = androidx.compose.ui.geometry.Rect(
+                                            bb.left.toFloat(), bb.top.toFloat(),
+                                            bb.right.toFloat(), bb.bottom.toFloat()
+                                        ),
+                                        label = label,
+                                        score = score
+                                    )
+                                )
+                            }
+                        }
+                        _rawDetections.value = raw
+
+
+                        val bufferToSensor = android.graphics.Matrix().apply {
+                            imageProxy.imageInfo.sensorToBufferTransformMatrix.invert(this)
+                        }
+                        _analyzerToSensor.value = bufferToSensor
+                    }
+                    .addOnFailureListener { e ->
+                        _state.value = _state.value.copy(message = "ML Kit error: ${e.message}")
+                    }
+                    .addOnCompleteListener { imageProxy.close() }
+            } catch (t: Throwable) {
+                _state.value = _state.value.copy(message = "Analyzer crash: ${t.message}")
+                imageProxy.close()
+            }
+        }
+    }
+
+
+
+    private fun setEfficientDetAnalyzer(analysis: ImageAnalysis) {
+        analysis.setAnalyzer(analysisExecutor) { imageProxy ->
+            try {
+                // Run EfficientDet on the current frame
+                val bmp = imageProxy.toBitmap()
+                val tensorImage = org.tensorflow.lite.support.image.TensorImage.fromBitmap(bmp)
+                val detections = efficientDet.detect(tensorImage) // sync call
+
+                val raw = buildList {
+                    for (det in detections) {
+                        val best = det.categories.maxByOrNull { it.score } ?: continue
+                        val score = best.score
+                        if (score < 0.25f) continue
+
+
+                        val idx = best.index
+                        val label = when {
+                            idx in COCO80.indices -> COCO80[idx]
+                            !best.displayName.isNullOrBlank() -> best.displayName
+                            !best.label.isNullOrBlank() -> best.label
+                            else -> "object"
+                        }
+
+                        val r = det.boundingBox
+                        add(
+                            RawDetection(
+                                rectPx = androidx.compose.ui.geometry.Rect(
+                                    r.left.toFloat(), r.top.toFloat(),
+                                    r.right.toFloat(), r.bottom.toFloat()
+                                ),
+                                label = label,
+                                score = score
+                            )
+                        )
+                    }
+                }
+                _rawDetections.value = raw
+
+                // Keep your overlay in sync: analyzerBuffer -> sensor
+                val bufferToSensor = android.graphics.Matrix().apply {
+                    imageProxy.imageInfo.sensorToBufferTransformMatrix.invert(this)
+                }
+                _analyzerToSensor.value = bufferToSensor
+            } catch (t: Throwable) {
+                _state.value = _state.value.copy(message = "EfficientDet error: ${t.message}")
+            } finally {
+                imageProxy.close()
+            }
+        }
+    }
+
+    /* Build a cameraSelector for matching our current choice in state */
+    private fun cameraSelector(): CameraSelector =
+        CameraSelector.Builder()
+            .requireLensFacing(_state.value.lensFacing)
+            .build()
+
+
+
+    private fun displayRotation(): Int {
+        val app = getApplication<Application>()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val dm = app.getSystemService(DisplayManager::class.java)
+            val d = dm?.displays?.firstOrNull()
+            d?.rotation ?: Surface.ROTATION_0
+        } else {
+            @Suppress("DEPRECATION")
+            (app.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
+                .defaultDisplay.rotation
+        }
+    }
+
 }
 
 

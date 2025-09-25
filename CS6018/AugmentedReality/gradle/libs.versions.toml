@@ -21,6 +21,8 @@ lifecycle = "2.8.6"
 
 # Coroutines
 kotlinxCoroutinesAndroid = "1.10.2"
+uiUnit = "1.9.1"
+litertMetadata = "1.4.0"
 
 [libraries]
 # CameraX core
@@ -58,6 +60,11 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+tensorflow-lite-support = { group = "org.tensorflow", name = "tensorflow-lite-support" }
+tensorflow-lite-metadata = { group = "org.tensorflow", name = "tensorflow-lite-metadata" }
+tensorflow-lite-gpu = { group = "org.tensorflow", name = "tensorflow-lite-gpu" }
+androidx-ui-unit = { group = "androidx.compose.ui", name = "ui-unit", version.ref = "uiUnit" }
+litert-metadata = { group = "com.google.ai.edge.litert", name = "litert-metadata", version.ref = "litertMetadata" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
