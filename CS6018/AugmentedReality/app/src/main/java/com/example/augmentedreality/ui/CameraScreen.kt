@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import android.Manifest
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
@@ -30,30 +31,43 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.aspectRatio
 
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.setFrom
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 
 //The screen composable will connect to the VM and grab the Lifecycle Owner
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CameraRoute ( vm: CameraViewModel = viewModel() ) {
 
     // Turn the VM's stateflow into Compose state so recomp happens on updates
     val state by vm.state.collectAsState()
+
+    var showGallery by remember { mutableStateOf(false) }
+
     // Lifecycle for this composable used later to bind CameraX
     val owner = LocalLifecycleOwner.current // pass to startPreview in vm when starting camera
     //
@@ -89,8 +103,8 @@ fun CameraRoute ( vm: CameraViewModel = viewModel() ) {
     }
 
     // When permissions are granted/becoem true or the lensFacing changes, re/bind the camera
-    LaunchedEffect(state.permissionsGranted, state.lensFacing, state.detectorModel) {
-        if (state.permissionsGranted) {
+    LaunchedEffect(state.permissionsGranted, state.lensFacing, state.detectorModel, showGallery) {
+        if (state.permissionsGranted && !showGallery) {
             vm.startPreview(owner) // tell the VM to bind preview, imagecapture, analysis
         } else {
             vm.stopPreview()
@@ -102,154 +116,182 @@ fun CameraRoute ( vm: CameraViewModel = viewModel() ) {
         vm.handle(CameraIntent.ClearMessage)
     }
 
-    // UI -- show the camera preview when we have a SurfaceRequest from the VM
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
-
-            val sr = state.surfaceRequest
-            val ar = 4f / 3f
-
-            // Center a box that matches the camera’s upright aspect ratio
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(if (showGallery) "My Photos" else "Camera") },
+                actions = {
+                    TextButton(onClick = { showGallery = !showGallery }) {
+                        Text(if (showGallery) "Back to Camera" else "My Photos")
+                    }
+                }
+            )
+        }
+    ) { innerPadding: PaddingValues ->
+        if (showGallery) {
+            // Pause camera while in gallery
+            LaunchedEffect(Unit) { vm.stopPreview() }
+            BackHandler { showGallery = false }
+            GalleryScreen(modifier = Modifier.padding(innerPadding),
+                vm = vm)
+        } else {
+            // UI -- show the camera preview when we have a SurfaceRequest from the VM
             Box(
                 Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(ar)
-                    .align(Alignment.Center)
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(Color.Black)
             ) {
-                // creates coordinate transformer for camerax viewfinder to update
-                val transformer = remember { MutableCoordinateTransformer() }
-                // If we have a SR from VM render the camera previeew
-                if (sr != null) {
-                    CameraXViewfinder( //How camerax get surface to draw into
-                        modifier = Modifier.matchParentSize(),
-                        surfaceRequest = sr,
-                        coordinateTransformer = transformer // keep transfromer synced
-                    )
-                }
 
-                val transformInfo = androidx.compose.runtime.produceState<SurfaceRequest.TransformationInfo?>(null, sr) {
+                val sr = state.surfaceRequest
+                val ar = 4f / 3f
+
+                // Center a box that matches the camera’s upright aspect ratio
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(ar)
+                        .align(Alignment.Center)
+                ) {
+                    // creates coordinate transformer for camerax viewfinder to update
+                    val transformer = remember { MutableCoordinateTransformer() }
+                    // If we have a SR from VM render the camera previeew
                     if (sr != null) {
-                        // CameraX calls this with latest crop rectangle, rot and sensor to bufffer matrix
-                        sr.setTransformationInfoListener(Runnable::run) { value = it }
-                    }
-                    kotlinx.coroutines.awaitCancellation()
-                }
-
-                // Compose matrix that maps buffer -> UI (invert of viewfinder’s UI->buffer)
-                val bufferToUi = androidx.compose.ui.graphics.Matrix().apply {
-                    setFrom(transformer.transformMatrix) // UI -> buffer mapping
-                    invert()                             // buffer -> UI
-                }
-
-                Canvas(Modifier.matchParentSize()) {
-                    val info = transformInfo.value ?: return@Canvas
-
-                    // Android matrices to multiply with
-                    val sensorToPreviewBufferAndroid: android.graphics.Matrix = info.sensorToBufferTransform
-                    val analyzerToSensorAndroid: android.graphics.Matrix = analyzerToSensor   // from VM publish each frame
-
-                    // analysis -> previewBuffer = (sensor->previewBuffer) x (analysis->sensor)
-                    val analysisToPreviewAndroid = android.graphics.Matrix().apply {
-                        set(analyzerToSensorAndroid)
-                        postConcat(sensorToPreviewBufferAndroid) // apply previous transform and then this one
-                    }
-
-                    // Convert to Compose matrix once
-                    val analysisToPreview = androidx.compose.ui.graphics.Matrix().apply {
-                        setFrom(analysisToPreviewAndroid)
-                    }
-
-                    rawDetections.forEach { det ->
-                        // map analyzer rect -> preview buffer
-                        val bufRect = analysisToPreview.map(det.rectPx)
-                        // map preview buffer -> UI
-                        val uiRect  = bufferToUi.map(bufRect)
-
-                        // box
-                        drawRect(
-                            color = Color.Red,
-                            topLeft = Offset(uiRect.left, uiRect.top),
-                            size    = Size(uiRect.width, uiRect.height),
-                            style   = Stroke(width = 4.dp.toPx())
+                        CameraXViewfinder( //How camerax get surface to draw into
+                            modifier = Modifier.matchParentSize(),
+                            surfaceRequest = sr,
+                            coordinateTransformer = transformer // keep transfromer synced
                         )
+                    }
 
-                        drawIntoCanvas { canvas ->
-                            val paint = android.graphics.Paint().apply {
-                                color = android.graphics.Color.WHITE
-                                textSize = 14.dp.toPx()
-                                isAntiAlias = true
+                    val transformInfo =
+                        androidx.compose.runtime.produceState<SurfaceRequest.TransformationInfo?>(
+                            null,
+                            sr
+                        ) {
+                            if (sr != null) {
+                                // CameraX calls this with latest crop rectangle, rot and sensor to bufffer matrix
+                                sr.setTransformationInfoListener(Runnable::run) { value = it }
                             }
-                            canvas.nativeCanvas.drawText(
-                                "${det.label} ${(det.score * 100).toInt()}%",
-                                uiRect.left,
-                                (uiRect.top - 6.dp.toPx()).coerceAtLeast(12.dp.toPx()),  // keep visible
-                                paint
+                            kotlinx.coroutines.awaitCancellation()
+                        }
+
+                    // Compose matrix that maps buffer -> UI (invert of viewfinder’s UI->buffer)
+                    val bufferToUi = androidx.compose.ui.graphics.Matrix().apply {
+                        setFrom(transformer.transformMatrix) // UI -> buffer mapping
+                        invert()                             // buffer -> UI
+                    }
+
+                    Canvas(Modifier.matchParentSize()) {
+                        val info = transformInfo.value ?: return@Canvas
+
+                        // Android matrices to multiply with
+                        val sensorToPreviewBufferAndroid: android.graphics.Matrix =
+                            info.sensorToBufferTransform
+                        val analyzerToSensorAndroid: android.graphics.Matrix =
+                            analyzerToSensor   // from VM publish each frame
+
+                        // analysis -> previewBuffer = (sensor->previewBuffer) x (analysis->sensor)
+                        val analysisToPreviewAndroid = android.graphics.Matrix().apply {
+                            set(analyzerToSensorAndroid)
+                            postConcat(sensorToPreviewBufferAndroid) // apply previous transform and then this one
+                        }
+
+                        // Convert to Compose matrix once
+                        val analysisToPreview = androidx.compose.ui.graphics.Matrix().apply {
+                            setFrom(analysisToPreviewAndroid)
+                        }
+
+                        rawDetections.forEach { det ->
+                            // map analyzer rect -> preview buffer
+                            val bufRect = analysisToPreview.map(det.rectPx)
+                            // map preview buffer -> UI
+                            val uiRect = bufferToUi.map(bufRect)
+
+                            // box
+                            drawRect(
+                                color = Color.Red,
+                                topLeft = Offset(uiRect.left, uiRect.top),
+                                size = Size(uiRect.width, uiRect.height),
+                                style = Stroke(width = 4.dp.toPx())
                             )
+
+                            drawIntoCanvas { canvas ->
+                                val paint = android.graphics.Paint().apply {
+                                    color = android.graphics.Color.WHITE
+                                    textSize = 14.dp.toPx()
+                                    isAntiAlias = true
+                                }
+                                canvas.nativeCanvas.drawText(
+                                    "${det.label} ${(det.score * 100).toInt()}%",
+                                    uiRect.left,
+                                    (uiRect.top - 6.dp.toPx()).coerceAtLeast(12.dp.toPx()),  // keep visible
+                                    paint
+                                )
+                            }
                         }
                     }
                 }
-            }
-        if (sr == null) {
-        Text(
-            "Waiting for camera",
-            modifier = Modifier.align(Alignment.Center),
-            color = Color.White
-        )
-        }
-
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.TopCenter).padding(top = 48.dp)
-        )
-        val using = if (state.detectorModel == DetectorModel.MLKIT) "Using: ML Kit" else "Using: EfficientDet"
-        Text(
-            using,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(8.dp)
-                .background(Color(0x66000000), RoundedCornerShape(8.dp))
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            color = Color.White,
-            style = MaterialTheme.typography.labelMedium
-        )
-
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        )
-            {
-            FilledTonalButton(onClick = { vm.handle(CameraIntent.ToggleLens) }) {
-                Text("Flip")
-            }
-
-            val isMlkit = state.detectorModel == DetectorModel.MLKIT
-            FilledTonalButton(
-                onClick = {
-                    vm.handle(
-                        CameraIntent.SetModel(
-                            if (isMlkit) DetectorModel.EFFICIENTDET else DetectorModel.MLKIT
-                        )
+                if (sr == null) {
+                    Text(
+                        "Waiting for camera",
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.White
                     )
                 }
-            ) {
-                Text(if (isMlkit) "Switch to EfficientDet" else "Switch to ML Kit")
-            }
 
-                Button(
-                onClick = { vm.handle(CameraIntent.CapturePhoto) },
-                enabled = state.permissionsGranted
-            ) {
-                Text("Save Photo")
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.TopCenter).padding(top = 48.dp)
+                )
+                val using =
+                    if (state.detectorModel == DetectorModel.MLKIT) "Using: ML Kit" else "Using: EfficientDet"
+                Text(
+                    using,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(8.dp)
+                        .background(Color(0x66000000), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelMedium
+                )
+
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                )
+                {
+                    FilledTonalButton(onClick = { vm.handle(CameraIntent.ToggleLens) }) {
+                        Text("Flip")
+                    }
+
+                    val isMlkit = state.detectorModel == DetectorModel.MLKIT
+                    FilledTonalButton(
+                        onClick = {
+                            vm.handle(
+                                CameraIntent.SetModel(
+                                    if (isMlkit) DetectorModel.EFFICIENTDET else DetectorModel.MLKIT
+                                )
+                            )
+                        }
+                    ) {
+                        Text(if (isMlkit) "Switch to EfficientDet" else "Switch to ML Kit")
+                    }
+
+                    Button(
+                        onClick = { vm.handle(CameraIntent.CapturePhoto) },
+                        enabled = state.permissionsGranted
+                    ) {
+                        Text("Save Photo")
+                    }
+                }
             }
         }
     }
-
 }
 
 //LaunchedEffect(keys...) runs once when the composable first appears, and again only when any key value changes.

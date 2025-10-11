@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -90,5 +91,12 @@ dependencies {
     // Coroutines Guava (if you use .await() on CameraX futures)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.10.2")
 
+    implementation("io.ktor:ktor-client-android:3.1.2")
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.2")
+    implementation("io.ktor:ktor-client-logging:3.1.2")
+
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
 }

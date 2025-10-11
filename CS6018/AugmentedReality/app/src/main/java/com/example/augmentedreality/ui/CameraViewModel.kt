@@ -3,10 +3,12 @@ package com.example.augmentedreality.ui
 import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Rational
 import android.view.Surface
 import android.hardware.display.DisplayManager
 import android.os.Build
+import android.util.Log
 import androidx.camera.core.AspectRatio
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.example.augmentedreality.data.MediaStoreSaver
+import com.example.augmentedreality.net.ApiClient
+import com.example.augmentedreality.net.TokenStore
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.lifecycle.LifecycleOwner
@@ -35,6 +39,7 @@ import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions as MlKitOD
 import org.tensorflow.lite.task.vision.detector.ObjectDetector
 import org.tensorflow.lite.task.vision.detector.ObjectDetector.ObjectDetectorOptions as TfLiteODOptions
 import android.view.WindowManager
+import io.ktor.http.ContentType
 
 // RawDetection
 data class RawDetection(
@@ -57,6 +62,61 @@ private val COCO80 = listOf(
 
 // ViewModel holds UI state and business logic for the camera screen.
 class CameraViewModel(app: Application) : AndroidViewModel(app) {
+
+    // Server client & auth storage
+    private val api = ApiClient()
+    private val tokenStore = TokenStore(getApplication())
+    @Volatile
+    private var token: String? = null
+
+    private var username: String? = null
+    // Ensure that we have JTW in memory  and only signup once
+    private suspend fun ensureToken(username: String = "user", password: String = "pass"): String {
+        token?.let {return it}
+        // try to create user
+        runCatching { api.signUp(username, password)}
+        this.username = username
+        val t = api.login(username, password)
+        token = t
+        runCatching { tokenStore.save(t)}
+        return t
+    }
+    suspend fun listPhotos(): List<String> {
+        val t = ensureToken()
+        return api.listPhotos(t)
+    }
+
+    fun photoUrl(name: String): String = api.photoUrl(name)
+
+    fun currentTokenOrNull(): String? = token
+    fun currentUsernameOrNull(): String? = username
+
+
+    sealed interface AuthState {
+        data object SignedOut : AuthState
+        data class SignedIn(val username: String) : AuthState
+    }
+
+    private val _authState = MutableStateFlow<AuthState>(AuthState.SignedOut)
+    suspend fun login(username: String, password: String){
+        this.username = username
+        runCatching {api.signUp(username,password)}
+        val t = api.login(username,password)
+        token = t
+        tokenStore.save(t)
+        _authState.value = AuthState.SignedIn(username)
+    }
+    fun logout(){
+        token = null
+        username = null
+        _authState.value = AuthState.SignedOut
+        viewModelScope.launch {
+            runCatching { tokenStore.clear() }
+                .onFailure { Log.w("CameraVM", "clear() failed", it) }
+
+        }
+    }
+
 
     // Backing, mutable state inside the VM
     private val _state = MutableStateFlow(CameraUiState())
@@ -261,17 +321,69 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
 
 
     }
+    suspend fun uploadSavedPhoto(savedUri: Uri): String {
+        val token = ensureToken()
+        val app = getApplication<Application>()
+        val cr = app.contentResolver
 
+        // Infer MIME & content type
+        val mime = cr.getType(savedUri) ?: "image/jpeg"
+        val contentType = when {
+            mime.contains("png", true) -> ContentType.Image.PNG
+            mime.contains("webp", true) -> ContentType.parse("image/webp")
+            mime.contains("heic", true) || mime.contains("heif", true) -> ContentType.parse("image/heic")
+            else -> ContentType.Image.JPEG
+        }
+        val ext = when {
+            contentType == ContentType.Image.PNG -> "png"
+            contentType.toString().contains("webp", true) -> "webp"
+            contentType.toString().contains("heic", true) -> "heic"
+            else -> "jpg"
+        }
+        val remoteName = "photo_${System.currentTimeMillis()}.$ext"
+
+        // Read the image bytes
+        val bytes = cr.openInputStream(savedUri)!!.use { it.readBytes() }
+
+        // Upload via your ApiClient
+        val reply = api.uploadImageBytes(
+            token = token,
+            bytes = bytes,
+            remoteName = remoteName,
+            contentType = contentType
+        )
+        val uploaded = reply.trim().trim('"').ifBlank {remoteName}
+        return uploaded
+    }
     // Take a photo with ImageCapture and save it to ARPreview by MediaStoreSaver
     private fun takePhoto(){
         val imageCapture = imageCapture ?: return //no image capture configured
         viewModelScope.launch {
             try {
-                val savedUri = MediaStoreSaver.savePhoto(getApplication(), imageCapture)
-                val msg = "Photo saved: $savedUri"
-                _state.value = _state.value.copy(message = msg)
+                val savedUri: Uri? = MediaStoreSaver.savePhoto(getApplication(),imageCapture)
+                if (savedUri == null){
+                    _state.value = _state.value.copy(message = "Save failed: URI")
+                    return@launch
+                }
+//                val msg = "Photo saved: $savedUri"
+//                _state.value = _state.value.copy(message = msg)
+
+//                val t = ensureToken()
+//                val remoteName = "photo_${System.currentTimeMillis()}.png"
+//                val result = api.uploadImageUri(
+//                    token = t,
+//                    context = getApplication(),
+//                    uri = savedUri,
+//                    remoteName = remoteName
+//                )
+                val uploadedName = uploadSavedPhoto(savedUri)
+                val url = api.photoUrl(uploadedName)
+                _state.value = _state.value.copy(
+//                    message = "Uploaded $remoteName: $result"
+                    message = "Uploaded $uploadedName\n$url"
+                )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(message = "Save failed: ${e.message}")
+                _state.value = _state.value.copy(message = "Save/Upload failed: ${e.message}")
             }
         }
     }
