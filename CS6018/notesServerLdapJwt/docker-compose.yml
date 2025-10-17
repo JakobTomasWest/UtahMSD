@@ -1,0 +1,50 @@
+services:
+  openldap:
+    image: bitnamilegacy/openldap:2.6.10
+    container_name: openldap
+    hostname: ldap
+    domainname: asd.msd.localhost            # FQDN becomes ldap.asd.msd.localhost
+    environment:
+      - LDAP_ROOT=dc=ldap,dc=asd,dc=msd,dc=localhost
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_ENABLE_TLS=no
+      - BITNAMI_DEBUG=true
+    ports:
+      - "1389:1389"                          # Bitnami uses 1389 for plain LDAP
+
+    volumes:
+      - ldap-data:/bitnami/openldap          # Bitnami data dir (persistent)
+    healthcheck:
+        test: [ "CMD-SHELL", "ldapsearch -x -H ldap://localhost:1389 -b dc=ldap,dc=asd,dc=msd,dc=localhost -s base '(objectclass=*)' >/dev/null 2>&1" ]
+        interval: 5s
+        timeout: 3s
+        retries: 10
+    networks:
+      default:
+        aliases:
+          - ldap.asd.msd.localhost           # so other services resolve the FQDN
+
+  app:
+    build: .
+    container_name: ktor-app
+    depends_on:
+      openldap:
+        condition: service_healthy
+    environment:
+      - SECRET=dev-super-secret
+      - PORT=8080
+      - UPLOAD_ROOT=/app/uploads
+      - LDAP_URL=ldap://openldap:1389
+      - LDAP_BASE_DN=ou=users,dc=ldap,dc=asd,dc=msd,dc=localhost
+      - LDAP_BIND_DN=cn=admin,dc=ldap,dc=asd,dc=msd,dc=localhost
+      - LDAP_BIND_PW=adminpassword
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./uploads:/app/uploads
+      # uploads:/app/uploads if you only want to keep files in Docker volume and not have files
+      # visible to host
+
+volumes:
+  ldap-data:
+  uploads: # required if you want to bind files to Docker volume
