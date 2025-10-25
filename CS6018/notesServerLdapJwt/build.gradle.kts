@@ -1,4 +1,3 @@
-
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -45,31 +44,32 @@ kotlin {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-auth")
-    implementation("io.ktor:ktor-server-core")
-    implementation("io.ktor:ktor-server-auth-jwt")
-    //using a helper method here to handle logins
-    //using JWTs with the client itself
-    implementation("io.ktor:ktor-server-auth-ldap")
-    implementation("io.ktor:ktor-server-content-negotiation")
-    implementation("io.ktor:ktor-serialization-kotlinx-json")
-    implementation("io.ktor:ktor-server-netty")
-    implementation("io.ktor:ktor-utils")
+    // --- Ktor Server ---
+    implementation("io.ktor:ktor-server-auth:3.1.2")
+    implementation("io.ktor:ktor-server-core:3.1.2")
+    implementation("io.ktor:ktor-server-auth-jwt:3.1.2")
+    // using a helper method here to handle logins
+    // using JWTs with the client itself
+    implementation("io.ktor:ktor-server-auth-ldap:3.1.2")
+    implementation("io.ktor:ktor-server-content-negotiation:3.1.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.2")
+    implementation("io.ktor:ktor-server-netty:3.1.2")
+    implementation("io.ktor:ktor-utils:3.1.2")
 
-
+    // --- Logging / Utils ---
     implementation("ch.qos.logback:logback-classic:$logback_version")
-
     implementation("at.favre.lib:bcrypt:0.10.2")
+
+    // --- Ktor Client ---
     implementation("io.ktor:ktor-client-core-jvm:3.1.2")
     implementation("io.ktor:ktor-client-apache:3.1.2")
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.2")
 
-    // testImplementation("io.ktor:ktor-server-tests")
+    // --- Tests ---
     testImplementation(kotlin("test"))
-    // testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("io.ktor:ktor-server-test-host")
+    testImplementation("io.ktor:ktor-server-test-host:3.1.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("io.ktor:ktor-client-core")
-    testImplementation("io.ktor:ktor-client-content-negotiation")
-    testImplementation("io.ktor:ktor-client-auth")
-    // testImplementation("io.ktor:ktor-client-auth-jwt")
+    testImplementation("io.ktor:ktor-client-core:3.1.2")
+    testImplementation("io.ktor:ktor-client-content-negotiation:3.1.2")
+    testImplementation("io.ktor:ktor-client-auth:3.1.2")
 }

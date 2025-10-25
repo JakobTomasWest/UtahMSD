@@ -33,33 +33,7 @@ fun Route.userRoute(userService: UserService) {
         )
     }
 
-    //remove this endpoint.
-//  authenticate {
-//    get {
-//      val users = userService.findAll()
-//
-//      call.respond(
-//        message = users.map(User::toResponse)
-//      )
-//    }
-//  }
 
-//  authenticate {
-//    get("/{id}") {
-//      val id: String = call.parameters["id"]
-//        ?: return@get call.respond(HttpStatusCode.BadRequest)
-//
-//      val foundUser = userService.findById(id)
-//        ?: return@get call.respond(HttpStatusCode.NotFound)
-//
-//      if (foundUser.username != extractPrincipalUsername(call))
-//        return@get call.respond(HttpStatusCode.NotFound)
-//
-//      call.respond(
-//        message = foundUser.toResponse()
-//      )
-//    }
-//  }
 }
 
 private fun UserRequest.toModel(): User =

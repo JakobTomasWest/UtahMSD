@@ -30,6 +30,8 @@ services:
     depends_on:
       openldap:
         condition: service_healthy
+      ml:
+        condition: service_healthy
     environment:
       - SECRET=dev-super-secret
       - PORT=8080
@@ -38,6 +40,7 @@ services:
       - LDAP_BASE_DN=ou=users,dc=ldap,dc=asd,dc=msd,dc=localhost
       - LDAP_BIND_DN=cn=admin,dc=ldap,dc=asd,dc=msd,dc=localhost
       - LDAP_BIND_PW=adminpassword
+      - ML_URL=http://ml:8000
     ports:
       - "8080:8080"
     volumes:
@@ -45,6 +48,29 @@ services:
       # uploads:/app/uploads if you only want to keep files in Docker volume and not have files
       # visible to host
 
+  ml:
+    build:
+      context: .                     # repo root
+      dockerfile: ml_server/Dockerfile
+    environment:
+      - MODEL_TASK=object-detection  # or image-to-text
+      - MODEL_ID=hustvl/yolos-tiny   # or nlpconnect/vit-gpt2-image-captioning
+      - TORCH_NUM_THREADS=2
+      - HF_HOME=/root/.cache/huggingface
+    working_dir: /app
+    volumes:
+      - ./uploads:/app/uploads
+      - hf-cache:/root/.cache/huggingface
+    expose:
+      - "8000"                       # internal only (do NOT publish a host port)
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:8000/healthz').getcode()==200 else sys.exit(1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 180s
+    restart: unless-stopped
+
 volumes:
   ldap-data:
-  uploads: # required if you want to bind files to Docker volume
+  hf-cache:

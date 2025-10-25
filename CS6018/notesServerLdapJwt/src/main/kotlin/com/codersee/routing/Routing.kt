@@ -11,28 +11,22 @@ import io.ktor.server.routing.*
 fun Application.configureRouting(
   jwtService: JwtService,
   userService: UserService,
-  notesRepository: NotesRepository
+  notesRepository: NotesRepository,
 ) {
   routing {
-
-    route("/api/auth") {
-      authRoute(jwtService)
-    }
-
-    route("/api/user") {
-      userRoute(userService)
-    }
+    // Public routes
+    route("/api/auth") { authRoute(jwtService) }
+    route("/api/user") { userRoute(userService) }
 
     authenticate {
-      route("/api/notes") {
-        noteRoute(notesRepository)
-      }
 
-      route("/api/upload"){
-        uploadRoute()
-      }
+      route("/api/notes") { noteRoute(notesRepository) }
+
+
+      route("/api/upload") { uploadRoute() }
+
+      aiRoute()
     }
-
   }
 }
 
@@ -41,6 +35,3 @@ fun extractPrincipalUsername(call: ApplicationCall): String? =
     ?.payload
     ?.getClaim("username")
     ?.asString()
-
-
-

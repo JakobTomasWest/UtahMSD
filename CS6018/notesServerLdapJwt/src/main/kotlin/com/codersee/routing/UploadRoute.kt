@@ -16,7 +16,7 @@ private val UPLOAD_ROOT: String = System.getenv("UPLOAD_ROOT") ?: "uploads"
 
 val uploadDir = Path(UPLOAD_ROOT)
 
-// allow-list: A–Z, a–z, 0–9, dot, underscore, hyphen; trim length to 128
+
 private fun sanitize(name: String): String {
     val cleaned = buildString {
         for (ch in name) {
