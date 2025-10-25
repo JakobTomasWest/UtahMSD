@@ -33,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GalleryScreen(
@@ -43,8 +44,9 @@ fun GalleryScreen(
     var files by remember { mutableStateOf<List<String>>(emptyList()) }
     var error by remember { mutableStateOf<String?>(null) }
     var showLogin by remember { mutableStateOf(vm.currentTokenOrNull() == null) }
+    var analysis: String? by remember { mutableStateOf(null) }
 
-    // Try to load on entry; if unauthenticated, show login dialog
+    // Try to load on entry, if unauthenticated, show login dialog
     LaunchedEffect(Unit) {
         if (!showLogin){
         runCatching { vm.listPhotos() }
@@ -67,9 +69,10 @@ fun GalleryScreen(
                             runCatching { vm.listPhotos() }
                                 .onSuccess { list ->
                                     files = list
+                                    error = null
                                     showLogin = false
                                 }
-                                .onFailure { e -> error = e.message }
+                                .onFailure { e -> error = e.message ?: "Failed to load photos" }
                         }
                         .onFailure { e -> error = "Login failed: ${e.message}" }
                 }
@@ -105,17 +108,36 @@ fun GalleryScreen(
                     .padding(horizontal = 8.dp)
             ) {
                 items(files) { name ->
-                    AsyncImage(
-                        model = ImageRequest.Builder(context)
-                            .data(vm.photoUrl(name))
-                            .addHeader("Authorization", "Bearer ${vm.currentTokenOrNull()}")
-                            .build(),
-                        contentDescription = name,
-                        modifier = Modifier.padding(4.dp)
-                    )
+                    Column(Modifier.padding(4.dp)) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(context)
+                                .data(vm.photoUrl(name))
+                                .addHeader("Authorization", "Bearer ${vm.currentTokenOrNull()}")
+                                .build(),
+                            contentDescription = name,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        TextButton(onClick = {
+                            scope.launch {
+                                analysis = "Analyzing…"
+                                runCatching { vm.analyzeServerPhoto(name) }
+                                    .onSuccess { result -> analysis = result }
+                                    .onFailure { e -> analysis = "Analyze failed: ${e.message}" }
+                            }
+                        }) { Text("Analyze") }
+                    }
                 }
             }
         }
+    }
+    if (analysis != null) {
+        AlertDialog(
+            onDismissRequest = { analysis = null },
+            title = { Text("Analysis Result") },
+            text = { Text(analysis ?: "") },
+            confirmButton = { TextButton(onClick = { analysis = null }) { Text("OK") } }
+        )
     }
 }
 

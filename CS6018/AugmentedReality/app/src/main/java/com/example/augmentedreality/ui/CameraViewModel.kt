@@ -41,6 +41,13 @@ import org.tensorflow.lite.task.vision.detector.ObjectDetector.ObjectDetectorOpt
 import android.view.WindowManager
 import io.ktor.http.ContentType
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.HttpStatusCode
+
 // RawDetection
 data class RawDetection(
     val rectPx: androidx.compose.ui.geometry.Rect,
@@ -72,13 +79,11 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
     private var username: String? = null
     // Ensure that we have JTW in memory  and only signup once
     private suspend fun ensureToken(username: String = "user", password: String = "pass"): String {
-        token?.let {return it}
-        // try to create user
-        runCatching { api.signUp(username, password)}
+        token?.let { return it }
         this.username = username
-        val t = api.login(username, password)
+        val t = loginOrSignUp(username, password)
         token = t
-        runCatching { tokenStore.save(t)}
+        runCatching { tokenStore.save(t) }
         return t
     }
     suspend fun listPhotos(): List<String> {
@@ -98,13 +103,38 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.SignedOut)
-    suspend fun login(username: String, password: String){
+    suspend fun login(username: String, password: String) {
+        val t = loginOrSignUp(username, password)
         this.username = username
-        runCatching {api.signUp(username,password)}
-        val t = api.login(username,password)
         token = t
         tokenStore.save(t)
         _authState.value = AuthState.SignedIn(username)
+    }
+
+    // Try login first; if unauthorized/not found, attempt sign-up. Surfaces 409 as a friendly message.
+    suspend fun loginOrSignUp(username: String, password: String): String {
+        // First, try normal login
+        try {
+            return api.login(username, password)
+        } catch (e: ClientRequestException) {
+            // If login failed with 401/404, try to create the user
+            if (e.response.status == HttpStatusCode.Unauthorized || e.response.status == HttpStatusCode.NotFound) {
+                try {
+                    api.signUp(username, password)
+                } catch (se: ClientRequestException) {
+                    if (se.response.status == HttpStatusCode.Conflict) {
+                        // Username already exists on the server
+                        throw IllegalStateException("Username already taken")
+                    }
+                    // Other sign-up error
+                    throw IllegalStateException("Sign up failed: ${se.response.status}")
+                }
+                // Sign-up succeeded → log in
+                return api.login(username, password)
+            }
+            // Different error from login
+            throw IllegalStateException("Login failed: ${e.response.status}")
+        }
     }
     fun logout(){
         token = null
@@ -321,6 +351,21 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
 
 
     }
+    /**
+     * Download a server photo by name, run detection w/ detectObjectsByName,
+     * and return a concise summary of labels. Public for GalleryScreen.
+     */
+
+    suspend fun analyzeServerPhoto(name: String): String {
+        val t = ensureToken()
+        val dets = api.detectObjectsByName(t, name)
+        return if (dets.isEmpty()) {
+            "No objects detected"
+        } else {
+            dets.joinToString(separator = ", ", limit = 6) { "${it.label} ${(it.score * 100).toInt()}%" }
+        }
+    }
+
     suspend fun uploadSavedPhoto(savedUri: Uri): String {
         val token = ensureToken()
         val app = getApplication<Application>()
@@ -345,7 +390,7 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
         // Read the image bytes
         val bytes = cr.openInputStream(savedUri)!!.use { it.readBytes() }
 
-        // Upload via your ApiClient
+        // Upload via  ApiClient
         val reply = api.uploadImageBytes(
             token = token,
             bytes = bytes,
@@ -355,32 +400,61 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
         val uploaded = reply.trim().trim('"').ifBlank {remoteName}
         return uploaded
     }
+
+     // Server-side object detection on a saved photo. Reads bytes from the given Uri,
+     // sends to Ktor /api/ai/detect-bytes, and returns a label summary.
+
+    private suspend fun detectObjectsOnSavedPhoto(savedUri: Uri): String {
+        val t = ensureToken()
+        val app = getApplication<Application>()
+        val cr = app.contentResolver
+
+        val mime = cr.getType(savedUri) ?: "image/jpeg"
+        val ct = when {
+            mime.contains("png", true) -> ContentType.Image.PNG
+            mime.contains("webp", true) -> ContentType.parse("image/webp")
+            mime.contains("heic", true) || mime.contains("heif", true) -> ContentType.parse("image/heic")
+            else -> ContentType.Image.JPEG
+        }
+        val ext = when {
+            ct == ContentType.Image.PNG -> "png"
+            ct.toString().contains("webp", true) -> "webp"
+            ct.toString().contains("heic", true) -> "heic"
+            else -> "jpg"
+        }
+        val fname = "photo_${System.currentTimeMillis()}.$ext"
+
+        val data = withContext(Dispatchers.IO) { cr.openInputStream(savedUri)!!.use { it.readBytes() } }
+        val dets = api.detectObjectsPhotoBytes(
+            token = t,
+            imageBytes = data,
+            filename = fname,
+            contentType = ct
+        )
+        return if (dets.isEmpty()) "No objects detected"
+        else dets.joinToString(limit = 5) { "${it.label} ${(it.score * 100).toInt()}%" }
+    }
+
     // Take a photo with ImageCapture and save it to ARPreview by MediaStoreSaver
     private fun takePhoto(){
         val imageCapture = imageCapture ?: return //no image capture configured
         viewModelScope.launch {
             try {
-                val savedUri: Uri? = MediaStoreSaver.savePhoto(getApplication(),imageCapture)
+                val savedUri: Uri? = MediaStoreSaver.savePhoto(getApplication(), imageCapture)
                 if (savedUri == null){
                     _state.value = _state.value.copy(message = "Save failed: URI")
                     return@launch
                 }
-//                val msg = "Photo saved: $savedUri"
-//                _state.value = _state.value.copy(message = msg)
 
-//                val t = ensureToken()
-//                val remoteName = "photo_${System.currentTimeMillis()}.png"
-//                val result = api.uploadImageUri(
-//                    token = t,
-//                    context = getApplication(),
-//                    uri = savedUri,
-//                    remoteName = remoteName
-//                )
-                val uploadedName = uploadSavedPhoto(savedUri)
+                // Upload the saved photo to the server
+                val uploadedName = withContext(Dispatchers.IO) { uploadSavedPhoto(savedUri) }
                 val url = api.photoUrl(uploadedName)
+
+                // Run server-side detection on the same photo
+                val labels = withContext(Dispatchers.IO) { detectObjectsOnSavedPhoto(savedUri) }
+
                 _state.value = _state.value.copy(
-//                    message = "Uploaded $remoteName: $result"
-                    message = "Uploaded $uploadedName\n$url"
+                    message = "Uploaded $uploadedName\n$url\nDetected: $labels"
                 )
             } catch (e: Exception) {
                 _state.value = _state.value.copy(message = "Save/Upload failed: ${e.message}")

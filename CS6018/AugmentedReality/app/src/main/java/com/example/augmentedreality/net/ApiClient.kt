@@ -1,8 +1,9 @@
 package com.example.augmentedreality.net
 
 
-import android.content.Context
 import android.net.Uri
+import org.json.JSONArray
+import org.json.JSONObject
 import io.ktor.client.*
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.*
@@ -14,24 +15,26 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import io.ktor.client.request.forms.*
+import io.ktor.http.*
 import io.ktor.client.plugins.*
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
-import io.ktor.util.*
 
 private const val BASE_URL = "http://10.0.2.2:8080"
 
 @Serializable data class LoginRequest(val username: String, val password: String)
 @Serializable data class TokenResponse(val token: String)
-@Serializable data class Note(val id: String? = null, val message: String, val public: Boolean)
-class ApiClient {
+
+class ApiClient(private val debugLogging: Boolean = true) {
 
     private val client = HttpClient(Android) {
         install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
-        install(Logging) { level = LogLevel.BODY }
+        install(Logging) {
+            level = if (debugLogging) LogLevel.INFO else LogLevel.NONE
+        }
         install(HttpTimeout) { requestTimeoutMillis = 30_000 }
         defaultRequest { url(BASE_URL) }
     }
@@ -50,18 +53,6 @@ class ApiClient {
         }.body<TokenResponse>().token
 
 
-    suspend fun getNotes(token:String): List<Note> =
-        client.get("/api/notes") {
-            header(HttpHeaders.Authorization, "Bearer $token")
-        }.body()
-
-    suspend fun addNote(token: String, message: String, public: Boolean) {
-        client.post("/api/notes") {
-            header(HttpHeaders.Authorization, "Bearer $token")
-            contentType(ContentType.Application.Json)
-            setBody(Note(message = message, public = public))
-        }.bodyAsText()
-    }
 
     suspend fun uploadImageBytes(
         token: String,
@@ -96,32 +87,7 @@ class ApiClient {
         }
         return resp.bodyAsText()
     }
-    suspend fun uploadImageUri(
-        token: String,
-        context: Context,
-        uri: Uri,
-        remoteName: String
-    ): String {
-        val ct = context.contentResolver.getType(uri) ?: "image/png"
-        val bytes = context.contentResolver.openInputStream(uri)!!.use { it.readBytes() }
-        return client.submitFormWithBinaryData(
-            url = "/api/upload/$remoteName",
-            formData = formData {
-                append(
-                    "image",
-                    bytes,
-                    Headers.build {
-                        append(HttpHeaders.ContentType, ct)
-                        append(HttpHeaders.ContentDisposition, "filename=\"$remoteName\"")
-                    }
-                )
-            }
-        ) {
-            header(HttpHeaders.Authorization, "Bearer $token")
-        }.bodyAsText()
 
-
-    }
 
     suspend fun listPhotos(token: String): List<String> =
         client.get("/api/upload") {
@@ -129,5 +95,107 @@ class ApiClient {
             accept(ContentType.Application.Json)
         }.body()
 
-    fun photoUrl(name: String): String = "$BASE_URL/api/upload/$name"
+    fun photoUrl(name: String): String = "$BASE_URL/api/upload/${Uri.encode(name)}"
+
+
+
+    //  Object Detection (labels + boxes)
+    data class ServerDetection(
+        val label: String,
+        val score: Float,
+        val left: Int,
+        val top: Int,
+        val right: Int,
+        val bottom: Int
+    )
+
+    private fun parseDetectionsJson(text: String): List<ServerDetection> {
+        val arr = JSONArray(text)
+        val out = ArrayList<ServerDetection>(arr.length())
+        for (i in 0 until arr.length()) {
+            val o: JSONObject = arr.getJSONObject(i)
+            out.add(
+                ServerDetection(
+                    label = o.optString("label", "object"),
+                    score = o.optDouble("score", 0.0).toFloat(),
+                    left = o.optInt("left", 0),
+                    top = o.optInt("top", 0),
+                    right = o.optInt("right", 0),
+                    bottom = o.optInt("bottom", 0)
+                )
+            )
+        }
+        return out
+    }
+
+    /**
+     * Sends raw image bytes to the Ktor detection endpoint and returns a list of detections.
+     */
+    suspend fun detectObjectsPhotoBytes(
+        token: String,
+        imageBytes: ByteArray,
+        filename: String = "upload.jpg",
+        contentType: ContentType = ContentType.Image.JPEG
+    ): List<ServerDetection> {
+        val response: HttpResponse = client.submitFormWithBinaryData(
+            url = "/api/ai/detect-bytes",
+            formData = formData {
+                append(
+                    key = "image",
+                    value = imageBytes,
+                    headers = Headers.build {
+                        append(HttpHeaders.ContentType, contentType.toString())
+                        append(HttpHeaders.ContentDisposition, "filename=\"$filename\"")
+                    }
+                )
+            }
+        ) {
+            header(HttpHeaders.Authorization, "Bearer $token")
+            accept(ContentType.Application.Json)
+        }
+
+        val status = response.status
+        val ctype = response.headers[HttpHeaders.ContentType] ?: ""
+        val text = response.bodyAsText()
+
+        if (!status.isSuccess()) {
+            throw IllegalStateException("Server $status: ${text.take(200)}")
+        }
+        if (!ctype.contains("application/json", ignoreCase = true)) {
+            throw IllegalStateException("Unexpected Content-Type: $ctype; body preview=\"${text.take(120)}\"")
+        }
+        if (text.isBlank()) {
+            throw IllegalStateException("Empty response body from server")
+        }
+        return parseDetectionsJson(text)
+    }
+
+
+    suspend fun detectObjectsByName(token: String, name: String): List<ServerDetection> {
+        val resp: HttpResponse = client.get {
+            url {
+                takeFrom(BASE_URL)
+                // Safely build /api/ai/detect-name/{filename} and URL-encode the segment
+                appendPathSegments("api", "ai", "detect-name", name)
+            }
+            header(HttpHeaders.Authorization, "Bearer $token")
+            accept(ContentType.Application.Json)
+        }
+
+        val status = resp.status
+        val ctype = resp.headers[HttpHeaders.ContentType] ?: ""
+        val text = resp.bodyAsText()
+
+        if (!status.isSuccess()) {
+            // Surface server error/plain text instead of trying to deserialize as JSON
+            throw IllegalStateException("detect-name failed: $status ${text.take(200)}")
+        }
+        if (!ctype.contains("application/json", ignoreCase = true)) {
+            throw IllegalStateException("Unexpected Content-Type: $ctype; body preview=\"${text.take(120)}\"")
+        }
+        if (text.isBlank()) {
+            throw IllegalStateException("Empty response body from server")
+        }
+        return parseDetectionsJson(text)
+    }
 }
