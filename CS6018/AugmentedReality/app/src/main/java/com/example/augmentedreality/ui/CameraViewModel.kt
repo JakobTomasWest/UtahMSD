@@ -45,8 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
-import io.ktor.client.plugins.ClientRequestException
-import io.ktor.http.HttpStatusCode
+import com.example.augmentedreality.net.HttpStatusException
 
 // RawDetection
 data class RawDetection(
@@ -113,27 +112,44 @@ class CameraViewModel(app: Application) : AndroidViewModel(app) {
 
     // Try login first; if unauthorized/not found, attempt sign-up. Surfaces 409 as a friendly message.
     suspend fun loginOrSignUp(username: String, password: String): String {
-        // First, try normal login
+        // 1) First try to login
         try {
             return api.login(username, password)
-        } catch (e: ClientRequestException) {
-            // If login failed with 401/404, try to create the user
-            if (e.response.status == HttpStatusCode.Unauthorized || e.response.status == HttpStatusCode.NotFound) {
+        } catch (e: HttpStatusException) {
+            // If login failed with 401/404, we *attempt* to create the user
+            if (e.status.value == 401 || e.status.value == 404) {
                 try {
+                    // 2) Try to sign up
                     api.signUp(username, password)
-                } catch (se: ClientRequestException) {
-                    if (se.response.status == HttpStatusCode.Conflict) {
-                        // Username already exists on the server
-                        throw IllegalStateException("Username already taken")
+                } catch (se: HttpStatusException) {
+                    when (se.status.value) {
+                        409 -> {
+                            // Account already exists. Since login just failed, this is effectively "wrong password".
+                            throw IllegalStateException("Username already taken (or incorrect password for an existing account)")
+                        }
+                        400 -> {
+                            // Your server returns 400 for invalid payload / weak password / policy failures
+                            throw IllegalStateException("Incorrect password or Username already taken")
+                        }
+                        else -> {
+                            throw IllegalStateException("Sign up failed (${se.status.value})")
+                        }
                     }
-                    // Other sign-up error
-                    throw IllegalStateException("Sign up failed: ${se.response.status}")
                 }
-                // Sign-up succeeded → log in
+                // 3) Signup succeeded → login again
                 return api.login(username, password)
             }
-            // Different error from login
-            throw IllegalStateException("Login failed: ${e.response.status}")
+
+            // Non-401/404 login failure → map nicely where possible
+            if (e.status.value == 401) {
+                throw IllegalStateException("Incorrect password")
+            } else if (e.status.value == 409) {
+                throw IllegalStateException("Username already taken")
+            } else if (e.status.value == 400) {
+                throw IllegalStateException("Incorrect password")
+            } else {
+                throw IllegalStateException("Login failed (${e.status.value})")
+            }
         }
     }
     fun logout(){

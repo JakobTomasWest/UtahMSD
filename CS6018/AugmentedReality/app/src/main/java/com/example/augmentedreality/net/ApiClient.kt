@@ -28,6 +28,12 @@ private const val BASE_URL = "http://10.0.2.2:8080"
 @Serializable data class LoginRequest(val username: String, val password: String)
 @Serializable data class TokenResponse(val token: String)
 
+/** Thrown when the server returns a non-2xx status. */
+class HttpStatusException(
+    val status: io.ktor.http.HttpStatusCode,
+    val payload: String
+) : Exception("HTTP ${status.value} ${status.description}: $payload")
+
 class ApiClient(private val debugLogging: Boolean = true) {
 
     private val client = HttpClient(Android) {
@@ -40,17 +46,28 @@ class ApiClient(private val debugLogging: Boolean = true) {
     }
 
     suspend fun signUp(username: String, password: String) {
-        client.post("/api/user") {
+        val resp = client.post("/api/user") {
             contentType(ContentType.Application.Json)
             setBody(LoginRequest(username, password))
-        }.bodyAsText()
+            accept(ContentType.Application.Json)
+        }
+        if (!resp.status.isSuccess()) {
+            throw HttpStatusException(resp.status, runCatching { resp.bodyAsText() }.getOrDefault(""))
+        }
+        // success (201/200) – nothing to return
     }
 
-    suspend fun login(username: String, password: String): String =
-        client.post("/api/auth") {
+    suspend fun login(username: String, password: String): String {
+        val resp = client.post("/api/auth") {
             contentType(ContentType.Application.Json)
             setBody(LoginRequest(username, password))
-        }.body<TokenResponse>().token
+            accept(ContentType.Application.Json)
+        }
+        if (!resp.status.isSuccess()) {
+            throw HttpStatusException(resp.status, runCatching { resp.bodyAsText() }.getOrDefault(""))
+        }
+        return resp.body<TokenResponse>().token
+    }
 
 
 
